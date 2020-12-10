@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_html_view/flutter_html_view.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -77,13 +76,7 @@ class _HomePageState extends State<HomePage> {
                               children: [
 
                                   Container(
-                                      child: HtmlView(
-                                          data: '<a class="twitter-timeline" href="https://twitter.com/LiveLawIndia?ref_src=twsrc%5Etfw">Tweets by LiveLawIndia</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>',
-                                          onLaunchFail: (url) {
-                                              print("launch $url failed");
-                                          },
 
-                                      )
                                   ),
                                   Container(
                                       decoration: BoxDecoration(

@@ -1,4 +1,5 @@
 import 'package:allaw/HomePage.dart';
+import 'package:allaw/Viewer.dart';
 import 'package:allaw/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -74,7 +75,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
                       GestureDetector(
                         onTap: () {
-
+                          Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                              builder: (context) => Viewer(
+                                url: "https://www.cgs.iitk.ac.in/user/hk/csd101/2020/exams/quiz1ans.pdf",
+                              ),
+                            ),
+                          );
                         },
                         child: Container(
                           width: ScreenUtil().setWidth(50),
