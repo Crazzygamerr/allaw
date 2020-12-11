@@ -23,6 +23,7 @@ dev_dependencies:
   advance_pdf_viewer: ^1.2.1+1
   http: ^0.12.2
   path_provider: ^1.6.24
+  webview_flutter_plus: ^0.1.1+10
 
 flutter:
   uses-material-design: true

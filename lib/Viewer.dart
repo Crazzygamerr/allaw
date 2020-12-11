@@ -9,125 +9,313 @@ import 'package:http/http.dart' as http;
 
 class Viewer extends StatefulWidget {
 
-  final String url, filePath;
+  final String url;
 
   @override
   _ViewerState createState() => _ViewerState();
 
-  Viewer({this.url, this.filePath});
+  Viewer({this.url});
 }
 
 class _ViewerState extends State<Viewer> {
 
-  PDFDocument pdfFile;
+  PDFDocument pdfFile, offlinePdfFile;
   PageController pageCon = new PageController();
-  bool load = false;
-  String url = "";
+  bool load = false, online = true;
+  String url = "", filePath = "", error = "";
 
   initState() {
     url = widget.url;
     super.initState();
-    getFileFromUrl(url).then((value) {
-      setState(() {
-        pdfFile = value;
-        load = true;
-      });
-    });
-
+    initPdf();
   }
 
-  Future<PDFDocument> getFileFromUrl(String url) async {
-
-    PDFDocument doc = await PDFDocument.fromURL(url);
-    return doc;
-
+  initPdf() async {
+    String filename = url.substring(url.lastIndexOf("/") + 1);
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    filePath = '$dir/$filename';
+    if (await File(filePath).exists()) {
+      getFileFromLocal();
+    } else {
+      await InternetAddress.lookup("www.google.com").then((value) {
+        getFileFromUrl(url);
+      }).catchError((e){
+        setState(() {
+          error = "No internet connection";
+        });
+      });
+    }
   }
 
   Future downloadPdf() async {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Loading..."),
+            CircularProgressIndicator(),
+          ],
+        ),
+      ),
+      barrierDismissible: false,
+    );
 
-    String filename = url.substring(url.lastIndexOf("/") + 1);
-    String dir = (await getApplicationDocumentsDirectory()).path;
-    print(filename);
-    print(dir);
-    if (await File('$dir/$filename').exists())
+    if (await File(filePath).exists()){
+      Navigator.pop(context);
       return null;
+    }
 
-    File file = new File("$dir/$filename");
-    var request = await HttpClient().getUrl(Uri.parse(url));
-    var response = await request.close();
-    var bytes = await consolidateHttpClientResponseBytes(response);
-    await file.writeAsBytes(bytes);
-
+    try {
+      File file = new File(filePath);
+      var request = await HttpClient().getUrl(Uri.parse(url));
+      var response = await request.close();
+      var bytes = await consolidateHttpClientResponseBytes(response);
+      await file.writeAsBytes(bytes);
+      getFileFromLocal();
+    } on SocketException catch (e) {
+      setState(() {
+        error = "No internet connection";
+      });
+    } catch (e) {
+      setState(() {
+        error = "An error occured";
+      });
+    }
+    Navigator.pop(context);
   }
 
-  /*fromLocal() async {
-    var temp = await PDFDocument.fromFile(File("/data/user/0/com.mobile.allaw/app_flutter/quiz1ans.pdf"));
-    setState(() {
-      pdfFile = temp;
-      load = true;
-    });
-  }*/
+  getFileFromUrl(String url) async {
+    try {
+      PDFDocument doc = await PDFDocument.fromURL(url);
+      setState(() {
+        pdfFile = doc;
+        load = true;
+        online = true;
+      });
+    } on SocketException catch (e) {
+      setState(() {
+        error = "No internet connection";
+      });
+    } catch (e) {
+      setState(() {
+        error = "An error occured";
+      });
+    }
+  }
 
-  deleteLocal() async {
-    var file = File("/data/user/0/com.mobile.allaw/app_flutter/quiz1ans.pdf");
+  getFileFromLocal() async {
+    var s = "/data/user/0/com.mobile.allaw/app_flutter/enda.pdf";
+    print(s);
+    var temp = await PDFDocument.fromFile(File(s));
+    setState(() {
+      offlinePdfFile = temp;
+      load = true;
+      online = false;
+    });
+  }
+
+  deleteLocalPdf() async {
+    var file = File(filePath);
     file.delete();
+    getFileFromUrl(url);
+  }
+
+  Future<bool> pls() async {
+    return await File(filePath).exists();
   }
 
   @override
   Widget build(BuildContext context) {
 
+    if(pdfFile != null)
+      print("online = " + pdfFile.count.toString());
+    if(offlinePdfFile != null)
+      print(offlinePdfFile.count);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("New doc"),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              downloadPdf();
-            },
-            child: Container(
-              width: ScreenUtil().setWidth(60),
-              color: Colors.white,
-              child: Icon(
-                Icons.download_sharp,
-                color: Colors.black,
+      backgroundColor: Color(0xffF2F2F2),
+      body: SafeArea(
+        child: Container(
+          child: Column(
+            children: [
+
+              Container(
+                color: Colors.grey,
+                height: ScreenUtil().setHeight(50),
               ),
-            ),
+
+              Container(
+                height: ScreenUtil().setHeight(70),
+                padding: EdgeInsets.fromLTRB(
+                  0,
+                  ScreenUtil().setHeight(10),
+                  0,
+                  ScreenUtil().setHeight(10),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                            width: 1,
+                            color: Colors.black
+                    ),
+                    color: Colors.white,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          width: ScreenUtil().setWidth(50),
+                          height: ScreenUtil().setHeight(50),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            ),
+                            color: Colors.white,
+                          ),
+                          child: Icon(Icons.arrow_back),
+                        ),
+                      ),
+
+                      GestureDetector(
+                        onTap: (){
+                          pls().then((value) {
+                            setState(() {
+                              online = !value;
+                            });
+                          });
+                        },
+                        child: Text(online.toString()),
+                      ),
+
+                      GestureDetector(
+                        onTap: () {
+                          downloadPdf();
+                        },
+                        child: Container(
+                          width: ScreenUtil().setWidth(50),
+                          height: ScreenUtil().setHeight(50),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            ),
+                            color: Colors.white,
+                          ),
+                          child: Icon(
+                            Icons.download_sharp,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          getFileFromLocal();
+                          //deleteLocalPdf();
+                        },
+                        child: Container(
+                          width: ScreenUtil().setWidth(50),
+                          height: ScreenUtil().setHeight(50),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            ),
+                            color: Colors.white,
+                          ),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+
+                    ],
+                  ),
+                ),
+              ),
+
+              (load)?Expanded(
+                child: (online)?PDFViewer(
+                  document: pdfFile,
+                  //scrollDirection: Axis.vertical,
+                  controller: pageCon,
+                  lazyLoad: online,
+                  showPicker: false,
+                  navigationBuilder: (context, pageNumber, totalPages, jumpToPage, animateToPage) {
+                    int x = pageNumber;
+                    return Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.black,
+                        ),
+                        color: Colors.white
+                      ),
+                      height: ScreenUtil().setHeight(50),
+                      child: Slider(
+                        value: x.toDouble(),
+                        min: 0,
+                        max: totalPages.toDouble(),
+                        activeColor: Colors.black54,
+                        onChanged: (value) {
+                          jumpToPage(page: value.toInt());
+                        },
+                      ),
+                    );
+                  },
+                ):PDFViewer(
+                  document: offlinePdfFile,
+                  //scrollDirection: Axis.vertical,
+                  controller: pageCon,
+                  lazyLoad: online,
+                  showPicker: false,
+                  navigationBuilder: (context, pageNumber, totalPages, jumpToPage, animateToPage) {
+                    int x = pageNumber;
+                    return Container(
+                      decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 1,
+                                color: Colors.black,
+                              ),
+                              color: Colors.white
+                      ),
+                      height: ScreenUtil().setHeight(50),
+                      child: Slider(
+                        value: x.toDouble(),
+                        min: 0,
+                        max: totalPages.toDouble(),
+                        activeColor: Colors.black54,
+                        onChanged: (value) {
+                          jumpToPage(page: value.toInt());
+                        },
+                      ),
+                    );
+                  },
+                )
+              ):Expanded(
+                child: Center(
+                  child: (error=="")?CircularProgressIndicator():Text(error),
+                ),
+              ),
+
+              Container(
+                color: Colors.grey,
+                height: ScreenUtil().setHeight(50),
+              ),
+
+            ],
           ),
-          /*GestureDetector(
-            onTap: () {
-              fromLocal();
-            },
-            child: Container(
-              width: ScreenUtil().setWidth(40),
-              color: Colors.white,
-              child: Icon(
-                Icons.refresh,
-                color: Colors.black,
-              ),
-            ),
-          ),*/
-          GestureDetector(
-            onTap: () {
-              deleteLocal();
-            },
-            child: Container(
-              width: ScreenUtil().setWidth(60),
-              color: Colors.white,
-              child: Icon(
-                Icons.delete,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Container(
-        child: load?PDFViewer(
-          document: pdfFile,
-          //scrollDirection: Axis.vertical,
-          controller: pageCon,
-        ):Center(
-          child: CircularProgressIndicator(),
         ),
       ),
     );
