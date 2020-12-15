@@ -18,7 +18,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_screenutil: ^3.2.0
-  share: ^0.6.5+2
+  share: ^0.6.5+4
   app_review: ^2.0.1
   advance_pdf_viewer: ^1.2.1+1
   http: ^0.12.2
@@ -29,5 +29,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/Logo.jpg
+    - assets/
 

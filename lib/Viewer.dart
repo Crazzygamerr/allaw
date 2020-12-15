@@ -6,6 +6,7 @@ import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import 'package:share/share.dart';
 
 class Viewer extends StatefulWidget {
 
@@ -34,7 +35,13 @@ class _ViewerState extends State<Viewer> {
     String filename = url.substring(url.lastIndexOf("/") + 1);
     String dir = (await getApplicationDocumentsDirectory()).path;
     filePath = '$dir/$filename';
-    if (await File(filePath).exists()) {
+    PDFDocument doc = await PDFDocument.fromAsset("assets/The Environment (Protection) Act, 1986 HL.pdf");
+    setState(() {
+      pdfFile = doc;
+      load = true;
+      online = true;
+    });
+    /*if (await File(filePath).exists()) {
       getFileFromLocal();
     } else {
       await InternetAddress.lookup("www.google.com").then((value) {
@@ -44,7 +51,7 @@ class _ViewerState extends State<Viewer> {
           error = "No internet connection";
         });
       });
-    }
+    }*/
   }
 
   Future downloadPdf() async {
@@ -100,7 +107,7 @@ class _ViewerState extends State<Viewer> {
       });
     } catch (e) {
       setState(() {
-        error = "An error occured";
+        error = e.message;
       });
     }
   }
@@ -198,6 +205,28 @@ class _ViewerState extends State<Viewer> {
 
                       GestureDetector(
                         onTap: () {
+                          Share.shareFiles([filePath]);
+                        },
+                        child: Container(
+                          width: ScreenUtil().setWidth(50),
+                          height: ScreenUtil().setHeight(50),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            ),
+                            color: Colors.white,
+                          ),
+                          child: Icon(
+                            Icons.open_in_new,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+
+                      GestureDetector(
+                        onTap: () {
                           downloadPdf();
                         },
                         child: Container(
@@ -219,7 +248,7 @@ class _ViewerState extends State<Viewer> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          getFileFromLocal();
+                          //getFileFromLocal();
                           //deleteLocalPdf();
                         },
                         child: Container(

@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             context,
                             new MaterialPageRoute(
                               builder: (context) => Viewer(
-                                url: "https://www.cgs.iitk.ac.in/user/hk/csd101/2020/exams/quiz8a.pdf",
+                                url: "https://pdfhost.io/v/qcqMs3bsC_The_Limitation_Act_1963_HLpdf.pdf",
                               ),
                             ),
                           );
@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Icon(Icons.home),
                         ),
                       ),
-                      GestureDetector(
+                      /*GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           child: Icon(Icons.home),
                         ),
-                      ),
+                      ),*/
 
                       Container(
                         //color: Colors.blue,
