@@ -24,6 +24,11 @@ dev_dependencies:
   http: ^0.12.2
   path_provider: ^1.6.24
   webview_flutter_plus: ^0.1.1+10
+  firebase_core: ^0.5.1
+  firebase_auth: ^0.18.2
+  cloud_firestore: ^0.14.2
+  firebase_storage: ^5.2.0
+  excel: ^1.1.5
 
 flutter:
   uses-material-design: true

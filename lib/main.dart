@@ -1,11 +1,22 @@
+import 'dart:io';
+
 import 'package:allaw/HomePage.dart';
 import 'package:allaw/Viewer.dart';
 import 'package:allaw/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:excel/excel.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseAuth auth = FirebaseAuth.instance;
+  if(auth.currentUser == null)      //////////////////////////////////////Anonymous signin here!
+    auth.signInAnonymously();
   runApp(MyApp());
 }
 
@@ -30,6 +41,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   PageController pageCon = new PageController();
 
+  Future<void> readXlsx() async {
+
+    ByteData data = await rootBundle.load("assets/test.xlsx");
+    List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    var excel = Excel.decodeBytes(bytes);
+    print(excel.tables["Sheet1"].rows);
+
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -48,9 +68,14 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
 
-              Container(
-                color: Colors.grey,
-                height: ScreenUtil().setHeight(50),
+              GestureDetector(
+                onTap: () {
+                  readXlsx();
+                },
+                child: Container(
+                  color: Colors.grey,
+                  height: ScreenUtil().setHeight(50),
+                ),
               ),
 
               Container(
