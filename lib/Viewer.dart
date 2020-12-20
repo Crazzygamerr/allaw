@@ -1,33 +1,36 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
-import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:http/http.dart' as http;
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:share/share.dart';
 import 'package:excel/excel.dart';
 
 class Viewer extends StatefulWidget {
 
-  final String url;
+  final Reference pdfReference, xlsxReference;
+  final bool local;
+  final String fileName;
 
   @override
   _ViewerState createState() => _ViewerState();
 
-  Viewer({this.url});
+  Viewer({this.pdfReference, this.xlsxReference, this.local, this.fileName});
 }
 
 class _ViewerState extends State<Viewer> {
 
-  PDFDocument pdfFile, offlinePdfFile;
+  PDFDocument pdfDocument;
   PageController pageCon = new PageController();
+
   bool load = false, online = true;
-  String url = "", filePath = "", error = "";
+  String error = "", dir = "", fileName = "";
+  double headingH = 0, subH = 0;
+
+  Reference pdfRef, xlsxRef;
+
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   List<String> chapter = [];
@@ -37,31 +40,38 @@ class _ViewerState extends State<Viewer> {
   List<bool> sub = [];
 
   initState() {
-    url = widget.url;
     super.initState();
     initPdf();
   }
 
   initPdf() async {
-    String filename = url.substring(url.lastIndexOf("/") + 1);
-    String dir = (await getApplicationDocumentsDirectory()).path;
-    filePath = '$dir/$filename';
-    downloadFileExample();
-    xlsxFromUrl();
-    /*if (await File(filePath).exists()) {
-      getFileFromLocal();
-    } else {
-      await InternetAddress.lookup("www.google.com").then((value) {
-        getFileFromUrl(url);
-      }).catchError((e){
-        setState(() {
-          error = "No internet connection";
+    dir = (await getApplicationDocumentsDirectory()).path;
+    if(!widget.local) {
+      pdfRef = widget.pdfReference;
+      xlsxRef = widget.xlsxReference;
+      fileName = pdfRef.name.replaceAll(".pdf", "");
+      if (await File('$dir/${pdfRef.name}').exists()) {
+        getFileFromLocal();
+      } else {
+        await InternetAddress.lookup("www.google.com").then((value) {
+          getFileFromCloud();
+          xlsxFromCloud();
+        }).catchError((e){
+          setState(() {
+            error = "No internet connection";
+          });
         });
-      });
-    }*/
+      }
+    } else {
+      fileName = widget.fileName;
+      getFileFromLocal();
+    }
+
+
+
   }
 
-  Future downloadPdf() async {
+  downloadFiles() async {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -76,110 +86,72 @@ class _ViewerState extends State<Viewer> {
       barrierDismissible: false,
     );
 
-    if (await File(filePath).exists()){
-      Navigator.pop(context);
-      return null;
-    }
-
     try {
-      File file = new File(filePath);
-      var request = await HttpClient().getUrl(Uri.parse(url));
-      var response = await request.close();
-      var bytes = await consolidateHttpClientResponseBytes(response);
-      await file.writeAsBytes(bytes);
+      File pdfFile = new File(dir + "/" + pdfRef.name);
+      File xlsxFile = new File(dir + "/" + xlsxRef.name);
+      FirebaseStorage storage = FirebaseStorage.instance;
+
+      await storage.ref(pdfRef.fullPath).writeToFile(pdfFile);
+      await storage.ref(xlsxRef.fullPath).writeToFile(xlsxFile);
+
       getFileFromLocal();
     } on SocketException catch (e) {
       setState(() {
+        load = false;
         error = "No internet connection";
       });
     } catch (e) {
       setState(() {
+        load = false;
         error = "An error occured";
       });
     }
     Navigator.pop(context);
   }
 
-  getFileFromUrl(String url) async {
-    try {
-      PDFDocument doc = await PDFDocument.fromURL(url);
-      setState(() {
-        pdfFile = doc;
-        load = true;
-        online = true;
-      });
-    } on SocketException catch (e) {
-      setState(() {
-        error = "No internet connection";
-      });
-    } catch (e) {
-      setState(() {
-        error = e.message;
-      });
-    }
-  }
+  Future<void> getFileFromCloud() async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    String url = await storage.ref(pdfRef.fullPath).getDownloadURL();
+    PDFDocument doc = await PDFDocument.fromURL(url);
 
-  Future<void> downloadFileExample() async {
-    firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-
-    var res = await storage.ref().listAll();
-    File downloadToFile = File('${appDocDir.path}/${res.items[0].name}');
-
-    storage.ref(res.items[0].fullPath).writeToFile(downloadToFile);
-
-    PDFDocument doc = await PDFDocument.fromFile(downloadToFile);
     setState(() {
-      pdfFile = doc;
+      pdfDocument = doc;
       load = true;
       online = true;
     });
   }
 
   getFileFromLocal() async {
-    var s = "/data/user/0/com.lexliaise.allaw/app_flutter/enda.pdf";
-    print(s);
-    var temp = await PDFDocument.fromFile(File(s));
+    File xlsxFile = File(dir + '/' +  fileName + ".xlsx");
+    List<int> bytes = await xlsxFile.readAsBytes();
+
+    var excel = Excel.decodeBytes(bytes);
+    Sheet sheet = excel.tables["Sheet1"];
+    readXlsx(sheet);
+
+    var temp = await PDFDocument.fromFile(File(dir + '/' + fileName + ".pdf"));
     setState(() {
-      offlinePdfFile = temp;
+      pdfDocument = temp;
       load = true;
       online = false;
     });
   }
 
-  Future<void> readXlsx() async {
-
-    /*ByteData data = await rootBundle.load("assets/test.xlsx");
-    List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  Future<void> xlsxFromCloud() async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    File downloadToFile = File('$dir/${xlsxRef.name}');
+    await storage.ref(xlsxRef.fullPath).writeToFile(downloadToFile);
+    List<int> bytes = downloadToFile.readAsBytesSync();
     var excel = Excel.decodeBytes(bytes);
-    //print(excel.tables["Sheet1"].rows);
-    Sheet sheet = excel.tables["Sheet1"];
-    for(var x in sheet.rows){
-      String a = x[0].toString().trim();
-      double b = x[1].toInt();
-      bool c = (x[2] != null)?x[2]:false;
-      if(a != null && b != null && c != null){
-        heading.add(a);
-        page.add(b);
-        sub.add(c);
-      }
-    }*/
 
+    Sheet sheet = excel.tables["Sheet1"];
+    readXlsx(sheet);
   }
 
-  Future<void> xlsxFromUrl() async {
-    firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
-    Directory appDocDir = await getApplicationDocumentsDirectory();
+  Future<void> readXlsx(Sheet sheet) async {
 
-    var res = await storage.ref().listAll();
-    File downloadToFile = File('${appDocDir.path}/${res.items[0].name}');
+    chapter = [];heading = [];section = [];page = [];sub = [];
 
-    await storage.ref(res.items[1].fullPath).writeToFile(downloadToFile);
-
-    List<int> bytes = await downloadToFile.readAsBytes();
-    var excel = Excel.decodeBytes(bytes);
-    print(excel.tables["Sheet1"].rows);
-    Sheet sheet = excel.tables["Sheet1"];
     for(var x in sheet.rows){
       String a = x[0].toString().trim();
       String b = x[1].toString();
@@ -193,26 +165,47 @@ class _ViewerState extends State<Viewer> {
         page.add(d);
         sub.add(e);
       }
+
+      var tp = TextPainter(
+        textAlign: TextAlign.left,
+        textDirection: TextDirection.ltr,
+        //maxLines: null,
+        text: TextSpan(
+          style: TextStyle(
+            fontSize: ScreenUtil().setSp((e)?10:15),
+          ),
+          text: b,
+        ),
+      );
+      tp.layout(maxWidth: ScreenUtil().setWidth(e?165:175),);
+      if(e) {
+        subH = (ScreenUtil().setHeight(tp.height + 25)> subH) ? ScreenUtil().setHeight(tp.height + 25): subH;
+      } else {
+        headingH = (ScreenUtil().setHeight(tp.height + 25)> headingH) ? ScreenUtil().setHeight(tp.height + 25): headingH;
+      }
     }
+    setState(() {
+    });
   }
 
   deleteLocalPdf() async {
-    var file = File(filePath);
-    file.delete();
-    getFileFromUrl(url);
+    File pdfFile = File('$dir/$fileName}.pdf');
+    File xlsxFile = File('$dir/$fileName}.xlsx');
+
+    await pdfFile.delete();
+    await xlsxFile.delete();
+
+    getFileFromCloud();
+    xlsxFromCloud();
   }
 
   Future<bool> pls() async {
-    return await File(filePath).exists();
+    bool b = await File('$dir/$fileName}.pdf').exists();
+    return b;
   }
 
   @override
   Widget build(BuildContext context) {
-
-    if(pdfFile != null)
-      print("online = " + pdfFile.count.toString());
-    if(offlinePdfFile != null)
-      print(offlinePdfFile.count);
 
     return Scaffold(
       key: _drawerKey,
@@ -232,138 +225,258 @@ class _ViewerState extends State<Viewer> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  ScreenUtil().setWidth(10),
-                  ScreenUtil().setHeight(0),
-                  ScreenUtil().setWidth(0),
-                  ScreenUtil().setHeight(10),
-                ),
-                child: Text(
-                  "Table of contents:",
-                  style: TextStyle(
-                    fontSize: ScreenUtil().setSp(25)
+              GestureDetector(
+                onTap: () {
+                  pls();
+                },
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    ScreenUtil().setWidth(10),
+                    ScreenUtil().setHeight(0),
+                    ScreenUtil().setWidth(0),
+                    ScreenUtil().setHeight(10),
+                  ),
+                  child: Text(
+                    fileName,
+                    style: TextStyle(
+                      fontSize: ScreenUtil().setSp(20)
+                    ),
                   ),
                 ),
               ),
 
-              Container(
-                height: ScreenUtil().setHeight(750),
-                child: ListView.builder(
-                  itemCount: heading.length,
-                  itemBuilder: (context, index) {
+              Column(
+                children: [
 
-                    var tp = TextPainter(
-                      textAlign: TextAlign.left,
-                      textDirection: TextDirection.ltr,
-                      //maxLines: null,
-                      text: TextSpan(
-                        style: TextStyle(
-                          fontSize: ScreenUtil().setSp((sub[index])?10:15),
-                        ),
-                        text: heading[index],
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(color: Colors.transparent),
+                        bottom: BorderSide(color: Colors.black),
+                        left: BorderSide(color: Colors.transparent),
+                        right: BorderSide(color: Colors.transparent),
                       ),
-                    );
-                    tp.layout(maxWidth: ScreenUtil().setWidth((sub[index])?165:175),);
+                      color: Colors.grey,
+                    ),
+                    child: Row(
+                      //mainAxisAlignment: MainAxisAlignment.s,
+                      //crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
 
-                    return GestureDetector(
-                      onTap: () {
-                        pageCon.jumpToPage(page[index]);
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        width: ScreenUtil().setWidth(330),
-                        color: (index%2 == 0)?Colors.grey:Colors.transparent,
-                        child: Row(
-                          //mainAxisAlignment: MainAxisAlignment.s,
-                          //crossAxisAlignment: CrossAxisAlignment.stretch,
+                        Container(
+                          width: ScreenUtil().setWidth(97),
+                          //color: Colors.blue,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.fromLTRB(
+                            ScreenUtil().setWidth(0),
+                            ScreenUtil().setHeight(10),
+                            ScreenUtil().setWidth(0),
+                            ScreenUtil().setHeight(10),
+                          ),
+                          child: Text(
+                            "Chapter no.",
+                            style: TextStyle(
+                              fontSize: ScreenUtil().setSp(15),
+                            ),
+                          ),
+                        ),
+
+                        Container(
+                          width: ScreenUtil().setWidth(165),
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.fromLTRB(
+                            ScreenUtil().setWidth(0),
+                            ScreenUtil().setHeight(10),
+                            ScreenUtil().setWidth(0),
+                            ScreenUtil().setHeight(10),
+                          ),
+                          //height: ScreenUtil().setHeight((sub[index])?15:20),
+                          //color: Colors.green,
+                          child: Text(
+                            "Title",
+                            style: TextStyle(
+                                    fontSize: ScreenUtil().setSp(15)
+                            ),
+                          ),
+                        ),
+
+                        Container(
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.fromLTRB(
+                            ScreenUtil().setWidth(2),
+                            ScreenUtil().setHeight(0),
+                            ScreenUtil().setWidth(0),
+                            ScreenUtil().setHeight(0),
+                          ),
+                          child: Text(
+                            "Section",
+                            style: TextStyle(
+                              fontSize: ScreenUtil().setSp(10),
+                            ),
+                          ),
+                        ),
+
+                        Container(
+                          width: ScreenUtil().setWidth(44),
+                          padding: EdgeInsets.fromLTRB(
+                            ScreenUtil().setWidth(14),
+                            ScreenUtil().setHeight(10),
+                            ScreenUtil().setWidth(5),
+                            ScreenUtil().setHeight(10),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Page no.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: ScreenUtil().setSp(10),
+                            ),
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ),
+
+                  ListView.builder(
+                    itemCount: heading.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+
+                      return GestureDetector(
+                        onTap: () {
+                          pageCon.jumpToPage(page[index]);
+                          Navigator.pop(context);
+                        },
+                        child: Stack(
                           children: [
 
-                            (sub[index]) ? Container(
-                              width: ScreenUtil().setWidth(25),
-                            ) : Container(),
-
-                            Container(
-                              width: ScreenUtil().setWidth((sub[index])?75:100),
-                              alignment: Alignment.centerLeft,
-                              //color: Colors.blue,
-                              padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(0),
-                                ScreenUtil().setHeight(10),
-                                ScreenUtil().setWidth(0),
-                                ScreenUtil().setHeight(10),
-                              ),
-                              child: Text(
-                                chapter[index] + " - ",
-                                maxLines: 1,
-                                style: TextStyle(
-                                  fontSize: ScreenUtil().setSp((sub[index])?10:15),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: ScreenUtil().setWidth(97),
                                 ),
-                              ),
+                                Container(
+                                  width: ScreenUtil().setWidth(1),
+                                  height: ScreenUtil().setHeight((sub[index])?subH:headingH),
+                                  color: Colors.black,
+                                ),
+                                SizedBox(
+                                  width: ScreenUtil().setWidth(167),
+                                ),
+                                Container(
+                                  width: ScreenUtil().setWidth(1),
+                                  height: ScreenUtil().setHeight((sub[index])?subH:headingH),
+                                  color: Colors.black,
+                                ),
+                                SizedBox(
+                                  width: ScreenUtil().setWidth(43),
+                                ),
+                                Container(
+                                  width: ScreenUtil().setWidth(1),
+                                  height: ScreenUtil().setHeight((sub[index])?subH:headingH),
+                                  color: Colors.black,
+                                ),
+                              ],
                             ),
 
                             Container(
-                              width: ScreenUtil().setWidth(165),
-                              padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(0),
-                                ScreenUtil().setHeight(10),
-                                ScreenUtil().setWidth(0),
-                                ScreenUtil().setHeight(10),
-                              ),
-                              //height: ScreenUtil().setHeight((sub[index])?15:20),
-                              //color: Colors.green,
-                              child: Text(
-                                heading[index],
-                                style: TextStyle(
-                                  fontSize: ScreenUtil().setSp((sub[index])?10:15)
+                              width: ScreenUtil().setWidth(350),
+                              height: ScreenUtil().setHeight((sub[index])?subH:headingH),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  top: BorderSide(color: Colors.transparent),
+                                  bottom: BorderSide(color: Colors.black),
+                                  left: BorderSide(color: Colors.transparent),
+                                  right: BorderSide(color: Colors.transparent),
                                 ),
                               ),
-                            ),
+                              child: Row(
+                                //mainAxisAlignment: MainAxisAlignment.s,
+                                //crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
 
-                            Expanded(
-                              child: Container(
-                                height: tp.height + ScreenUtil().setHeight(22),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                        border: Border(
-                                          top: BorderSide(color: Colors.transparent),
-                                          bottom: BorderSide(color: Colors.transparent),
-                                          left: BorderSide(color: Colors.black),
-                                          right: BorderSide(color: Colors.black),
-                                        )
-                                ),
-                                child: Text(
-                                  section[index],
-                                  style: TextStyle(
-                                    fontSize: ScreenUtil().setSp((sub[index])?10:15),
+                                  (sub[index]) ? Container(
+                                    width: ScreenUtil().setWidth(25),
+                                  ) : Container(),
+
+                                  Container(
+                                    width: ScreenUtil().setWidth((sub[index])?75:100),
+                                    alignment: Alignment.centerLeft,
+                                    //color: Colors.blue,
+                                    padding: EdgeInsets.fromLTRB(
+                                      ScreenUtil().setWidth(0),
+                                      ScreenUtil().setHeight(10),
+                                      ScreenUtil().setWidth(0),
+                                      ScreenUtil().setHeight(10),
+                                    ),
+                                    child: Text(
+                                      chapter[index].toString() + " - ",
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontSize: ScreenUtil().setSp((sub[index])?10:15),
+                                      ),
+                                    ),
                                   ),
-                                ),
+
+                                  Container(
+                                    width: ScreenUtil().setWidth(165),
+                                    padding: EdgeInsets.fromLTRB(
+                                      ScreenUtil().setWidth(0),
+                                      ScreenUtil().setHeight(10),
+                                      ScreenUtil().setWidth(0),
+                                      ScreenUtil().setHeight(10),
+                                    ),
+                                    //height: ScreenUtil().setHeight((sub[index])?15:20),
+                                    //color: Colors.green,
+                                    child: Text(
+                                      heading[index].toString(),
+                                      style: TextStyle(
+                                        fontSize: ScreenUtil().setSp((sub[index])?10:15)
+                                      ),
+                                    ),
+                                  ),
+
+                                  Expanded(
+                                    child: Container(
+                                      //height: ScreenUtil().setHeight(22),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        section[index].toString(),
+                                        style: TextStyle(
+                                          fontSize: ScreenUtil().setSp((sub[index])?10:15),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  Container(
+                                    width: ScreenUtil().setWidth(40),
+                                    padding: EdgeInsets.fromLTRB(
+                                      ScreenUtil().setWidth(10),
+                                      ScreenUtil().setHeight(10),
+                                      ScreenUtil().setWidth(10),
+                                      ScreenUtil().setHeight(10),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      page[index].toString(),
+                                      style: TextStyle(
+                                        fontSize: ScreenUtil().setSp((sub[index])?10:15),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-
-                            Container(
-                              width: ScreenUtil().setWidth(40),
-                              padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(10),
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(10),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                page[index].toString(),
-                                style: TextStyle(
-                                  fontSize: ScreenUtil().setSp((sub[index])?10:15),
-                                ),
-                              ),
-                            ),
-
                           ],
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -453,7 +566,7 @@ class _ViewerState extends State<Viewer> {
 
                       GestureDetector(
                         onTap: () {
-                          Share.shareFiles([filePath]);
+                          Share.shareFiles(['$dir/$fileName}.pdf']);
                         },
                         child: Container(
                           width: ScreenUtil().setWidth(50),
@@ -475,7 +588,7 @@ class _ViewerState extends State<Viewer> {
 
                       GestureDetector(
                         onTap: () {
-                          downloadPdf();
+                          downloadFiles();
                         },
                         child: Container(
                           width: ScreenUtil().setWidth(50),
@@ -496,8 +609,7 @@ class _ViewerState extends State<Viewer> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          //getFileFromLocal();
-                          //deleteLocalPdf();
+                          deleteLocalPdf();
                         },
                         child: Container(
                           width: ScreenUtil().setWidth(50),
@@ -523,11 +635,11 @@ class _ViewerState extends State<Viewer> {
               ),
 
               (load)?Expanded(
-                child: (online)?PDFViewer(
-                  document: pdfFile,
+                child: PDFViewer(
+                  document: pdfDocument,
                   //scrollDirection: Axis.vertical,
                   controller: pageCon,
-                  lazyLoad: online,
+                  lazyLoad: false,
                   showPicker: false,
                   navigationBuilder: (context, pageNumber, totalPages, jumpToPage, animateToPage) {
                     int x = pageNumber;
@@ -538,34 +650,6 @@ class _ViewerState extends State<Viewer> {
                           color: Colors.black,
                         ),
                         color: Colors.white
-                      ),
-                      height: ScreenUtil().setHeight(50),
-                      child: Slider(
-                        value: x.toDouble(),
-                        min: 0,
-                        max: totalPages.toDouble(),
-                        activeColor: Colors.black54,
-                        onChanged: (value) {
-                          jumpToPage(page: value.toInt());
-                        },
-                      ),
-                    );
-                  },
-                ):PDFViewer(
-                  document: offlinePdfFile,
-                  //scrollDirection: Axis.vertical,
-                  controller: pageCon,
-                  lazyLoad: online,
-                  showPicker: false,
-                  navigationBuilder: (context, pageNumber, totalPages, jumpToPage, animateToPage) {
-                    int x = pageNumber;
-                    return Container(
-                      decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 1,
-                                color: Colors.black,
-                              ),
-                              color: Colors.white
                       ),
                       height: ScreenUtil().setHeight(50),
                       child: Slider(

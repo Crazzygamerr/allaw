@@ -1,15 +1,16 @@
 import 'dart:io';
 
 import 'package:allaw/HomePage.dart';
-import 'package:allaw/Viewer.dart';
 import 'package:allaw/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:excel/excel.dart';
+import 'package:allaw/BareActs.dart';
+import 'package:allaw/Downloads.dart';
+import 'package:allaw/LegalTerms.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   PageController pageCon = new PageController();
+  List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms"];
+  int index = 0;
 
   Future<void> readXlsx() async {
 
@@ -100,14 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                              builder: (context) => Viewer(
-                                url: "https://pdfhost.io/v/qcqMs3bsC_The_Limitation_Act_1963_HLpdf.pdf",
-                              ),
-                            ),
-                          );
+                          pageCon.jumpToPage(0);
                         },
                         child: Container(
                           width: ScreenUtil().setWidth(50),
@@ -122,36 +118,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Icon(Icons.home),
                         ),
                       ),
-                      /*GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                              builder: (context) => Viewer(
-                                url: "https://www.cgs.iitk.ac.in/user/hk/csd101/2020/exams/enda.pdf",
-                              ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          width: ScreenUtil().setWidth(50),
-                          height: ScreenUtil().setHeight(50),
-                          decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  border: Border.all(
-                                          width: 1,
-                                          color: Colors.black
-                                  )
-                          ),
-                          child: Icon(Icons.home),
-                        ),
-                      ),*/
 
                       Container(
                         //color: Colors.blue,
                         width: ScreenUtil().setWidth(200),  //275 before---------------------
                         child: Text(
-                          "Test",
+                          s[index],
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: "Times New Roman",
@@ -187,12 +159,23 @@ class _MyHomePageState extends State<MyHomePage> {
               Expanded(
                 child: PageView(
                   controller: pageCon,
+                  onPageChanged: (page) {
+                    setState(() {
+                      index = page;
+                    });
+                  },
                   //physics: NeverScrollableScrollPhysics(),
                   children: [
 
                     HomePage(),
 
                     Settings(),
+
+                    BareActs(),
+
+                    Downloads(),
+
+                    LegalTerms(),
 
                   ],
                 ),
@@ -220,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                       GestureDetector(
                         onTap: () {
-
+                          pageCon.jumpToPage(2);
                         },
                         child: Container(
                           width: ScreenUtil().setWidth(100),
