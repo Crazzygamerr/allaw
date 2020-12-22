@@ -25,17 +25,25 @@ class _LegalTermsState extends State<LegalTerms>{
     }
 
     getDocs() async {
-        FirebaseStorage storage = FirebaseStorage.instance;
-        Reference ref;
-
-        await storage.ref().listAll().then((value) {
-            ref = value.items.singleWhere((element) => element.name == "Legal Terms.xlsx");
-        });
         String dir = (await getApplicationDocumentsDirectory()).path;
-        File downloadToFile = File('$dir/${ref.name}');
+        File xlsxFile;
+        if(await File('$dir/Legal Terms.xlsx').exists()) {
 
-        await storage.ref(ref.fullPath).writeToFile(downloadToFile);
-        List<int> bytes = downloadToFile.readAsBytesSync();
+            xlsxFile = File('$dir/Legal Terms.xlsx');
+
+        } else {
+
+            FirebaseStorage storage = FirebaseStorage.instance;
+            Reference ref;
+            xlsxFile = File('$dir/Legal Terms.xlsx');
+            await storage.ref().listAll().then((value) {
+                ref = value.items.singleWhere((element) => element.name == "Legal Terms.xlsx");
+            });
+            await storage.ref(ref.fullPath).writeToFile(xlsxFile);
+
+        }
+
+        List<int> bytes = xlsxFile.readAsBytesSync();
         var excel = Excel.decodeBytes(bytes);
 
         sheet = excel.tables["Sheet1"];
@@ -102,7 +110,7 @@ class _LegalTermsState extends State<LegalTerms>{
                                 decoration: BoxDecoration(
                                     color: Colors.white,
                                     border: Border.all(
-                                            color: Colors.black
+                                        color: Colors.black,
                                     ),
                                 ),
                                 child: (!loading)?Scrollbar(
@@ -113,29 +121,42 @@ class _LegalTermsState extends State<LegalTerms>{
 
                                             bool b = sheet.rows[index][0].toLowerCase().contains(textCon.text.toLowerCase());
 
-                                            return (b)?GestureDetector(
-                                                onTap: () {
-                                                    /*Navigator.push(
-                                                        context,
-                                                        new MaterialPageRoute(
-                                                            builder: (context) => Viewer(
-                                                                pdfReference: pdfReference[index],
-                                                                xlsxReference: xlsxReference[index],
-                                                            ),
-                                                        ),
-                                                    );*/
-                                                },
-                                                child: Container(
-                                                    padding: EdgeInsets.fromLTRB(
-                                                        ScreenUtil().setWidth(20),
-                                                        ScreenUtil().setHeight(20),
-                                                        ScreenUtil().setWidth(10),
-                                                        ScreenUtil().setHeight(20),
-                                                    ),
-                                                    child: Text(
-                                                        sheet.rows[index][0],
+                                            return (b)?Container(
+                                                decoration: BoxDecoration(
+                                                    border: Border(
+                                                        top: BorderSide(color: Colors.transparent),
+                                                        bottom: BorderSide(color: Colors.black),
+                                                        left: BorderSide(color: Colors.transparent),
+                                                        right: BorderSide(color: Colors.transparent),
                                                     ),
                                                 ),
+                                              child: ExpansionTile(
+                                                  title: Container(
+                                                      padding: EdgeInsets.fromLTRB(
+                                                          ScreenUtil().setWidth(20),
+                                                          ScreenUtil().setHeight(20),
+                                                          ScreenUtil().setWidth(10),
+                                                          ScreenUtil().setHeight(20),
+                                                      ),
+                                                      child: Text(
+                                                          sheet.rows[index][0],
+                                                      ),
+                                                  ),
+                                                  children: [
+                                                      Container(
+                                                          padding: EdgeInsets.fromLTRB(
+                                                              ScreenUtil().setWidth(10),
+                                                              ScreenUtil().setHeight(0),
+                                                              ScreenUtil().setWidth(10),
+                                                              ScreenUtil().setHeight(10),
+                                                          ),
+                                                          child: Text(
+                                                              sheet.rows[index][1],
+                                                          ),
+                                                      ),
+                                                  ],
+                                                  //isExpanded:
+                                              ),
                                             ):Container();
                                         },
                                     ),

@@ -24,6 +24,7 @@ class _BareActsState extends State<BareActs>{
   }
 
   getDocs() async {
+      bareActs = []; pdfReference = []; xlsxReference = [];
       FirebaseStorage storage = FirebaseStorage.instance;
       ListResult res = await storage.ref().listAll();
       List<String> excel = [];
@@ -130,7 +131,9 @@ class _BareActsState extends State<BareActs>{
                                                       local: false,
                                                   ),
                                               ),
-                                          );
+                                          ).then((value) {
+                                              getDocs();
+                                          });
                                       },
                                       child: Container(
                                           padding: EdgeInsets.fromLTRB(

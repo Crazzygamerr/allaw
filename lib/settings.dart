@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:share/share.dart';
+import 'package:app_review/app_review.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -85,7 +87,7 @@ class _SettingsState extends State<Settings> {
 
             GestureDetector(
               onTap: (){
-
+                AppReview.requestReview;
               },
               child: Container(
                 //color: Colors.blue,
@@ -104,7 +106,7 @@ class _SettingsState extends State<Settings> {
 
             GestureDetector(
               onTap: (){
-
+                Share.share("");
               },
               child: Container(
                 //color: Colors.blue,

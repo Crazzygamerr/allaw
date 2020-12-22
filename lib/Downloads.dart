@@ -118,7 +118,9 @@ class _DownloadsState extends State<Downloads>{
                                                                 fileName: downloads[index],
                                                             ),
                                                         ),
-                                                    );
+                                                    ).then((value) {
+                                                        getDocs();
+                                                    });
                                                 },
                                                 child: Container(
                                                     padding: EdgeInsets.fromLTRB(
