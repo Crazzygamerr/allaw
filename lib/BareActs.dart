@@ -43,8 +43,6 @@ class _BareActsState extends State<BareActs>{
           int x = excel.indexOf(s + '.xlsx');
           xlsxReference.add(excelRef.elementAt(x));
       }
-      print(pdfReference);
-      print(xlsxReference);
       setState(() {
           loading = false;
       });

@@ -48,14 +48,14 @@ class _MyHomePageState extends State<MyHomePage> {
     int index = 0;
     List<Offset> offsets = [];
 
-    Future<void> readXlsx() async {
+    /*Future<void> readXlsx() async {
 
         ByteData data = await rootBundle.load("assets/test.xlsx");
         List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
         var excel = Excel.decodeBytes(bytes);
         print(excel.tables["Sheet1"].rows);
 
-    }
+    }*/
 
     @override
     Widget build(BuildContext context) {
@@ -77,7 +77,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
                             GestureDetector(
                                 onTap: () {
-                                    readXlsx();
                                 },
                                 child: Container(
                                     color: Colors.grey,

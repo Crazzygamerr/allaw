@@ -140,42 +140,43 @@ class _TwitterFeedState extends State<TwitterFeed> with AutomaticKeepAliveClient
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.fromLTRB(
-            ScreenUtil().setWidth(5),
-            0,
-            ScreenUtil().setWidth(5),
-            0,
-        ),
-        child: Container(
-            child: Stack(
-              children: [
-                WebViewPlus(
-                    javascriptMode: JavascriptMode.unrestricted,
-                    onWebViewCreated: (controller) {
-                        controller.loadString(s[widget.i]);
-                    },
-                    onPageFinished: (url) {
-                      setState(() {
-                        loading = false;
-                      });
-                    },
-                    navigationDelegate: (navigation) {
-                        return NavigationDecision.prevent;
-                    },
-                ),
+      super.build(context);
+      return Padding(
+          padding: EdgeInsets.fromLTRB(
+              ScreenUtil().setWidth(5),
+              0,
+              ScreenUtil().setWidth(5),
+              0,
+          ),
+          child: Container(
+              child: Stack(
+                  children: [
+                      /*WebViewPlus(
+                          javascriptMode: JavascriptMode.unrestricted,
+                          onWebViewCreated: (controller) {
+                              controller.loadString(s[widget.i]);
+                          },
+                          onPageFinished: (url) {
+                              setState(() {
+                                  loading = false;
+                              });
+                          },
+                          navigationDelegate: (navigation) {
+                              return NavigationDecision.prevent;
+                          },
+                      ),*/
 
-                  (loading)?Container(
-                    color: Colors.white,
-                    child: Center(
-                        child: CircularProgressIndicator(),
-                    ),
-                  ):Container(),
+                      (loading)?Container(
+                          color: Colors.white,
+                          child: Center(
+                              child: CircularProgressIndicator(),
+                          ),
+                      ):Container(),
 
-              ],
-            ),
-        ),
-    );
+                  ],
+              ),
+          ),
+      );
   }
 
   @override
