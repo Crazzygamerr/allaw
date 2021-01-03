@@ -4,7 +4,9 @@ import 'dart:ui';
 
 import 'package:allaw/HomePage.dart';
 import 'package:allaw/settings.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,12 +31,13 @@ class MyApp extends StatelessWidget {
     Widget build(BuildContext context) {
         return MaterialApp(
             title: 'Allaw',
+            theme: ThemeData(fontFamily: 'SF Pro'),
             debugShowCheckedModeBanner: false,
             home: MyHomePage(),
         );
     }
 }
-
+// PDF Viewer icon
 class MyHomePage extends StatefulWidget {
 
     @override
@@ -47,6 +50,20 @@ class _MyHomePageState extends State<MyHomePage> {
     List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms"];
     int index = 0;
     List<Offset> offsets = [];
+    bool onboarding = true;
+    @override
+    void initState() {
+        super.initState();
+        func1();
+    }
+
+    func1() async {
+        if(mounted){
+            Future.delayed(Duration(seconds: 1)).then((value) => setState((){onboarding = false;}));
+        } else {
+            Future.delayed(Duration(milliseconds: 50)).then((value) => setState((){func1();}));
+        }
+    }
 
     /*Future<void> readXlsx() async {
 
@@ -59,15 +76,54 @@ class _MyHomePageState extends State<MyHomePage> {
 
     @override
     Widget build(BuildContext context) {
-
         ScreenUtil.init(context,
                 designSize: Size(411.4, 866.3), allowFontScaling: true);
 
         SystemChrome.setPreferredOrientations([
             DeviceOrientation.portraitUp,
         ]);
-
-        return Scaffold(
+        if(onboarding) return Scaffold(
+            backgroundColor: Color(0xff404040),
+            body: Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                      SizedBox(
+                          height: ScreenUtil().setHeight(230),
+                      ),
+                      Container(
+                          height: ScreenUtil().setHeight(250),
+                          width: ScreenUtil().setWidth(250),
+                          decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20)
+                          ),
+                          clipBehavior: Clip.hardEdge,
+                          child: Image.asset("assets/Logo.jpg"),
+                      ),
+                      Text(
+                          "Your Ally for Law",
+                          style: TextStyle(
+                              fontFamily: "Times New Roman",
+                              fontSize: ScreenUtil().setSp(18),
+                              color: Colors.white,
+                          ),
+                      ),
+                      SizedBox(
+                          height: ScreenUtil().setHeight(205),
+                      ),
+                      Text(
+                          "by LexLiaise",
+                          style: TextStyle(
+                              fontFamily: "Times New Roman",
+                              fontSize: ScreenUtil().setSp(16),
+                              color: Colors.white,
+                          ),
+                      ),
+                  ],
+              ),
+            ),
+        );
+        else return Scaffold(
             backgroundColor: Color(0xffF2F2F2),
             body: SafeArea(
                 child: Container(
@@ -120,19 +176,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     ),
                                                     child: Icon(
                                                         Icons.home,
-                                                        size: 20,
+                                                        size: 27,
                                                     ),
                                                 ),
                                             ),
 
                                             Container(
                                                 //color: Colors.blue,
-                                                width: ScreenUtil().setWidth(200),  //275 before---------------------
+                                                width: ScreenUtil().setWidth(290),  //275 before---------------------
                                                 child: Text(
                                                     s[index],
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
-                                                        fontFamily: "Times New Roman",
                                                         fontSize: ScreenUtil().setSp(24),
                                                         fontWeight: FontWeight.bold,
                                                     ),
@@ -155,7 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     ),
                                                     child: Icon(
                                                         Icons.settings,
-                                                        size: 20,
+                                                        size: 27,
                                                     ),
                                                 ),
                                             ),
@@ -264,7 +319,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             Text(
                                                                 "Bare Acts",
                                                                 /*style: TextStyle(
-                                                                    fontSize: ScreenUtil().setSp(15)
+                                                                    fontFamily: "SF Pro",
+                                                                    fontStyle: FontStyle.normal,
                                                                 ),*/
                                                             ),
                                                         ],
@@ -275,29 +331,59 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 onTap: () {
 
                                                 },
-                                                child: Container(
-                                                    width: ScreenUtil().setWidth(100),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(15),
-                                                        border: Border.all(
-                                                            width: 1,
-                                                            color: Colors.black,
+                                                child: Stack(
+                                                    alignment: Alignment.center,
+                                                    children: [
+                                                        Container(
+                                                            width: ScreenUtil().setWidth(100),
+                                                            decoration: BoxDecoration(
+                                                                borderRadius: BorderRadius.circular(15),
+                                                                border: Border.all(
+                                                                    width: 1,
+                                                                    color: Colors.black,
+                                                                ),
+                                                                //color: Colors.grey,
+                                                            ),
+                                                            child: Column(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                    Icon(
+                                                                        Icons.article,
+                                                                        //color: Colors.white,
+                                                                        size: 20,
+                                                                    ),
+                                                                    Text(
+                                                                        "Legal Notes",
+                                                                    ),
+                                                                ],
+                                                            ),
                                                         ),
-                                                        //color: Colors.grey,
-                                                    ),
-                                                    child: Column(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        children: [
-                                                            Icon(
-                                                                Icons.article,
-                                                                //color: Colors.white,
-                                                                size: 20,
+                                                        Transform.rotate(
+                                                            angle: -3.14*1/10,
+                                                            child: Opacity(
+                                                                opacity: 1,
+                                                                child: Container(
+                                                                    width: ScreenUtil().setWidth(98),
+                                                                    decoration: BoxDecoration(
+                                                                        color: Colors.grey,
+                                                                        borderRadius: BorderRadius.only(
+                                                                            topRight: Radius.circular(11),
+                                                                            //bottomRight: Radius.circular(5),
+                                                                            bottomLeft: Radius.circular(11),
+                                                                        ),
+                                                                    ),
+                                                                    alignment: Alignment.center,
+                                                                    child: Text(
+                                                                        "Coming soon",
+                                                                        style: TextStyle(
+                                                                            //color: Colors.white
+                                                                            fontSize: ScreenUtil().setSp(10),
+                                                                        ),
+                                                                    ),
+                                                                ),
                                                             ),
-                                                            Text(
-                                                                "Legal Notes",
-                                                            ),
-                                                        ],
-                                                    ),
+                                                        ),
+                                                    ],
                                                 ),
                                             ),
                                             GestureDetector(
@@ -320,7 +406,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                 Icons.font_download,
                                                                 size: 20,
                                                             ),
-                                                            Text("Legal Terms"),
+                                                            Text(
+                                                                "Legal Terms",
+                                                                /*style: TextStyle(
+                                                                    fontWeight: FontWeight.bold,
+                                                                    fontSize: 12,
+                                                                ),*/
+                                                            ),
                                                         ],
                                                     ),
                                                 ),
@@ -389,9 +481,9 @@ class TestPaint extends CustomPainter {
     @override
     void paint(Canvas canvas, Size size) {
         final paint = Paint()
-        ..color = Colors.black
-        ..isAntiAlias = true
-        ..strokeWidth = 2;
+            ..color = Colors.black
+            ..isAntiAlias = true
+            ..strokeWidth = 2;
 
         //canvas.drawLine(Offset(100,100), Offset(200,200), paint);
         if(offsets != null){

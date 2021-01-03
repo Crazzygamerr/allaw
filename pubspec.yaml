@@ -29,10 +29,24 @@ dev_dependencies:
   cloud_firestore: ^0.14.2
   firebase_storage: ^5.2.0
   excel: ^1.1.5
+  quotes: ^0.0.2
+  flutter_launcher_icons: ^0.8.1
+
+flutter_icons:
+  image_path: "assets/Logo.jpg"
+  image_path_android: "assets/Logo.jpg"
+  android: true
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/
+
+  fonts:
+    - family: SF Pro
+      fonts:
+        - asset: assets/SFProText-Regular.ttf
+          style: normal
+        - asset: assets/SFProText-Bold.ttf
 

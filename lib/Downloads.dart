@@ -96,6 +96,7 @@ class _DownloadsState extends State<Downloads>{
                             child: Container(
                                 decoration: BoxDecoration(
                                     color: Colors.white,
+                                    borderRadius: BorderRadius.all(Radius.circular(15)),
                                     border: Border.all(
                                             color: Colors.black
                                     ),

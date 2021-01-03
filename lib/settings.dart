@@ -106,7 +106,7 @@ class _SettingsState extends State<Settings> {
 
             GestureDetector(
               onTap: (){
-                Share.share("");
+                Share.share("h");
               },
               child: Container(
                 //color: Colors.blue,

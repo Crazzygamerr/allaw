@@ -109,6 +109,7 @@ class _LegalTermsState extends State<LegalTerms>{
                             child: Container(
                                 decoration: BoxDecoration(
                                     color: Colors.white,
+                                    borderRadius: BorderRadius.all(Radius.circular(15)),
                                     border: Border.all(
                                         color: Colors.black,
                                     ),
