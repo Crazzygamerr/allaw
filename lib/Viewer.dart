@@ -22,7 +22,7 @@ class Viewer extends StatefulWidget {
     Viewer({this.pdfReference, this.xlsxReference, this.local, this.fileName});
 }
 
-class _ViewerState extends State<Viewer> {
+class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 
     PDFDocument pdfDocument;
     PageController pageCon = new PageController(keepPage: true);
@@ -51,7 +51,7 @@ class _ViewerState extends State<Viewer> {
     List<String> heading = [];
     List<String> section = [];
     List<int> page = [];
-    List<bool> sub = [];
+    List<bool> sub = [], minimized = [];
 
     List<List<Map<String, dynamic>>> strokes = [];
     Color strokeColor = Colors.black;
@@ -104,7 +104,12 @@ class _ViewerState extends State<Viewer> {
                         content: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                                Text("Loading..."),
+                                Text(
+                                    "Loading...",
+                                    style: TextStyle(
+                                        fontSize: ScreenUtil().setSp(14),
+                                    ),
+                                ),
                                 CircularProgressIndicator(),
                             ],
                         ),
@@ -129,7 +134,7 @@ class _ViewerState extends State<Viewer> {
             } else if((x.height - ScreenUtil().setHeight(50))/x.width < 297/210) {
                 setState(() {
                     canvasH = (x.height - ScreenUtil().setHeight(50));
-                    canvasW = (297/210)*x.width;
+                    canvasW = (210/297)*canvasH;
                 });
             } else {
                 setState(() {
@@ -196,7 +201,12 @@ class _ViewerState extends State<Viewer> {
                     content: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                            Text("Loading..."),
+                            Text(
+                                "Loading...",
+                                style: TextStyle(
+                                    fontSize: ScreenUtil().setSp(14),
+                                ),
+                            ),
                             CircularProgressIndicator(),
                         ],
                     ),
@@ -274,8 +284,9 @@ class _ViewerState extends State<Viewer> {
 
     Future<void> readXlsx(Sheet sheet) async {
 
-        heading = [];section = [];page = [];sub = [];
-        for(var x in sheet.rows){
+        heading = [];section = [];page = [];sub = [];minimized = [];
+        for(int i=0;i<sheet.rows.length;i++){
+            var x = sheet.rows[i];
             String a = x[0].toString();
             String b = (x[1] != null)?x[1].toString():"";
             int c = x[2].toInt();
@@ -299,16 +310,35 @@ class _ViewerState extends State<Viewer> {
                 //maxLines: null,
                 text: TextSpan(
                     style: TextStyle(
-                        fontSize: ScreenUtil().setSp((d)?10:15),
+                        fontSize: ScreenUtil().setSp((d)?12:15),
                     ),
                     text: a,
                 ),
             );
-            tp.layout(maxWidth: ScreenUtil().setWidth(d?165:175),);
+            if(d)
+                tp.layout(maxWidth: ScreenUtil().setWidth(160),);
+            else if(i == sheet.rows.length-1)
+                tp.layout(maxWidth: ScreenUtil().setWidth(150,),);
+            else if(sheet.rows[i+1].length > 3 && sheet.rows[i+1] != null)
+                tp.layout(maxWidth: ScreenUtil().setWidth(100,),);
+            else
+                tp.layout(maxWidth: ScreenUtil().setWidth(150,),);
             if(d) {
-                subH = (ScreenUtil().setHeight(tp.height + 20)> subH) ? ScreenUtil().setHeight(tp.height + 20): subH;
+                subH = (tp.height + 20> subH) ? tp.height + 20: subH;
             } else {
-                headingH = (ScreenUtil().setHeight(tp.height + 20)> headingH) ? ScreenUtil().setHeight(tp.height + 20): headingH;
+                headingH = (tp.height + 20> headingH) ? tp.height + 20: headingH;
+            }
+        }
+        for(int i=0;i<sub.length;i++){
+            if(sub[i]) {
+                minimized.add(true);
+            } else{
+                if(i == sub.length-1)
+                    minimized.add(null);
+                else if(sub[i+1])
+                    minimized.add(true);
+                else
+                    minimized.add(null);
             }
         }
         setState(() {
@@ -415,7 +445,7 @@ class _ViewerState extends State<Viewer> {
                             ScreenUtil().setWidth(0),
                             ScreenUtil().setHeight(10),
                             ScreenUtil().setWidth(0),
-                            ScreenUtil().setHeight(10),
+                            ScreenUtil().setHeight(0),
                         ),
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -431,222 +461,252 @@ class _ViewerState extends State<Viewer> {
                                     child: Text(
                                         fileName,
                                         style: TextStyle(
-                                                fontSize: ScreenUtil().setSp(20)
+                                            fontSize: ScreenUtil().setSp(20),
                                         ),
                                     ),
                                 ),
 
-                                Column(
-                                    children: [
-
-                                        Container(
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    top: BorderSide(color: Colors.transparent),
-                                                    bottom: BorderSide(color: Colors.black),
-                                                    left: BorderSide(color: Colors.transparent),
-                                                    right: BorderSide(color: Colors.transparent),
-                                                ),
-                                                color: Colors.grey,
-                                            ),
-                                            child: Row(
-                                                //mainAxisAlignment: MainAxisAlignment.s,
-                                                //crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                children: [
-
-
-                                                    Expanded(
-                                                        child: Container(
-                                                            //width: ScreenUtil().setWidth(150),
-                                                            alignment: Alignment.center,
-                                                            child: Text(
-                                                                "Title",
-                                                                style: TextStyle(
-                                                                        fontSize: ScreenUtil().setSp(15)
-                                                                ),
-                                                            ),
-                                                        ),
-                                                    ),
-
-                                                    Container(
-                                                        width: ScreenUtil().setWidth(1),
-                                                        height: ScreenUtil().setHeight(50),
-                                                        color: Colors.black,
-                                                    ),
-
-                                                    Padding(
-                                                        padding: EdgeInsets.fromLTRB(
-                                                            ScreenUtil().setWidth(2),
-                                                            ScreenUtil().setHeight(0),
-                                                            ScreenUtil().setWidth(2),
-                                                            ScreenUtil().setHeight(0),
-                                                        ),
-                                                        child: Container(
-                                                            alignment: Alignment.center,
-                                                            //color: Colors.blue,
-                                                            child: Text(
-                                                                "Section no.",
-                                                                style: TextStyle(
-                                                                    fontSize: ScreenUtil().setSp(10),
-                                                                ),
-                                                            ),
-                                                        ),
-                                                    ),
-
-                                                    Container(
-                                                        width: ScreenUtil().setWidth(1),
-                                                        height: ScreenUtil().setHeight(50),
-                                                        color: Colors.black,
-                                                    ),
-
-                                                    Padding(
-                                                        padding: EdgeInsets.fromLTRB(
-                                                            ScreenUtil().setWidth(5),
-                                                            ScreenUtil().setHeight(10),
-                                                            ScreenUtil().setWidth(0),
-                                                            ScreenUtil().setHeight(10),
-                                                        ),
-                                                        child: Container(
-                                                            width: ScreenUtil().setWidth(44),
-                                                            alignment: Alignment.center,
-                                                            child: Text(
-                                                                "Page no.",
-                                                                textAlign: TextAlign.center,
-                                                                style: TextStyle(
-                                                                    fontSize: ScreenUtil().setSp(10),
-                                                                ),
-                                                            ),
-                                                        ),
-                                                    ),
-
-                                                ],
-                                            ),
+                                Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            top: BorderSide(color: Colors.transparent),
+                                            bottom: BorderSide(color: Colors.black),
+                                            left: BorderSide(color: Colors.transparent),
+                                            right: BorderSide(color: Colors.transparent),
                                         ),
+                                        color: Colors.grey,
+                                    ),
+                                    child: Row(
+                                        //mainAxisAlignment: MainAxisAlignment.s,
+                                        //crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        children: [
 
-                                        Container(
-                                            height: ScreenUtil().setHeight(700),
-                                            child: ListView.builder(
-                                                itemCount: heading.length,
-                                                shrinkWrap: true,
-                                                itemBuilder: (context, index) {
-                                                    String part1 = "", part2 = "";
-                                                    if(section[index].contains("-")) {
-                                                        part1 = section[index].split("-")[0];
-                                                        part2 = section[index].split("-")[1];
-                                                    }
+                                            Expanded(
+                                                child: Container(
+                                                    //width: ScreenUtil().setWidth(150),
+                                                    alignment: Alignment.center,
+                                                    child: Text(
+                                                        "Title",
+                                                        style: TextStyle(
+                                                            fontSize: ScreenUtil().setSp(15),
+                                                        ),
+                                                    ),
+                                                ),
+                                            ),
 
-                                                    return GestureDetector(
-                                                        onTap: () {
-                                                            pageCon.jumpToPage(page[index]-1);
-                                                            if(!online)
-                                                                canvasCon.jumpToPage(page[index]-1);
-                                                            Navigator.pop(context);
-                                                        },
-                                                        child: Stack(
-                                                            children: [
+                                            Container(
+                                                width: ScreenUtil().setWidth(1),
+                                                height: ScreenUtil().setHeight(70),
+                                                color: Colors.black,
+                                            ),
 
-                                                                Row(
-                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    children: [
-                                                                        SizedBox(
-                                                                            width: ScreenUtil().setWidth(260),
-                                                                        ),
-                                                                        Container(
-                                                                            width: ScreenUtil().setWidth(1),
-                                                                            height: ScreenUtil().setHeight((sub[index])?subH:headingH),
-                                                                            color: Colors.black,
-                                                                        ),
-                                                                        SizedBox(
-                                                                            width: ScreenUtil().setWidth(63),
-                                                                        ),
-                                                                        Container(
-                                                                            width: ScreenUtil().setWidth(1),
-                                                                            height: ScreenUtil().setHeight((sub[index])?subH:headingH),
-                                                                            color: Colors.black,
-                                                                        ),
-                                                                    ],
-                                                                ),
+                                            Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    ScreenUtil().setWidth(2),
+                                                    ScreenUtil().setHeight(0),
+                                                    ScreenUtil().setWidth(2),
+                                                    ScreenUtil().setHeight(0),
+                                                ),
+                                                child: Container(
+                                                    width: ScreenUtil().setWidth(59),
+                                                    alignment: Alignment.center,
+                                                    //color: Colors.blue,
+                                                    child: Text(
+                                                        "Section No.",
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(
+                                                            fontSize: ScreenUtil().setSp(15),
+                                                        ),
+                                                    ),
+                                                ),
+                                            ),
 
-                                                                Container(
-                                                                    width: ScreenUtil().setWidth(375),
-                                                                    height: ScreenUtil().setHeight((sub[index])?subH:headingH),
-                                                                    decoration: BoxDecoration(
-                                                                        border: Border(
-                                                                            top: BorderSide(color: Colors.transparent),
-                                                                            bottom: BorderSide(color: Colors.black),
-                                                                            left: BorderSide(color: Colors.transparent),
-                                                                            right: BorderSide(color: Colors.transparent),
-                                                                        ),
+                                            Container(
+                                                width: ScreenUtil().setWidth(1),
+                                                height: ScreenUtil().setHeight(70),
+                                                color: Colors.black,
+                                            ),
+
+                                            Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    ScreenUtil().setWidth(5),
+                                                    ScreenUtil().setHeight(10),
+                                                    ScreenUtil().setWidth(0),
+                                                    ScreenUtil().setHeight(10),
+                                                ),
+                                                child: Container(
+                                                    width: ScreenUtil().setWidth(44),
+                                                    alignment: Alignment.center,
+                                                    child: Text(
+                                                        "Page No.",
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(
+                                                            fontSize: ScreenUtil().setSp(15),
+                                                        ),
+                                                    ),
+                                                ),
+                                            ),
+
+                                        ],
+                                    ),
+                                ),
+
+                                Expanded(
+                                    child: ListView.builder(
+                                        itemCount: heading.length,
+                                        shrinkWrap: true,
+                                        itemBuilder: (context, index) {
+                                            String part1 = "", part2 = "";
+                                            if(section[index].contains("-")) {
+                                                part1 = section[index].split("-")[0];
+                                                part2 = section[index].split("-")[1];
+                                            }
+
+                                            if(sub[index] && minimized[index])
+                                                return Container();
+                                            else
+                                                return GestureDetector(
+                                                    onTap: () {
+                                                        pageCon.jumpToPage(page[index]-1);
+                                                        if(!online)
+                                                            canvasCon.jumpToPage(page[index]-1);
+                                                        Navigator.pop(context);
+                                                    },
+                                                    child: Stack(
+                                                        children: [
+
+                                                            Row(
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                    SizedBox(
+                                                                        width: ScreenUtil().setWidth(260),
                                                                     ),
-                                                                    child: Row(
-                                                                        //mainAxisAlignment: MainAxisAlignment.s,
-                                                                        //crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                                        children: [
+                                                                    Container(
+                                                                        width: ScreenUtil().setWidth(1),
+                                                                        height: ScreenUtil().setHeight((sub[index])?subH:headingH),
+                                                                        color: Colors.black,
+                                                                    ),
+                                                                    SizedBox(
+                                                                        width: ScreenUtil().setWidth(63),
+                                                                    ),
+                                                                    Container(
+                                                                        width: ScreenUtil().setWidth(1),
+                                                                        height: ScreenUtil().setHeight((sub[index])?subH:headingH),
+                                                                        color: Colors.black,
+                                                                    ),
+                                                                ],
+                                                            ),
 
-                                                                            (sub[index]) ? Container(
-                                                                                width: ScreenUtil().setWidth(25),
-                                                                            ) : Container(),
+                                                            Container(
+                                                                width: ScreenUtil().setWidth(375),
+                                                                height: ScreenUtil().setHeight((sub[index])?subH:headingH),
+                                                                decoration: BoxDecoration(
+                                                                    border: Border(
+                                                                        top: BorderSide(color: Colors.transparent),
+                                                                        bottom: BorderSide(color: Colors.black),
+                                                                        left: BorderSide(color: Colors.transparent),
+                                                                        right: BorderSide(color: Colors.transparent),
+                                                                    ),
+                                                                ),
+                                                                child: Row(
+                                                                    //mainAxisAlignment: MainAxisAlignment.s,
+                                                                    //crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                                    children: [
 
-                                                                            Container(
-                                                                                width: ScreenUtil().setWidth((sub[index])?235:260),
-                                                                                alignment: Alignment.centerLeft,
+                                                                        (sub[index]) ? Container(
+                                                                            width: ScreenUtil().setWidth(15),
+                                                                        ) : Container(),
+
+                                                                        Container(
+                                                                            width: ScreenUtil().setWidth(
+                                                                                (sub[index])
+                                                                                        ? 245
+                                                                                        : (!sub[index] && minimized[index] != null)
+                                                                                        ? 210
+                                                                                        :260,
+                                                                            ),
+                                                                            alignment: Alignment.centerLeft,
+                                                                            //color: Colors.red,
+                                                                            padding: EdgeInsets.fromLTRB(
+                                                                                ScreenUtil().setWidth(10),
+                                                                                ScreenUtil().setHeight(5),
+                                                                                ScreenUtil().setWidth(10),
+                                                                                ScreenUtil().setHeight(5),
+                                                                            ),
+                                                                            child: Text(
+                                                                                heading[index].toString(),
+                                                                                style: TextStyle(
+                                                                                    fontSize: ScreenUtil().setSp((sub[index])?12:15),
+                                                                                ),
+                                                                            ),
+                                                                        ),
+
+                                                                        (!sub[index] && minimized[index] != null) ? GestureDetector(
+                                                                            onTap: () {
+                                                                                for(int i=index+1;i<minimized.length;i++){
+                                                                                    if(!sub[i])
+                                                                                        break;
+                                                                                    else
+                                                                                        minimized[i] = !minimized[i];
+                                                                                }
+                                                                                setState(() {
+                                                                                });
+                                                                            },
+                                                                            child: Container(
+                                                                                height: ScreenUtil().setHeight((sub[index])?subH:headingH),
+                                                                                width: ScreenUtil().setWidth(50),
                                                                                 //color: Colors.blue,
                                                                                 padding: EdgeInsets.fromLTRB(
                                                                                     ScreenUtil().setWidth(10),
-                                                                                    ScreenUtil().setHeight(5),
+                                                                                    ScreenUtil().setHeight(10),
                                                                                     ScreenUtil().setWidth(10),
-                                                                                    ScreenUtil().setHeight(5),
+                                                                                    ScreenUtil().setHeight(10),
                                                                                 ),
-                                                                                child: Text(
-                                                                                    heading[index].toString(),
-                                                                                    style: TextStyle(
-                                                                                        fontSize: ScreenUtil().setSp((sub[index])?10:15),
-                                                                                    ),
+                                                                                child: Image.asset(
+                                                                                    (minimized[index+1])?"assets/expand_more.png":"assets/expand_less.png",
                                                                                 ),
                                                                             ),
+                                                                        ) : Container(),
 
-                                                                            Expanded(
-                                                                                child: Container(
-                                                                                    //height: ScreenUtil().setHeight(22),
-                                                                                    alignment: Alignment.center,
-                                                                                    //color: Colors.blue,
-                                                                                    child: Text(
-                                                                                        (section[index].contains("-"))?"$part1\n-\n$part2":section[index].toString(),
-                                                                                        textAlign: TextAlign.center,
-                                                                                        style: TextStyle(
-                                                                                            fontSize: ScreenUtil().setSp((sub[index])?10:15),
-                                                                                        ),
-                                                                                    ),
+                                                                        Container(
+                                                                            //height: ScreenUtil().setHeight(22),
+                                                                            width: ScreenUtil().setWidth(63),
+                                                                            alignment: Alignment.center,
+                                                                            //color: (sub[index] && minimized[index])?Colors.green:Colors.white,
+                                                                            child: Text(
+                                                                                (section[index].contains("-"))?"$part1\n-\n$part2":section[index].toString(),
+                                                                                textAlign: TextAlign.center,
+                                                                                style: TextStyle(
+                                                                                    fontSize: ScreenUtil().setSp((sub[index])?10:15),
                                                                                 ),
                                                                             ),
+                                                                        ),
 
-                                                                            Container(
-                                                                                width: ScreenUtil().setWidth(50),
-                                                                                padding: EdgeInsets.fromLTRB(
-                                                                                    ScreenUtil().setWidth(0),
-                                                                                    ScreenUtil().setHeight(5),
-                                                                                    ScreenUtil().setWidth(0),
-                                                                                    ScreenUtil().setHeight(5),
-                                                                                ),
-                                                                                alignment: Alignment.center,
-                                                                                child: Text(
-                                                                                    page[index].toString(),
-                                                                                    style: TextStyle(
-                                                                                        fontSize: ScreenUtil().setSp((sub[index])?10:15),
-                                                                                    ),
+                                                                        Container(
+                                                                            width: ScreenUtil().setWidth(45),
+                                                                            padding: EdgeInsets.fromLTRB(
+                                                                                ScreenUtil().setWidth(0),
+                                                                                ScreenUtil().setHeight(5),
+                                                                                ScreenUtil().setWidth(0),
+                                                                                ScreenUtil().setHeight(5),
+                                                                            ),
+                                                                            alignment: Alignment.center,
+                                                                            child: Text(
+                                                                                page[index].toString(),
+                                                                                style: TextStyle(
+                                                                                    fontSize: ScreenUtil().setSp((sub[index])?10:15),
                                                                                 ),
                                                                             ),
-                                                                        ],
-                                                                    ),
+                                                                        ),
+                                                                    ],
                                                                 ),
-                                                            ],
-                                                        ),
-                                                    );
-                                                },
-                                            ),
-                                        ),
-                                    ],
+                                                            ),
+                                                        ],
+                                                    ),
+                                                );
+                                        },
+                                    ),
                                 ),
                             ],
                         ),
@@ -671,6 +731,12 @@ class _ViewerState extends State<Viewer> {
                                         ScreenUtil().setHeight(10),
                                     ),
                                     child: Container(
+                                        padding: EdgeInsets.fromLTRB(
+                                            ScreenUtil().setWidth(10),
+                                            ScreenUtil().setHeight(0),
+                                            ScreenUtil().setWidth(0),
+                                            ScreenUtil().setHeight(0),
+                                        ),
                                         decoration: BoxDecoration(
                                             border: Border.all(
                                                     width: 1,
@@ -679,7 +745,7 @@ class _ViewerState extends State<Viewer> {
                                             color: Colors.white,
                                         ),
                                         child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
 
                                                 if(drawing || zoom) Container(
@@ -698,9 +764,14 @@ class _ViewerState extends State<Viewer> {
                                                             ),
                                                             color: Colors.white,
                                                         ),
-                                                        child: Icon(
-                                                            Icons.navigate_before,
-                                                            size: 27,
+                                                        padding: EdgeInsets.fromLTRB(
+                                                            ScreenUtil().setWidth(8),
+                                                            ScreenUtil().setHeight(8),
+                                                            ScreenUtil().setWidth(8),
+                                                            ScreenUtil().setHeight(8),
+                                                        ),
+                                                        child: Image.asset(
+                                                            "assets/navigate_before.png",
                                                         ),
                                                     ),
                                                 ),
@@ -728,13 +799,24 @@ class _ViewerState extends State<Viewer> {
                                                                 ),
                                                                 color: Colors.white,
                                                             ),
-                                                            child: Icon(
-                                                                Icons.list,
-                                                                color: Colors.black,
-                                                                size: 27,
+                                                            padding: EdgeInsets.fromLTRB(
+                                                                ScreenUtil().setWidth(8),
+                                                                ScreenUtil().setHeight(8),
+                                                                ScreenUtil().setWidth(8),
+                                                                ScreenUtil().setHeight(8),
                                                             ),
+                                                            child: Image.asset(
+                                                                "assets/list.png",
+                                                            ),/*Icon(
+                                                                Icons.list,
+                                                                size: 27,
+                                                            ),*/
                                                         ),
                                                     ),
+                                                ),
+
+                                                if(drawing) Container(
+                                                    width: ScreenUtil().setWidth(220),
                                                 ),
 
                                                 (drawing)?GestureDetector(
@@ -757,10 +839,15 @@ class _ViewerState extends State<Viewer> {
                                                             ),
                                                             color: Colors.white,
                                                         ),
-                                                        child: Icon(
-                                                            Icons.undo,
+                                                        padding: EdgeInsets.fromLTRB(
+                                                            ScreenUtil().setWidth(8),
+                                                            ScreenUtil().setHeight(8),
+                                                            ScreenUtil().setWidth(8),
+                                                            ScreenUtil().setHeight(8),
+                                                        ),
+                                                        child: Image.asset(
+                                                            "assets/undo.png",
                                                             color: Colors.black,
-                                                            size: 27,
                                                         ),
                                                     ),
                                                 ):Container(),
@@ -777,22 +864,23 @@ class _ViewerState extends State<Viewer> {
                                                 ),*/
                                                 if(drawing) Container(
                                                 ) else if(zoom)SizedBox(
-                                                    width: ScreenUtil().setWidth(220),
+                                                    width: ScreenUtil().setWidth(270),
                                                 ) else SizedBox(
-                                                    width: ScreenUtil().setWidth((online)?150:100),
+                                                    width: ScreenUtil().setWidth((online)?150:90),
                                                 ),
 
-                                                if (online || zoom || !drawing) Container(
+                                                if (online || zoom) Container(
                                                 ) else GestureDetector(
                                                     onTap: () {
-                                                        strokes = [];
-                                                        func3();
+                                                        setState(() {
+                                                            drawing = !drawing;
+                                                        });
                                                     },
                                                     child: Padding(
                                                         padding: EdgeInsets.fromLTRB(
                                                             ScreenUtil().setWidth(10),
                                                             ScreenUtil().setHeight(0),
-                                                            ScreenUtil().setWidth(10),
+                                                            ScreenUtil().setWidth(0),
                                                             ScreenUtil().setHeight(0),
                                                         ),
                                                         child: Container(
@@ -806,47 +894,60 @@ class _ViewerState extends State<Viewer> {
                                                                 ),
                                                                 color: Colors.white,
                                                             ),
-                                                            child: Icon(
-                                                                Icons.clear,
+                                                            padding: EdgeInsets.fromLTRB(
+                                                                ScreenUtil().setWidth(8),
+                                                                ScreenUtil().setHeight(8),
+                                                                ScreenUtil().setWidth(8),
+                                                                ScreenUtil().setHeight(8),
+                                                            ),
+                                                            child: Image.asset(
+                                                                (drawing)?"assets/exit_to_app.png":"assets/border_color.png",
                                                                 color: Colors.black,
-                                                                size: 27,
                                                             ),
                                                         ),
                                                     ),
                                                 ),
 
-                                                /*if(drawing) Container(
-                                                    width: ,
-                                                )*/
+                                                /*if(drawing) SizedBox(
+                                                    width: ScreenUtil().setWidth(55),
+                                                ),*/
 
-                                                if (online || zoom) Container(
+                                                if (online || zoom || !drawing) Container(
                                                 ) else GestureDetector(
                                                     onTap: () {
-                                                        setState(() {
-                                                            drawing = !drawing;
-                                                        });
+                                                        strokes = [];
+                                                        func3();
                                                     },
-                                                    child: Container(
-                                                        width: ScreenUtil().setWidth(50),
-                                                        height: ScreenUtil().setHeight(50),
-                                                        decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(15),
-                                                            border: Border.all(
-                                                                width: 1,
+                                                    child: Padding(
+                                                        padding: EdgeInsets.fromLTRB(
+                                                            ScreenUtil().setWidth(10),
+                                                            ScreenUtil().setHeight(0),
+                                                            ScreenUtil().setWidth(0),
+                                                            ScreenUtil().setHeight(0),
+                                                        ),
+                                                        child: Container(
+                                                            width: ScreenUtil().setWidth(50),
+                                                            height: ScreenUtil().setHeight(50),
+                                                            decoration: BoxDecoration(
+                                                                borderRadius: BorderRadius.circular(15),
+                                                                border: Border.all(
+                                                                    width: 1,
+                                                                    color: Colors.black,
+                                                                ),
+                                                                color: Colors.white,
+                                                            ),
+                                                            padding: EdgeInsets.fromLTRB(
+                                                                ScreenUtil().setWidth(8),
+                                                                ScreenUtil().setHeight(8),
+                                                                ScreenUtil().setWidth(8),
+                                                                ScreenUtil().setHeight(8),
+                                                            ),
+                                                            child: Image.asset(
+                                                                "assets/clear.png",
                                                                 color: Colors.black,
                                                             ),
-                                                            color: Colors.white,
-                                                        ),
-                                                        child: Icon(
-                                                            (drawing)?Icons.exit_to_app:Icons.border_color,
-                                                            color: Colors.black,
-                                                            size: 27,
                                                         ),
                                                     ),
-                                                ),
-
-                                                if(drawing) SizedBox(
-                                                    width: ScreenUtil().setWidth(22.5     ),
                                                 ),
 
                                                 if(drawing) Container(
@@ -863,7 +964,12 @@ class _ViewerState extends State<Viewer> {
                                                                         content: Row(
                                                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                             children: [
-                                                                                Text("Loading..."),
+                                                                                Text(
+                                                                                    "Loading...",
+                                                                                    style: TextStyle(
+                                                                                        fontSize: ScreenUtil().setSp(14),
+                                                                                    ),
+                                                                                ),
                                                                                 CircularProgressIndicator(),
                                                                             ],
                                                                         ),
@@ -902,10 +1008,15 @@ class _ViewerState extends State<Viewer> {
                                                                 ),
                                                                 color: Colors.white,
                                                             ),
-                                                            child: Icon(
-                                                                (zoom)?Icons.exit_to_app:Icons.zoom_in,
+                                                            padding: EdgeInsets.fromLTRB(
+                                                                ScreenUtil().setWidth(8),
+                                                                ScreenUtil().setHeight(8),
+                                                                ScreenUtil().setWidth(8),
+                                                                ScreenUtil().setHeight(8),
+                                                            ),
+                                                            child: Image.asset(
+                                                                (zoom)?"assets/exit_to_app.png":"assets/zoom_in.png",
                                                                 color: Colors.black,
-                                                                size: 27,
                                                             ),
                                                         ),
                                                     ),
@@ -930,10 +1041,15 @@ class _ViewerState extends State<Viewer> {
                                                             ),
                                                             color: Colors.white,
                                                         ),
-                                                        child: Icon(
-                                                            (online)?Icons.get_app:Icons.delete_forever,
+                                                        padding: EdgeInsets.fromLTRB(
+                                                            ScreenUtil().setWidth(8),
+                                                            ScreenUtil().setHeight(8),
+                                                            ScreenUtil().setWidth(8),
+                                                            ScreenUtil().setHeight(8),
+                                                        ),
+                                                        child: Image.asset(
+                                                            (online)?"assets/get_app.png":"assets/delete_forever.png",
                                                             color: Colors.black,
-                                                            size: 27,
                                                         ),
                                                     ),
                                                 )
@@ -1002,175 +1118,170 @@ class _ViewerState extends State<Viewer> {
                                                                             onTap: () {
                                                                                 showDialog(
                                                                                     context: context,
-                                                                                    builder: (_) => WillPopScope(
-                                                                                        onWillPop: () async {
-                                                                                            return false;
-                                                                                        },
-                                                                                        child: AlertDialog(
-                                                                                            content: StatefulBuilder(
-                                                                                                    builder: (context, snapshot) {
-                                                                                                        return Column(
-                                                                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                                                                            mainAxisSize: MainAxisSize.min,
-                                                                                                            children: [
-                                                                                                                SingleChildScrollView(
-                                                                                                                    child: Column(
-                                                                                                                        children: [
-                                                                                                                            GestureDetector(
-                                                                                                                                onTap: (){
-                                                                                                                                    setState(() {
-                                                                                                                                        snapshot(() {
-                                                                                                                                            strokeWidth = 1;
-                                                                                                                                        });
+                                                                                    builder: (_) => AlertDialog(
+                                                                                        content: StatefulBuilder(
+                                                                                                builder: (context, snapshot) {
+                                                                                                    return Column(
+                                                                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                                                                        mainAxisSize: MainAxisSize.min,
+                                                                                                        children: [
+                                                                                                            SingleChildScrollView(
+                                                                                                                child: Column(
+                                                                                                                    children: [
+                                                                                                                        GestureDetector(
+                                                                                                                            onTap: (){
+                                                                                                                                setState(() {
+                                                                                                                                    snapshot(() {
+                                                                                                                                        strokeWidth = 1;
                                                                                                                                     });
-                                                                                                                                    Navigator.pop(context);
-                                                                                                                                },
-                                                                                                                                child: Padding(
-                                                                                                                                    padding: EdgeInsets.fromLTRB(
-                                                                                                                                        ScreenUtil().setWidth(10),
-                                                                                                                                        ScreenUtil().setHeight(10),
-                                                                                                                                        ScreenUtil().setWidth(10),
-                                                                                                                                        ScreenUtil().setHeight(10),
+                                                                                                                                });
+                                                                                                                                Navigator.pop(context);
+                                                                                                                            },
+                                                                                                                            child: Padding(
+                                                                                                                                padding: EdgeInsets.fromLTRB(
+                                                                                                                                    ScreenUtil().setWidth(10),
+                                                                                                                                    ScreenUtil().setHeight(10),
+                                                                                                                                    ScreenUtil().setWidth(10),
+                                                                                                                                    ScreenUtil().setHeight(10),
+                                                                                                                                ),
+                                                                                                                                child: Container(
+                                                                                                                                    height: ScreenUtil().setHeight(50),
+                                                                                                                                    decoration: BoxDecoration(
+                                                                                                                                        borderRadius: BorderRadius.circular(5),
+                                                                                                                                        color: Colors.grey.withOpacity(0.2),
                                                                                                                                     ),
-                                                                                                                                    child: Container(
-                                                                                                                                        height: ScreenUtil().setHeight(50),
-                                                                                                                                        decoration: BoxDecoration(
-                                                                                                                                            borderRadius: BorderRadius.circular(5),
-                                                                                                                                            color: Colors.grey.withOpacity(0.2),
-                                                                                                                                        ),
-                                                                                                                                        padding: EdgeInsets.fromLTRB(
-                                                                                                                                            ScreenUtil().setWidth(20),
-                                                                                                                                            ScreenUtil().setHeight(0),
-                                                                                                                                            ScreenUtil().setWidth(20),
-                                                                                                                                            ScreenUtil().setHeight(0),
-                                                                                                                                        ),
-                                                                                                                                        child: Center(
-                                                                                                                                            child: Container(
-                                                                                                                                                height: 1.0,
-                                                                                                                                                color: Colors.black,
-                                                                                                                                            ),
+                                                                                                                                    padding: EdgeInsets.fromLTRB(
+                                                                                                                                        ScreenUtil().setWidth(20),
+                                                                                                                                        ScreenUtil().setHeight(0),
+                                                                                                                                        ScreenUtil().setWidth(20),
+                                                                                                                                        ScreenUtil().setHeight(0),
+                                                                                                                                    ),
+                                                                                                                                    child: Center(
+                                                                                                                                        child: Container(
+                                                                                                                                            height: 1.0,
+                                                                                                                                            color: Colors.black,
                                                                                                                                         ),
                                                                                                                                     ),
                                                                                                                                 ),
                                                                                                                             ),
-                                                                                                                            GestureDetector(
-                                                                                                                                onTap: (){
-                                                                                                                                    setState(() {
-                                                                                                                                        snapshot(() {
-                                                                                                                                            strokeWidth = 5;
-                                                                                                                                        });
+                                                                                                                        ),
+                                                                                                                        GestureDetector(
+                                                                                                                            onTap: (){
+                                                                                                                                setState(() {
+                                                                                                                                    snapshot(() {
+                                                                                                                                        strokeWidth = 5;
                                                                                                                                     });
-                                                                                                                                    Navigator.pop(context);
-                                                                                                                                },
-                                                                                                                                child: Padding(
-                                                                                                                                    padding: EdgeInsets.fromLTRB(
-                                                                                                                                        ScreenUtil().setWidth(10),
-                                                                                                                                        ScreenUtil().setHeight(10),
-                                                                                                                                        ScreenUtil().setWidth(10),
-                                                                                                                                        ScreenUtil().setHeight(10),
+                                                                                                                                });
+                                                                                                                                Navigator.pop(context);
+                                                                                                                            },
+                                                                                                                            child: Padding(
+                                                                                                                                padding: EdgeInsets.fromLTRB(
+                                                                                                                                    ScreenUtil().setWidth(10),
+                                                                                                                                    ScreenUtil().setHeight(10),
+                                                                                                                                    ScreenUtil().setWidth(10),
+                                                                                                                                    ScreenUtil().setHeight(10),
+                                                                                                                                ),
+                                                                                                                                child: Container(
+                                                                                                                                    height: ScreenUtil().setHeight(50),
+                                                                                                                                    decoration: BoxDecoration(
+                                                                                                                                        borderRadius: BorderRadius.circular(5),
+                                                                                                                                        color: Colors.grey.withOpacity(0.2),
                                                                                                                                     ),
-                                                                                                                                    child: Container(
-                                                                                                                                        height: ScreenUtil().setHeight(50),
-                                                                                                                                        decoration: BoxDecoration(
-                                                                                                                                            borderRadius: BorderRadius.circular(5),
-                                                                                                                                            color: Colors.grey.withOpacity(0.2),
-                                                                                                                                        ),
-                                                                                                                                        padding: EdgeInsets.fromLTRB(
-                                                                                                                                            ScreenUtil().setWidth(20),
-                                                                                                                                            ScreenUtil().setHeight(0),
-                                                                                                                                            ScreenUtil().setWidth(20),
-                                                                                                                                            ScreenUtil().setHeight(0),
-                                                                                                                                        ),
-                                                                                                                                        child: Center(
-                                                                                                                                            child: Container(
-                                                                                                                                                height: 5.0,
-                                                                                                                                                color: Colors.black,
-                                                                                                                                            ),
+                                                                                                                                    padding: EdgeInsets.fromLTRB(
+                                                                                                                                        ScreenUtil().setWidth(20),
+                                                                                                                                        ScreenUtil().setHeight(0),
+                                                                                                                                        ScreenUtil().setWidth(20),
+                                                                                                                                        ScreenUtil().setHeight(0),
+                                                                                                                                    ),
+                                                                                                                                    child: Center(
+                                                                                                                                        child: Container(
+                                                                                                                                            height: 5.0,
+                                                                                                                                            color: Colors.black,
                                                                                                                                         ),
                                                                                                                                     ),
                                                                                                                                 ),
                                                                                                                             ),
-                                                                                                                            GestureDetector(
-                                                                                                                                onTap: (){
-                                                                                                                                    setState(() {
-                                                                                                                                        snapshot(() {
-                                                                                                                                            strokeWidth = 10;
-                                                                                                                                        });
+                                                                                                                        ),
+                                                                                                                        GestureDetector(
+                                                                                                                            onTap: (){
+                                                                                                                                setState(() {
+                                                                                                                                    snapshot(() {
+                                                                                                                                        strokeWidth = 10;
                                                                                                                                     });
-                                                                                                                                    Navigator.pop(context);
-                                                                                                                                },
-                                                                                                                                child: Padding(
-                                                                                                                                    padding: EdgeInsets.fromLTRB(
-                                                                                                                                        ScreenUtil().setWidth(10),
-                                                                                                                                        ScreenUtil().setHeight(10),
-                                                                                                                                        ScreenUtil().setWidth(10),
-                                                                                                                                        ScreenUtil().setHeight(10),
+                                                                                                                                });
+                                                                                                                                Navigator.pop(context);
+                                                                                                                            },
+                                                                                                                            child: Padding(
+                                                                                                                                padding: EdgeInsets.fromLTRB(
+                                                                                                                                    ScreenUtil().setWidth(10),
+                                                                                                                                    ScreenUtil().setHeight(10),
+                                                                                                                                    ScreenUtil().setWidth(10),
+                                                                                                                                    ScreenUtil().setHeight(10),
+                                                                                                                                ),
+                                                                                                                                child: Container(
+                                                                                                                                    height: ScreenUtil().setHeight(50),
+                                                                                                                                    decoration: BoxDecoration(
+                                                                                                                                        borderRadius: BorderRadius.circular(5),
+                                                                                                                                        color: Colors.grey.withOpacity(0.2),
                                                                                                                                     ),
-                                                                                                                                    child: Container(
-                                                                                                                                        height: ScreenUtil().setHeight(50),
-                                                                                                                                        decoration: BoxDecoration(
-                                                                                                                                            borderRadius: BorderRadius.circular(5),
-                                                                                                                                            color: Colors.grey.withOpacity(0.2),
-                                                                                                                                        ),
-                                                                                                                                        padding: EdgeInsets.fromLTRB(
-                                                                                                                                            ScreenUtil().setWidth(20),
-                                                                                                                                            ScreenUtil().setHeight(0),
-                                                                                                                                            ScreenUtil().setWidth(20),
-                                                                                                                                            ScreenUtil().setHeight(0),
-                                                                                                                                        ),
-                                                                                                                                        child: Center(
-                                                                                                                                            child: Container(
-                                                                                                                                                height: 10.0,
-                                                                                                                                                color: Colors.black,
-                                                                                                                                            ),
+                                                                                                                                    padding: EdgeInsets.fromLTRB(
+                                                                                                                                        ScreenUtil().setWidth(20),
+                                                                                                                                        ScreenUtil().setHeight(0),
+                                                                                                                                        ScreenUtil().setWidth(20),
+                                                                                                                                        ScreenUtil().setHeight(0),
+                                                                                                                                    ),
+                                                                                                                                    child: Center(
+                                                                                                                                        child: Container(
+                                                                                                                                            height: 10.0,
+                                                                                                                                            color: Colors.black,
                                                                                                                                         ),
                                                                                                                                     ),
                                                                                                                                 ),
                                                                                                                             ),
-                                                                                                                            GestureDetector(
-                                                                                                                                onTap: (){
-                                                                                                                                    setState(() {
-                                                                                                                                        snapshot(() {
-                                                                                                                                            strokeWidth = 15;
-                                                                                                                                        });
+                                                                                                                        ),
+                                                                                                                        GestureDetector(
+                                                                                                                            onTap: (){
+                                                                                                                                setState(() {
+                                                                                                                                    snapshot(() {
+                                                                                                                                        strokeWidth = 15;
                                                                                                                                     });
-                                                                                                                                    Navigator.pop(context);
-                                                                                                                                },
-                                                                                                                                child: Padding(
-                                                                                                                                    padding: EdgeInsets.fromLTRB(
-                                                                                                                                        ScreenUtil().setWidth(10),
-                                                                                                                                        ScreenUtil().setHeight(10),
-                                                                                                                                        ScreenUtil().setWidth(10),
-                                                                                                                                        ScreenUtil().setHeight(10),
+                                                                                                                                });
+                                                                                                                                Navigator.pop(context);
+                                                                                                                            },
+                                                                                                                            child: Padding(
+                                                                                                                                padding: EdgeInsets.fromLTRB(
+                                                                                                                                    ScreenUtil().setWidth(10),
+                                                                                                                                    ScreenUtil().setHeight(10),
+                                                                                                                                    ScreenUtil().setWidth(10),
+                                                                                                                                    ScreenUtil().setHeight(10),
+                                                                                                                                ),
+                                                                                                                                child: Container(
+                                                                                                                                    height: ScreenUtil().setHeight(50),
+                                                                                                                                    decoration: BoxDecoration(
+                                                                                                                                        borderRadius: BorderRadius.circular(5),
+                                                                                                                                        color: Colors.grey.withOpacity(0.2),
                                                                                                                                     ),
-                                                                                                                                    child: Container(
-                                                                                                                                        height: ScreenUtil().setHeight(50),
-                                                                                                                                        decoration: BoxDecoration(
-                                                                                                                                            borderRadius: BorderRadius.circular(5),
-                                                                                                                                            color: Colors.grey.withOpacity(0.2),
-                                                                                                                                        ),
-                                                                                                                                        padding: EdgeInsets.fromLTRB(
-                                                                                                                                            ScreenUtil().setWidth(20),
-                                                                                                                                            ScreenUtil().setHeight(0),
-                                                                                                                                            ScreenUtil().setWidth(20),
-                                                                                                                                            ScreenUtil().setHeight(0),
-                                                                                                                                        ),
-                                                                                                                                        child: Center(
-                                                                                                                                            child: Container(
-                                                                                                                                                height: 15.0,
-                                                                                                                                                color: Colors.black,
-                                                                                                                                            ),
+                                                                                                                                    padding: EdgeInsets.fromLTRB(
+                                                                                                                                        ScreenUtil().setWidth(20),
+                                                                                                                                        ScreenUtil().setHeight(0),
+                                                                                                                                        ScreenUtil().setWidth(20),
+                                                                                                                                        ScreenUtil().setHeight(0),
+                                                                                                                                    ),
+                                                                                                                                    child: Center(
+                                                                                                                                        child: Container(
+                                                                                                                                            height: 15.0,
+                                                                                                                                            color: Colors.black,
                                                                                                                                         ),
                                                                                                                                     ),
                                                                                                                                 ),
                                                                                                                             ),
-                                                                                                                        ],
-                                                                                                                    ),
+                                                                                                                        ),
+                                                                                                                    ],
                                                                                                                 ),
-                                                                                                            ],
-                                                                                                        );
-                                                                                                    }
-                                                                                            ),
+                                                                                                            ),
+                                                                                                        ],
+                                                                                                    );
+                                                                                                }
                                                                                         ),
                                                                                     ),
                                                                                 );
@@ -1215,116 +1326,111 @@ class _ViewerState extends State<Viewer> {
                                                                             onTap: () {
                                                                                 showDialog(
                                                                                     context: context,
-                                                                                    builder: (_) => WillPopScope(
-                                                                                        onWillPop: () async {
-                                                                                            return false;
-                                                                                        },
-                                                                                        child: AlertDialog(
-                                                                                            content: StatefulBuilder(
-                                                                                                    builder: (context, snapshot) {
-                                                                                                        return Column(
-                                                                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                                                                            mainAxisSize: MainAxisSize.min,
-                                                                                                            children: [
-                                                                                                                Row(
-                                                                                                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                                                                                    children: [
-                                                                                                                        GestureDetector(
-                                                                                                                            onTap: () {
-                                                                                                                                setState(() {
-                                                                                                                                    snapshot(() {
-                                                                                                                                        strokeOpacity = 0.2;
-                                                                                                                                    });
+                                                                                    builder: (_) => AlertDialog(
+                                                                                        content: StatefulBuilder(
+                                                                                                builder: (context, snapshot) {
+                                                                                                    return Column(
+                                                                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                                                                        mainAxisSize: MainAxisSize.min,
+                                                                                                        children: [
+                                                                                                            Row(
+                                                                                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                                                                children: [
+                                                                                                                    GestureDetector(
+                                                                                                                        onTap: () {
+                                                                                                                            setState(() {
+                                                                                                                                snapshot(() {
+                                                                                                                                    strokeOpacity = 0.2;
                                                                                                                                 });
-                                                                                                                                Navigator.pop(context);
-                                                                                                                            },
-                                                                                                                            child: Container(
-                                                                                                                                height: ScreenUtil().setHeight(40),
-                                                                                                                                width: ScreenUtil().setWidth(40),
-                                                                                                                                decoration: BoxDecoration(
-                                                                                                                                    color: Colors.black.withOpacity(0.2),
-                                                                                                                                    borderRadius: BorderRadius.circular(15),
-                                                                                                                                ),
+                                                                                                                            });
+                                                                                                                            Navigator.pop(context);
+                                                                                                                        },
+                                                                                                                        child: Container(
+                                                                                                                            height: ScreenUtil().setHeight(40),
+                                                                                                                            width: ScreenUtil().setWidth(40),
+                                                                                                                            decoration: BoxDecoration(
+                                                                                                                                color: Colors.black.withOpacity(0.2),
+                                                                                                                                borderRadius: BorderRadius.circular(15),
                                                                                                                             ),
                                                                                                                         ),
-                                                                                                                        GestureDetector(
-                                                                                                                            onTap: () {
-                                                                                                                                setState(() {
-                                                                                                                                    snapshot(() {
-                                                                                                                                        strokeOpacity = 0.4;
-                                                                                                                                    });
+                                                                                                                    ),
+                                                                                                                    GestureDetector(
+                                                                                                                        onTap: () {
+                                                                                                                            setState(() {
+                                                                                                                                snapshot(() {
+                                                                                                                                    strokeOpacity = 0.4;
                                                                                                                                 });
-                                                                                                                                Navigator.pop(context);
-                                                                                                                            },
-                                                                                                                            child: Container(
-                                                                                                                                height: ScreenUtil().setHeight(40),
-                                                                                                                                width: ScreenUtil().setWidth(40),
-                                                                                                                                decoration: BoxDecoration(
-                                                                                                                                    color: Colors.black.withOpacity(0.4),
-                                                                                                                                    borderRadius: BorderRadius.circular(15),
-                                                                                                                                ),
+                                                                                                                            });
+                                                                                                                            Navigator.pop(context);
+                                                                                                                        },
+                                                                                                                        child: Container(
+                                                                                                                            height: ScreenUtil().setHeight(40),
+                                                                                                                            width: ScreenUtil().setWidth(40),
+                                                                                                                            decoration: BoxDecoration(
+                                                                                                                                color: Colors.black.withOpacity(0.4),
+                                                                                                                                borderRadius: BorderRadius.circular(15),
                                                                                                                             ),
                                                                                                                         ),
-                                                                                                                        GestureDetector(
-                                                                                                                            onTap: () {
-                                                                                                                                setState(() {
-                                                                                                                                    snapshot(() {
-                                                                                                                                        strokeOpacity = 0.6;
-                                                                                                                                    });
+                                                                                                                    ),
+                                                                                                                    GestureDetector(
+                                                                                                                        onTap: () {
+                                                                                                                            setState(() {
+                                                                                                                                snapshot(() {
+                                                                                                                                    strokeOpacity = 0.6;
                                                                                                                                 });
-                                                                                                                                Navigator.pop(context);
-                                                                                                                            },
-                                                                                                                            child: Container(
-                                                                                                                                height: ScreenUtil().setHeight(40),
-                                                                                                                                width: ScreenUtil().setWidth(40),
-                                                                                                                                decoration: BoxDecoration(
-                                                                                                                                    color: Colors.black.withOpacity(0.6),
-                                                                                                                                    borderRadius: BorderRadius.circular(15),
-                                                                                                                                ),
+                                                                                                                            });
+                                                                                                                            Navigator.pop(context);
+                                                                                                                        },
+                                                                                                                        child: Container(
+                                                                                                                            height: ScreenUtil().setHeight(40),
+                                                                                                                            width: ScreenUtil().setWidth(40),
+                                                                                                                            decoration: BoxDecoration(
+                                                                                                                                color: Colors.black.withOpacity(0.6),
+                                                                                                                                borderRadius: BorderRadius.circular(15),
                                                                                                                             ),
                                                                                                                         ),
-                                                                                                                        GestureDetector(
-                                                                                                                            onTap: () {
-                                                                                                                                setState(() {
-                                                                                                                                    snapshot(() {
-                                                                                                                                        strokeOpacity = 0.8;
-                                                                                                                                    });
+                                                                                                                    ),
+                                                                                                                    GestureDetector(
+                                                                                                                        onTap: () {
+                                                                                                                            setState(() {
+                                                                                                                                snapshot(() {
+                                                                                                                                    strokeOpacity = 0.8;
                                                                                                                                 });
-                                                                                                                                Navigator.pop(context);
-                                                                                                                            },
-                                                                                                                            child: Container(
-                                                                                                                                height: ScreenUtil().setHeight(40),
-                                                                                                                                width: ScreenUtil().setWidth(40),
-                                                                                                                                decoration: BoxDecoration(
-                                                                                                                                    color: Colors.black.withOpacity(0.8),
-                                                                                                                                    borderRadius: BorderRadius.circular(15),
-                                                                                                                                ),
+                                                                                                                            });
+                                                                                                                            Navigator.pop(context);
+                                                                                                                        },
+                                                                                                                        child: Container(
+                                                                                                                            height: ScreenUtil().setHeight(40),
+                                                                                                                            width: ScreenUtil().setWidth(40),
+                                                                                                                            decoration: BoxDecoration(
+                                                                                                                                color: Colors.black.withOpacity(0.8),
+                                                                                                                                borderRadius: BorderRadius.circular(15),
                                                                                                                             ),
                                                                                                                         ),
-                                                                                                                        GestureDetector(
-                                                                                                                            onTap: () {
-                                                                                                                                setState(() {
-                                                                                                                                    snapshot(() {
-                                                                                                                                        strokeOpacity = 1;
-                                                                                                                                    });
+                                                                                                                    ),
+                                                                                                                    GestureDetector(
+                                                                                                                        onTap: () {
+                                                                                                                            setState(() {
+                                                                                                                                snapshot(() {
+                                                                                                                                    strokeOpacity = 1;
                                                                                                                                 });
-                                                                                                                                Navigator.pop(context);
-                                                                                                                            },
-                                                                                                                            child: Container(
-                                                                                                                                height: ScreenUtil().setHeight(40),
-                                                                                                                                width: ScreenUtil().setWidth(40),
-                                                                                                                                decoration: BoxDecoration(
-                                                                                                                                    color: Colors.black.withOpacity(1),
-                                                                                                                                    borderRadius: BorderRadius.circular(15),
-                                                                                                                                ),
+                                                                                                                            });
+                                                                                                                            Navigator.pop(context);
+                                                                                                                        },
+                                                                                                                        child: Container(
+                                                                                                                            height: ScreenUtil().setHeight(40),
+                                                                                                                            width: ScreenUtil().setWidth(40),
+                                                                                                                            decoration: BoxDecoration(
+                                                                                                                                color: Colors.black.withOpacity(1),
+                                                                                                                                borderRadius: BorderRadius.circular(15),
                                                                                                                             ),
                                                                                                                         ),
-                                                                                                                    ],
-                                                                                                                ),
-                                                                                                            ],
-                                                                                                        );
-                                                                                                    }
-                                                                                            ),
+                                                                                                                    ),
+                                                                                                                ],
+                                                                                                            ),
+                                                                                                        ],
+                                                                                                    );
+                                                                                                }
                                                                                         ),
                                                                                     ),
                                                                                 );
@@ -1373,7 +1479,7 @@ class _ViewerState extends State<Viewer> {
                                             ),
 
                                             if(!online) Column(
-                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                mainAxisAlignment: MainAxisAlignment.start,
                                                 children: [
                                                     Opacity(
                                                         opacity: (canvasH == 0)?0:1,
@@ -1412,8 +1518,11 @@ class _ViewerState extends State<Viewer> {
                                                                                     writeJson();
                                                                                 },
                                                                                 child: Container(
-                                                                                    height: ScreenUtil().setHeight(canvasH),
-                                                                                    width: ScreenUtil().setWidth(canvasW),
+                                                                                    height: canvasH,
+                                                                                    width: canvasW,
+                                                                                    decoration: BoxDecoration(
+                                                                                    ),
+                                                                                    clipBehavior: Clip.hardEdge,
                                                                                     child: CustomPaint(
                                                                                         painter: (page < strokes.length)?Painter(
                                                                                             strokes: strokes[page],
@@ -1425,8 +1534,12 @@ class _ViewerState extends State<Viewer> {
                                                                     } else {
                                                                         return Center(
                                                                             child: Container(
-                                                                                height: ScreenUtil().setHeight(canvasH),
-                                                                                width: ScreenUtil().setWidth(canvasW),
+                                                                                height: canvasH,
+                                                                                width: canvasW,
+                                                                                decoration: BoxDecoration(
+                                                                                ),
+                                                                                clipBehavior: Clip.hardEdge,
+                                                                                //color: Colors.grey,
                                                                                 child: CustomPaint(
                                                                                     painter: (page < strokes.length)?Painter(
                                                                                         strokes: strokes[page],
@@ -1440,7 +1553,8 @@ class _ViewerState extends State<Viewer> {
                                                         ),
                                                     ),
                                                     Container(
-                                                        height: ScreenUtil().setHeight(50),
+                                                        height: ScreenUtil().setHeight(45),
+                                                        //color: Colors.red,
                                                     ),
                                                 ],
                                             ),
@@ -1464,7 +1578,14 @@ class _ViewerState extends State<Viewer> {
                                     ),
                                 ):Expanded(
                                     child: Center(
-                                        child: (error=="")?CircularProgressIndicator():Text(error),
+                                        child: (error=="")
+                                                ?CircularProgressIndicator()
+                                                :Text(
+                                            error,
+                                            style: TextStyle(
+                                                fontSize: ScreenUtil().setSp(14),
+                                            ),
+                                        ),
                                     ),
                                 ),
 

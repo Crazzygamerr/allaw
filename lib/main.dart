@@ -2,8 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:allaw/AboutUs.dart';
 import 'package:allaw/HomePage.dart';
+import 'package:allaw/provider.dart';
 import 'package:allaw/settings.dart';
+import 'package:allaw/Request.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -11,7 +15,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:excel/excel.dart';
 import 'package:allaw/BareActs.dart';
 import 'package:allaw/Downloads.dart';
 import 'package:allaw/LegalTerms.dart';
@@ -47,7 +50,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
     PageController pageCon = new PageController();
-    List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms"];
+    List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms", "About Us", "Request an Act"];
     int index = 0;
     List<Offset> offsets = [];
     bool onboarding = true;
@@ -65,15 +68,6 @@ class _MyHomePageState extends State<MyHomePage> {
         }
     }
 
-    /*Future<void> readXlsx() async {
-
-        ByteData data = await rootBundle.load("assets/test.xlsx");
-        List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-        var excel = Excel.decodeBytes(bytes);
-        print(excel.tables["Sheet1"].rows);
-
-    }*/
-
     @override
     Widget build(BuildContext context) {
         ScreenUtil.init(context,
@@ -84,47 +78,50 @@ class _MyHomePageState extends State<MyHomePage> {
         ]);
         if(onboarding) return Scaffold(
             backgroundColor: Color(0xff404040),
+            resizeToAvoidBottomInset: false,
+            resizeToAvoidBottomPadding: false,
             body: Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                      SizedBox(
-                          height: ScreenUtil().setHeight(230),
-                      ),
-                      Container(
-                          height: ScreenUtil().setHeight(250),
-                          width: ScreenUtil().setWidth(250),
-                          decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20)
-                          ),
-                          clipBehavior: Clip.hardEdge,
-                          child: Image.asset("assets/Logo.jpg"),
-                      ),
-                      Text(
-                          "Your Ally for Law",
-                          style: TextStyle(
-                              fontFamily: "Times New Roman",
-                              fontSize: ScreenUtil().setSp(18),
-                              color: Colors.white,
-                          ),
-                      ),
-                      SizedBox(
-                          height: ScreenUtil().setHeight(205),
-                      ),
-                      Text(
-                          "by LexLiaise",
-                          style: TextStyle(
-                              fontFamily: "Times New Roman",
-                              fontSize: ScreenUtil().setSp(16),
-                              color: Colors.white,
-                          ),
-                      ),
-                  ],
-              ),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                        SizedBox(
+                            height: ScreenUtil().setHeight(230),
+                        ),
+                        Container(
+                            height: ScreenUtil().setHeight(250),
+                            width: ScreenUtil().setWidth(250),
+                            decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20)
+                            ),
+                            clipBehavior: Clip.hardEdge,
+                            child: Image.asset("assets/Logo.jpg"),
+                        ),
+                        Text(
+                            "Your Ally for Law",
+                            style: TextStyle(
+                                fontFamily: "Times New Roman",
+                                fontSize: ScreenUtil().setSp(18),
+                                color: Colors.white,
+                            ),
+                        ),
+                        SizedBox(
+                            height: ScreenUtil().setHeight(205),
+                        ),
+                        Text(
+                            "by LexLiaise",
+                            style: TextStyle(
+                                fontFamily: "Times New Roman",
+                                fontSize: ScreenUtil().setSp(16),
+                                color: Colors.white,
+                            ),
+                        ),
+                    ],
+                ),
             ),
         );
         else return Scaffold(
             backgroundColor: Color(0xffF2F2F2),
+            resizeToAvoidBottomInset: false,
             body: SafeArea(
                 child: Container(
                     child: Column(
@@ -162,6 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                             GestureDetector(
                                                 onTap: () {
+                                                    FocusScope.of(context).unfocus();
                                                     pageCon.jumpToPage(0);
                                                 },
                                                 child: Container(
@@ -174,9 +172,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             color: Colors.black,
                                                         ),
                                                     ),
-                                                    child: Icon(
-                                                        Icons.home,
-                                                        size: 27,
+                                                    padding: EdgeInsets.fromLTRB(
+                                                        ScreenUtil().setWidth(8),
+                                                        ScreenUtil().setHeight(8),
+                                                        ScreenUtil().setWidth(8),
+                                                        ScreenUtil().setHeight(8),
+                                                    ),
+                                                    child: Image.asset(
+                                                        "assets/home.png",
                                                     ),
                                                 ),
                                             ),
@@ -196,6 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                             GestureDetector(
                                                 onTap: () {
+                                                    FocusScope.of(context).unfocus();
                                                     pageCon.jumpToPage(1);
                                                 },
                                                 child: Container(
@@ -208,10 +212,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             color: Colors.black,
                                                         ),
                                                     ),
-                                                    child: Icon(
+                                                    padding: EdgeInsets.fromLTRB(
+                                                        ScreenUtil().setWidth(8),
+                                                        ScreenUtil().setHeight(8),
+                                                        ScreenUtil().setWidth(8),
+                                                        ScreenUtil().setHeight(8),
+                                                    ),
+                                                    child: Image.asset(
+                                                        "assets/settings.png",
+                                                    ),/*Icon(
                                                         Icons.settings,
                                                         size: 27,
-                                                    ),
+                                                    ),*/
                                                 ),
                                             ),
 
@@ -221,58 +233,65 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
 
                             Expanded(
-                                child: PageView(
-                                    controller: pageCon,
-                                    onPageChanged: (page) {
-                                        setState(() {
-                                            if(page<s.length)
-                                                index = page;
-                                        });
-                                    },
-                                    //physics: NeverScrollableScrollPhysics(),
-                                    children: [
+                                child: pageConProvider(
+                                    pageCon: pageCon,
+                                    child: PageView(
+                                        controller: pageCon,
+                                        onPageChanged: (page) {
+                                            setState(() {
+                                                if(page<s.length)
+                                                    index = page;
+                                            });
+                                        },
+                                        //physics: NeverScrollableScrollPhysics(),
+                                        children: [
 
-                                        HomePage(),
+                                            HomePage(),
 
-                                        Settings(),
+                                            Settings(),
 
-                                        BareActs(),
+                                            BareActs(),
 
-                                        Downloads(),
+                                            Downloads(),
 
-                                        LegalTerms(),
+                                            LegalTerms(),
 
-                                        /*Container(
-                                            color: Colors.blue,
-                                            child: GestureDetector(
-                                                onTap: () {
-                                                    test();
-                                                },
-                                                onPanStart: (details) {
-                                                    print("Start: " + details.localPosition.toString());
-                                                    setState(() {
-                                                      offsets.add(details.localPosition);
-                                                    });
-                                                    //offsets.add(offset);
-                                                },
-                                                onPanUpdate: (details) {
-                                                    print("Update: " + details.localPosition.toString());
-                                                    setState(() {
+                                            AboutUs(),
+
+                                            Request(),
+
+                                            /*Container(
+                                              color: Colors.blue,
+                                              child: GestureDetector(
+                                                  onTap: () {
+                                                      test();
+                                                  },
+                                                  onPanStart: (details) {
+                                                      print("Start: " + details.localPosition.toString());
+                                                      setState(() {
                                                         offsets.add(details.localPosition);
-                                                    });
-                                                },
-                                                onPanEnd: (details) {
-                                                    setState(() {
-                                                        offsets.add(null);
-                                                    });
-                                                },
-                                                child: CustomPaint(
-                                                    painter: TestPaint(offsets: offsets),
-                                                ),
-                                            ),
-                                        ),*/
+                                                      });
+                                                      //offsets.add(offset);
+                                                  },
+                                                  onPanUpdate: (details) {
+                                                      print("Update: " + details.localPosition.toString());
+                                                      setState(() {
+                                                          offsets.add(details.localPosition);
+                                                      });
+                                                  },
+                                                  onPanEnd: (details) {
+                                                      setState(() {
+                                                          offsets.add(null);
+                                                      });
+                                                  },
+                                                  child: CustomPaint(
+                                                      painter: TestPaint(offsets: offsets),
+                                                  ),
+                                              ),
+                                          ),*/
 
-                                    ],
+                                        ],
+                                    ),
                                 ),
                             ),
 
@@ -298,6 +317,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                             GestureDetector(
                                                 onTap: () {
+                                                    FocusScope.of(context).unfocus();
                                                     pageCon.jumpToPage(2);
                                                 },
                                                 child: Container(
@@ -312,12 +332,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     child: Column(
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
-                                                            Icon(
-                                                                Icons.library_books,
-                                                                size: 20,
+                                                            Image.asset(
+                                                                "assets/library_books.png",
+                                                                width: ScreenUtil().setWidth(20),
+                                                                height: ScreenUtil().setHeight(20),
                                                             ),
                                                             Text(
                                                                 "Bare Acts",
+                                                                style: TextStyle(
+                                                                        fontSize: ScreenUtil().setSp(14)
+                                                                ),
                                                                 /*style: TextStyle(
                                                                     fontFamily: "SF Pro",
                                                                     fontStyle: FontStyle.normal,
@@ -336,6 +360,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     children: [
                                                         Container(
                                                             width: ScreenUtil().setWidth(100),
+                                                            //height: ScreenUtil().setHeight(75),
                                                             decoration: BoxDecoration(
                                                                 borderRadius: BorderRadius.circular(15),
                                                                 border: Border.all(
@@ -347,13 +372,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             child: Column(
                                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                                 children: [
-                                                                    Icon(
-                                                                        Icons.article,
-                                                                        //color: Colors.white,
-                                                                        size: 20,
+                                                                    Image.asset(
+                                                                        "assets/article.png",
+                                                                        width: ScreenUtil().setWidth(20),
+                                                                        height: ScreenUtil().setHeight(20),
                                                                     ),
                                                                     Text(
                                                                         "Legal Notes",
+                                                                        style: TextStyle(
+                                                                            fontSize: ScreenUtil().setSp(14)
+                                                                        ),
                                                                     ),
                                                                 ],
                                                             ),
@@ -388,6 +416,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             ),
                                             GestureDetector(
                                                 onTap: () {
+                                                    FocusScope.of(context).unfocus();
                                                     pageCon.jumpToPage(4);
                                                 },
                                                 child: Container(
@@ -402,12 +431,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     child: Column(
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
-                                                            Icon(
-                                                                Icons.font_download,
-                                                                size: 20,
+                                                            Image.asset(
+                                                                "assets/font_download.png",
+                                                                width: ScreenUtil().setWidth(20),
+                                                                height: ScreenUtil().setHeight(20),
                                                             ),
                                                             Text(
                                                                 "Legal Terms",
+                                                                style: TextStyle(
+                                                                        fontSize: ScreenUtil().setSp(14)
+                                                                ),
                                                                 /*style: TextStyle(
                                                                     fontWeight: FontWeight.bold,
                                                                     fontSize: 12,
@@ -419,6 +452,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             ),
                                             GestureDetector(
                                                 onTap: () {
+                                                    FocusScope.of(context).unfocus();
                                                     pageCon.jumpToPage(3);
                                                 },
                                                 child: Container(
@@ -433,11 +467,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     child: Column(
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
-                                                            Icon(
-                                                                Icons.archive,
-                                                                size: 20,
+                                                            Image.asset(
+                                                                "assets/archive.png",
+                                                                width: ScreenUtil().setWidth(20),
+                                                                height: ScreenUtil().setHeight(20),
                                                             ),
-                                                            Text("Downloads"),
+                                                            Text(
+                                                                "Downloads",
+                                                                style: TextStyle(
+                                                                        fontSize: ScreenUtil().setSp(14)
+                                                                ),
+                                                            ),
                                                         ],
                                                     ),
                                                 ),

@@ -77,12 +77,12 @@ class _HomePageState extends State<HomePage> {
                             child: Container(
                                 //height: ScreenUtil().setHeight(300),
                                 /*decoration: BoxDecoration(
-                              border: Border.all(
-                                      width: 1,
-                                      color: Colors.black
-                              ),
-                              color: Colors.white,
-                          ),*/
+                            border: Border.all(
+                                    width: 1,
+                                    color: Colors.black
+                            ),
+                            color: Colors.white,
+                        ),*/
                                 child: PageView(
                                     controller: pageController,
                                     //physics: NeverScrollableScrollPhysics(),
@@ -111,46 +111,49 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: Container(
                             padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(2),
-                                ScreenUtil().setHeight(2),
-                                ScreenUtil().setWidth(2),
-                                ScreenUtil().setHeight(2),
+                                ScreenUtil().setWidth(1),
+                                ScreenUtil().setHeight(1),
+                                ScreenUtil().setWidth(1),
+                                ScreenUtil().setHeight(1),
                             ),
-                            height: ScreenUtil().setHeight(50),
+                            height: ScreenUtil().setHeight(55),
                             width: double.infinity,
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                        width: 1,
-                                        color: Colors.black,
+                                    width: 1,
+                                    color: Colors.black,
                                 ),
                                 borderRadius: BorderRadius.all(Radius.circular(15)),
                                 color: colorOptions[0],
                             ),
-                            child: SingleChildScrollView(
-                                child: Column(
-                                    children: [
-                                        Container(
-                                            width: ScreenUtil().setWidth(380),
-                                          child: Text(
-                                              quote.content,
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                  fontSize: ScreenUtil().setSp(12.5),
-                                              ),
-                                          ),
-                                        ),
-                                        Container(
-                                            width: ScreenUtil().setWidth(380),
-                                            child: Text(
-                                                " - " + quote.author,
-                                                textAlign: TextAlign.end,
-                                                style: TextStyle(
-                                                    fontSize: ScreenUtil().setSp(12.5),
-
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: SingleChildScrollView(
+                                    child: Column(
+                                        children: [
+                                            Container(
+                                                width: ScreenUtil().setWidth(380),
+                                                child: Text(
+                                                    quote.content,
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                        fontSize: ScreenUtil().setSp(12.5),
+                                                    ),
                                                 ),
                                             ),
-                                        ),
-                                    ],
+                                            Container(
+                                                width: ScreenUtil().setWidth(380),
+                                                child: Text(
+                                                    " - " + quote.author,
+                                                    textAlign: TextAlign.end,
+                                                    style: TextStyle(
+                                                        fontSize: ScreenUtil().setSp(12.5),
+
+                                                    ),
+                                                ),
+                                            ),
+                                        ],
+                                    ),
                                 ),
                             ),
                         ),
@@ -195,43 +198,46 @@ class _TwitterFeedState extends State<TwitterFeed> with AutomaticKeepAliveClient
             ),
             child: Container(
                 padding: EdgeInsets.fromLTRB(
-                    ScreenUtil().setWidth(4),
-                    ScreenUtil().setHeight(4),
-                    ScreenUtil().setWidth(4),
-                    ScreenUtil().setHeight(4),
+                    ScreenUtil().setWidth(1),
+                    ScreenUtil().setHeight(1),
+                    ScreenUtil().setWidth(1),
+                    ScreenUtil().setHeight(1),
                 ),
                 decoration: BoxDecoration(
                     border: Border.all(
                         width: 1,
                     ),
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    borderRadius: BorderRadius.circular(15),
                     color: Colors.white,
                 ),
-                child: Stack(
-                    children: [
-                        WebViewPlus(
-                            javascriptMode: JavascriptMode.unrestricted,
-                            onWebViewCreated: (controller) {
-                                controller.loadString(s[widget.i]);
-                            },
-                            onPageFinished: (url) {
-                                setState(() {
-                                    loading = false;
-                                });
-                            },
-                            navigationDelegate: (navigation) {
-                                return NavigationDecision.prevent;
-                            },
-                        ),
-
-                        (loading)?Container(
-                            color: Colors.white,
-                            child: Center(
-                                child: CircularProgressIndicator(),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Stack(
+                        children: [
+                            WebViewPlus(
+                                javascriptMode: JavascriptMode.unrestricted,
+                                onWebViewCreated: (controller) {
+                                    controller.loadString(s[widget.i]);
+                                },
+                                onPageFinished: (url) {
+                                    setState(() {
+                                        loading = false;
+                                    });
+                                },
+                                navigationDelegate: (navigation) {
+                                    return NavigationDecision.prevent;
+                                },
                             ),
-                        ):Container(),
 
-                    ],
+                            (loading)?Container(
+                                color: Colors.white,
+                                child: Center(
+                                    child: CircularProgressIndicator(),
+                                ),
+                            ):Container(),
+
+                        ],
+                    ),
                 ),
             ),
         );

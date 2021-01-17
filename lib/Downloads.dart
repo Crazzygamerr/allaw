@@ -101,45 +101,56 @@ class _DownloadsState extends State<Downloads>{
                                             color: Colors.black
                                     ),
                                 ),
-                                child: (downloads.length != 0)?Scrollbar(
-                                    child: ListView.builder(
-                                        itemCount: downloads.length,
+                                child: (downloads.length != 0)?ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: Scrollbar(
+                                        child: ListView.builder(
+                                            itemCount: downloads.length,
 
-                                        itemBuilder: (context, index) {
+                                            itemBuilder: (context, index) {
 
-                                            bool b = downloads[index].toLowerCase().contains(textCon.text.toLowerCase());
+                                                bool b = downloads[index].toLowerCase().contains(textCon.text.toLowerCase());
 
-                                            return (b)?GestureDetector(
-                                                onTap: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        new MaterialPageRoute(
-                                                            builder: (context) => Viewer(
-                                                                local: true,
-                                                                fileName: downloads[index],
+                                                return (b)?GestureDetector(
+                                                    onTap: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            new MaterialPageRoute(
+                                                                builder: (context) => Viewer(
+                                                                    local: true,
+                                                                    fileName: downloads[index],
+                                                                ),
+                                                            ),
+                                                        ).then((value) {
+                                                            getDocs();
+                                                        });
+                                                    },
+                                                    child: Container(
+                                                        padding: EdgeInsets.fromLTRB(
+                                                            ScreenUtil().setWidth(20),
+                                                            ScreenUtil().setHeight(20),
+                                                            ScreenUtil().setWidth(10),
+                                                            ScreenUtil().setHeight(20),
+                                                        ),
+                                                        decoration: BoxDecoration(
+                                                            border: Border(
+                                                                top: BorderSide(color: Colors.transparent),
+                                                                bottom: BorderSide(color: Colors.black),
+                                                                left: BorderSide(color: Colors.transparent),
+                                                                right: BorderSide(color: Colors.transparent),
                                                             ),
                                                         ),
-                                                    ).then((value) {
-                                                        getDocs();
-                                                    });
-                                                },
-                                                child: Container(
-                                                    padding: EdgeInsets.fromLTRB(
-                                                        ScreenUtil().setWidth(20),
-                                                        ScreenUtil().setHeight(20),
-                                                        ScreenUtil().setWidth(10),
-                                                        ScreenUtil().setHeight(20),
+                                                        child: Text(
+                                                            downloads[index],
+                                                        ),
                                                     ),
-                                                    child: Text(
-                                                        downloads[index],
-                                                    ),
-                                                ),
-                                            ):Container();
-                                        },
+                                                ):Container();
+                                            },
+                                        ),
                                     ),
                                 ) : Center(
                                     child: Text(
-                                        "No downloads!"
+                                            "No downloads!"
                                     ),
                                 ),
                             ),
