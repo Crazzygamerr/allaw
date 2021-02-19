@@ -49,13 +49,28 @@ class _RequestState extends State<Request> {
                     ),
                     padding: EdgeInsets.fromLTRB(
                         ScreenUtil().setWidth(10),
-                        ScreenUtil().setHeight(30),
+                        ScreenUtil().setHeight(20),
                         ScreenUtil().setWidth(10),
                         ScreenUtil().setHeight(10),
                     ),
                     child: SingleChildScrollView(
                         child: Column(
                             children: [
+
+                                Container(
+                                    child: Text(
+                                        "Can't find a particular Act or Legal Term you are looking for, "
+                                                "let us know down below and we will add them immediately.",
+                                        textAlign: TextAlign.justify,
+                                        style: TextStyle(
+                                            fontSize: ScreenUtil().setSp(13),
+                                        ),
+                                    ),
+                                ),
+
+                                SizedBox(
+                                    height: ScreenUtil().setHeight(30),
+                                ),
 
                                 Container(
                                     height: ScreenUtil().setHeight(95),
@@ -210,22 +225,11 @@ class _RequestState extends State<Request> {
                                                 ScreenUtil().setWidth(0),
                                                 ScreenUtil().setHeight(0),
                                             ),
-                                            child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                    Text(
-                                                        "Your email address",
-                                                        style: TextStyle(
-                                                            fontSize: ScreenUtil().setSp(14),
-                                                        ),
-                                                    ),
-                                                    Text(
-                                                        "(So that we can let you know once we add the requested Act/Legal Term)",
-                                                        style: TextStyle(
-                                                            fontSize: ScreenUtil().setSp(10),
-                                                        ),
-                                                    ),
-                                                ],
+                                            child: Text(
+                                                "Your Email address",
+                                                style: TextStyle(
+                                                    fontSize: ScreenUtil().setSp(14),
+                                                ),
                                             ),
                                         ),
                                         Form(

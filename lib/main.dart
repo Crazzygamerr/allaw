@@ -50,7 +50,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
     PageController pageCon = new PageController();
-    List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms", "About Us", "Request an Act"];
+    List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms", "About Us", "Request Material"];
     int index = 0;
     List<Offset> offsets = [];
     bool onboarding = true;

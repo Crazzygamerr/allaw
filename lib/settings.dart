@@ -117,7 +117,7 @@ class _SettingsState extends State<Settings> {
                                     alignment: Alignment.centerLeft,
                                     height: ScreenUtil().setHeight(60),
                                     width: double.infinity,
-                                    child: Text("Request an Act",
+                                    child: Text("Request Material",
                                         style: TextStyle(
                                                 fontSize: ScreenUtil().setSp(14)
                                         ),
