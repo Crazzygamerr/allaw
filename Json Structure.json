@@ -1,0 +1,33 @@
+{
+  "test.pdf": 
+  [
+    [
+      {
+        "Stroke": "First stroke",
+        "color": "red",
+        "width": "5",
+        "Offsets":
+        [
+          "Offset",
+          "Offset"
+        ]
+      }
+      {
+        "color": "blue",
+        "width": "1",
+        "Offsets":
+        [
+          "Offset",
+          "Offset",
+          "Offset",
+          "Offset"
+        ]
+      }
+    ],
+    [
+      
+    ]
+  ],
+  
+  "onemore.pdf": []
+}

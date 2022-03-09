@@ -22,13 +22,13 @@ class _RequestState extends State<Request> {
     FocusNode node2 = new FocusNode();
     FocusNode node3 = new FocusNode();
 
-    bool isWriting1,isWriting2,isWriting3;
+    bool isWriting1 = false,isWriting2 = false,isWriting3 = false;
 
     @override
     Widget build(BuildContext context) {
         return WillPopScope(
             onWillPop: () async {
-                pageConProvider.of(context).pageCon.jumpToPage(1);
+                PageConProvider.of(context)?.pageCon.jumpToPage(1);
                 return false;
             },
             child: Padding(
@@ -114,7 +114,7 @@ class _RequestState extends State<Request> {
                                                                 focusNode: node1,
                                                                 onChanged: (String s) {
                                                                     isWriting1 = true;
-                                                                    _formKey1.currentState.validate();
+                                                                    _formKey1.currentState?.validate();
                                                                 },
                                                                 onEditingComplete: () async {
                                                                     if (textCon1.text.trim() != "") {
@@ -122,7 +122,7 @@ class _RequestState extends State<Request> {
                                                                         node2.requestFocus();
                                                                     } else {
                                                                         isWriting1 = false;
-                                                                        _formKey1.currentState.validate();
+                                                                        _formKey1.currentState?.validate();
                                                                     }
                                                                 },
                                                                 validator: (value){
@@ -263,11 +263,17 @@ class _RequestState extends State<Request> {
                                     height: ScreenUtil().setHeight(25),
                                 ),
 
-                                RaisedButton(
-                                    elevation: 0.0,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(25),
+                                ElevatedButton(
+                                    style: ButtonStyle(
+                                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(25),
+                                            ),
+                                        ),
                                     ),
+                                    onPressed: () {
+                                        requestAct();
+                                    },
                                     child: Padding(
                                         padding: EdgeInsets.fromLTRB(
                                             ScreenUtil().setWidth(10),
@@ -283,10 +289,6 @@ class _RequestState extends State<Request> {
                                             ),
                                         ),
                                     ),
-                                    color: Colors.black,
-                                    onPressed: () {
-                                        requestAct();
-                                    },
                                 ),
 
                                 Container(
@@ -318,7 +320,7 @@ class _RequestState extends State<Request> {
     void requestAct() async {
         if (textCon1.text.trim() == "") {
             isWriting1 = false;
-            _formKey1.currentState.validate();
+            _formKey1.currentState?.validate();
         } else {
             String URL = "https://script.google.com/macros/s/AKfycbx30nXWKUQCwn8mLqeSa7iC2JjZr7OT01tTBmCZg3j0eFeODh9gs3u9aQ/exec";
             FocusScope.of(context).unfocus();
@@ -341,14 +343,14 @@ class _RequestState extends State<Request> {
                 barrierDismissible: false,
             );
             try {
-                await http.post(URL, body: {
+                await http.post(Uri.parse(URL), body: {
                     "name": textCon1.text,
                     "year": textCon2.text,
                     "email": textCon3.text,
                 }).then((response) async {
                     if (response.statusCode == 302) {
-                        var url = response.headers['location'];
-                        await http.get(url).then((response) {
+                        String url = response.headers['location']!;
+                        await http.get(Uri.parse(url)).then((response) {
                             Navigator.pop(context);
                             String s = (jsonDecode(response.body)['status'] == "SUCCESS")?"Success":"Error!";
                             if(jsonDecode(response.body)['status'] == "SUCCESS"){

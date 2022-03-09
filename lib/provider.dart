@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 
-class pageConProvider extends InheritedWidget{
+class PageConProvider extends InheritedWidget{
 
     final Widget child;
     final PageController pageCon;
 
-    pageConProvider({this.child, this.pageCon,});
+    PageConProvider({
+        required this.child,
+        required this.pageCon,
+    }) : super(child: child);
 
     @override
     bool updateShouldNotify(InheritedWidget oldWidget) {
         return true;
     }
 
-    static pageConProvider of(BuildContext context){
+    static PageConProvider? of(BuildContext context){
         return context.dependOnInheritedWidgetOfExactType();
     }
 

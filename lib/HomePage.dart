@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
-import 'package:quotes/quotes.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
     @override
@@ -12,6 +13,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
     PageController pageController = new PageController(viewportFraction: 0.8, keepPage: true);
+    String quote = "", author = "";
+    late Future quoteFuture;
 
     List<Color> colorOptions = [
         Colors.limeAccent.withOpacity(0.2),
@@ -20,9 +23,25 @@ class _HomePageState extends State<HomePage> {
         Colors.pinkAccent.withOpacity(0.2),
     ];
 
+    fetchQuote() async {
+        final response = await http.get(Uri.parse("https://favqs.com/api/qotd"));
+
+        if(response.statusCode == 200) {
+            var responseJson = json.decode(response.body);
+            quote = responseJson["quote"]["body"];
+            author = responseJson["quote"]["author"];
+        }
+    }
+
+
     @override
+  void initState() {
+     super.initState();
+     quoteFuture = fetchQuote();
+  }
+
+  @override
     Widget build(BuildContext context) {
-        var quote = Quotes.getRandom();
         colorOptions.shuffle();
         return Container(
             child: Column(
@@ -102,61 +121,66 @@ class _HomePageState extends State<HomePage> {
                         ),
                     ),
 
-                    Padding(
-                        padding: EdgeInsets.fromLTRB(
-                            ScreenUtil().setWidth(10),
-                            ScreenUtil().setHeight(5),
-                            ScreenUtil().setWidth(10),
-                            ScreenUtil().setHeight(5),
-                        ),
-                        child: Container(
+                    FutureBuilder(
+                      future: quoteFuture,
+                      builder: (context, snapshot) {
+                        return Padding(
                             padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(1),
-                                ScreenUtil().setHeight(1),
-                                ScreenUtil().setWidth(1),
-                                ScreenUtil().setHeight(1),
+                                ScreenUtil().setWidth(10),
+                                ScreenUtil().setHeight(5),
+                                ScreenUtil().setWidth(10),
+                                ScreenUtil().setHeight(5),
                             ),
-                            height: ScreenUtil().setHeight(55),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 1,
-                                    color: Colors.black,
+                            child: Container(
+                                padding: EdgeInsets.fromLTRB(
+                                    ScreenUtil().setWidth(1),
+                                    ScreenUtil().setHeight(1),
+                                    ScreenUtil().setWidth(1),
+                                    ScreenUtil().setHeight(1),
                                 ),
-                                borderRadius: BorderRadius.all(Radius.circular(15)),
-                                color: colorOptions[0],
-                            ),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: SingleChildScrollView(
-                                    child: Column(
-                                        children: [
-                                            Container(
-                                                width: ScreenUtil().setWidth(380),
-                                                child: Text(
-                                                    quote.content,
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyle(
-                                                        fontSize: ScreenUtil().setSp(12.5),
+                                height: ScreenUtil().setHeight(55),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 1,
+                                        color: Colors.black,
+                                    ),
+                                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                                    color: colorOptions[0],
+                                ),
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: SingleChildScrollView(
+                                        child: Column(
+                                            children: [
+                                                Container(
+                                                    width: ScreenUtil().setWidth(380),
+                                                    child: Text(
+                                                        quote,
+                                                        textAlign: TextAlign.left,
+                                                        style: TextStyle(
+                                                            fontSize: ScreenUtil().setSp(12.5),
+                                                        ),
                                                     ),
                                                 ),
-                                            ),
-                                            Container(
-                                                width: ScreenUtil().setWidth(380),
-                                                child: Text(
-                                                    " - " + quote.author,
-                                                    textAlign: TextAlign.end,
-                                                    style: TextStyle(
-                                                        fontSize: ScreenUtil().setSp(12.5),
+                                                Container(
+                                                    width: ScreenUtil().setWidth(380),
+                                                    child: Text(
+                                                        " - " + author,
+                                                        textAlign: TextAlign.end,
+                                                        style: TextStyle(
+                                                            fontSize: ScreenUtil().setSp(12.5),
 
+                                                        ),
                                                     ),
                                                 ),
-                                            ),
-                                        ],
+                                            ],
+                                        ),
                                     ),
                                 ),
                             ),
-                        ),
+                        );
+                      }
                     ),
 
                 ],

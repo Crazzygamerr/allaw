@@ -34,7 +34,7 @@ class _SettingsState extends State<Settings> {
 
                             GestureDetector(
                                 onTap: (){
-                                    pageConProvider.of(context).pageCon.jumpToPage(5);
+                                    PageConProvider.of(context)?.pageCon.jumpToPage(5);
                                 },
                                 child: Container(
                                     //color: Colors.blue,
@@ -96,7 +96,7 @@ class _SettingsState extends State<Settings> {
 
                             GestureDetector(
                                 onTap: (){
-                                    pageConProvider.of(context).pageCon.jumpToPage(6);
+                                    PageConProvider.of(context)?.pageCon.jumpToPage(6);
                                 },
                                 child: Container(
                                     //color: Colors.blue,

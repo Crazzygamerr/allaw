@@ -1,16 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:allaw/AboutUs.dart';
 import 'package:allaw/HomePage.dart';
+import 'package:allaw/global/widgets/onboarding.dart';
 import 'package:allaw/provider.dart';
 import 'package:allaw/settings.dart';
 import 'package:allaw/Request.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -57,68 +55,35 @@ class _MyHomePageState extends State<MyHomePage> {
     @override
     void initState() {
         super.initState();
-        func1();
+        showOnboarding();
     }
 
-    func1() async {
+    showOnboarding() async {
         if(mounted){
-            Future.delayed(Duration(seconds: 1)).then((value) => setState((){onboarding = false;}));
+            Future.delayed(Duration(seconds: 1))
+                    .then((value) => setState((){
+                        onboarding = false;
+                    }));
         } else {
-            Future.delayed(Duration(milliseconds: 50)).then((value) => setState((){func1();}));
+            Future.delayed(Duration(milliseconds: 50))
+                    .then((value) => showOnboarding());
         }
     }
 
     @override
     Widget build(BuildContext context) {
-        ScreenUtil.init(context,
-                designSize: Size(411.4, 866.3), allowFontScaling: true);
+        ScreenUtil.init(
+            BoxConstraints(maxWidth: 411.4, maxHeight: 866.3),
+            context: context,
+            designSize: Size(411.4, 866.3),
+        );
+
 
         SystemChrome.setPreferredOrientations([
             DeviceOrientation.portraitUp,
         ]);
-        if(onboarding) return Scaffold(
-            backgroundColor: Color(0xff404040),
-            resizeToAvoidBottomInset: false,
-            resizeToAvoidBottomPadding: false,
-            body: Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                        SizedBox(
-                            height: ScreenUtil().setHeight(230),
-                        ),
-                        Container(
-                            height: ScreenUtil().setHeight(250),
-                            width: ScreenUtil().setWidth(250),
-                            decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20)
-                            ),
-                            clipBehavior: Clip.hardEdge,
-                            child: Image.asset("assets/Logo.jpg"),
-                        ),
-                        Text(
-                            "Your Ally for Law",
-                            style: TextStyle(
-                                fontFamily: "Times New Roman",
-                                fontSize: ScreenUtil().setSp(18),
-                                color: Colors.white,
-                            ),
-                        ),
-                        SizedBox(
-                            height: ScreenUtil().setHeight(205),
-                        ),
-                        Text(
-                            "by LexLiaise",
-                            style: TextStyle(
-                                fontFamily: "Times New Roman",
-                                fontSize: ScreenUtil().setSp(16),
-                                color: Colors.white,
-                            ),
-                        ),
-                    ],
-                ),
-            ),
-        );
+
+        if(onboarding) return Onboarding();
         else return Scaffold(
             backgroundColor: Color(0xffF2F2F2),
             resizeToAvoidBottomInset: false,
@@ -233,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
 
                             Expanded(
-                                child: pageConProvider(
+                                child: PageConProvider(
                                     pageCon: pageCon,
                                     child: PageView(
                                         controller: pageCon,

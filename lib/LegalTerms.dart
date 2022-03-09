@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:excel/excel.dart';
@@ -15,7 +13,7 @@ class LegalTerms extends StatefulWidget {
 class _LegalTermsState extends State<LegalTerms>{
 
     TextEditingController textCon = new TextEditingController();
-    Sheet sheet;
+    late Sheet sheet;
     bool loading = true;
 
     @override
@@ -34,19 +32,18 @@ class _LegalTermsState extends State<LegalTerms>{
         } else {
 
             FirebaseStorage storage = FirebaseStorage.instance;
-            Reference ref;
+            Reference? ref;
             xlsxFile = File('$dir/Legal Terms.xlsx');
             await storage.ref().listAll().then((value) {
                 ref = value.items.singleWhere((element) => element.name == "Legal Terms.xlsx");
             });
-            await storage.ref(ref.fullPath).writeToFile(xlsxFile);
-
+            await storage.ref(ref!.fullPath).writeToFile(xlsxFile);
         }
 
         List<int> bytes = xlsxFile.readAsBytesSync();
         var excel = Excel.decodeBytes(bytes);
 
-        sheet = excel.tables["Sheet1"];
+        sheet = excel.tables["Sheet1"]!;
         setState(() {
             loading = false;
         });
@@ -120,7 +117,7 @@ class _LegalTermsState extends State<LegalTerms>{
 
                                         itemBuilder: (context, index) {
 
-                                            bool b = sheet.rows[index][0].toLowerCase().contains(textCon.text.toLowerCase());
+                                            bool b = sheet.rows[index][0].toString().toLowerCase().contains(textCon.text.toLowerCase());
 
                                             return (b)?Container(
                                                 decoration: BoxDecoration(
@@ -140,7 +137,7 @@ class _LegalTermsState extends State<LegalTerms>{
                                                           ScreenUtil().setHeight(20),
                                                       ),
                                                       child: Text(
-                                                          sheet.rows[index][0],
+                                                          sheet.rows[index][0]?.value,
                                                       ),
                                                   ),
                                                   children: [
@@ -152,7 +149,7 @@ class _LegalTermsState extends State<LegalTerms>{
                                                               ScreenUtil().setHeight(10),
                                                           ),
                                                           child: Text(
-                                                              sheet.rows[index][1],
+                                                              sheet.rows[index][1]?.value,
                                                           ),
                                                       ),
                                                   ],

@@ -14,7 +14,7 @@ class _AboutUsState extends State<AboutUs> {
     Widget build(BuildContext context) {
         return WillPopScope(
             onWillPop: () async {
-                pageConProvider.of(context).pageCon.jumpToPage(1);
+                PageConProvider.of(context)?.pageCon.jumpToPage(1);
                 return false;
             },
             child: Padding(

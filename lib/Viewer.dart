@@ -1,33 +1,36 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:share/share.dart';
 import 'package:excel/excel.dart';
-import 'package:allaw/advance_pdf_viewer-1.2.1+1/lib/advance_pdf_viewer.dart';
+import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 
 class Viewer extends StatefulWidget {
 
-    final Reference pdfReference, xlsxReference;
+    final Reference? pdfReference, xlsxReference;
     final bool local;
-    final String fileName;
+    final String? fileName;
 
     @override
     _ViewerState createState() => _ViewerState();
 
-    Viewer({this.pdfReference, this.xlsxReference, this.local, this.fileName});
+    Viewer({
+        this.pdfReference,
+        this.xlsxReference,
+        required this.local,
+        this.fileName
+    }):assert(fileName != null || (pdfReference != null && xlsxReference != null));
 }
 
 class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 
-    PDFDocument pdfDocument;
+    late PDFDocument pdfDocument;
     PageController pageCon = new PageController(keepPage: true);
     PageController canvasCon = new PageController();
-    File file;
+    late File file;
 
     bool load = false,
             online = true,
@@ -43,7 +46,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
     double headingH = 0, subH = 0,
             canvasH = 0, canvasW = 0;
 
-    Reference pdfRef, xlsxRef;
+    late Reference pdfRef, xlsxRef;
 
     GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
     GlobalKey _canvasKey = GlobalKey();
@@ -125,7 +128,9 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
         if(_canvasKey.currentContext == null) {
             Future.delayed(Duration(seconds: 1)).then((value) => func1());
         } else {
-            var x = _canvasKey.currentContext.size;
+            Size? x = _canvasKey.currentContext?.size;
+            if(x == null)
+                return;
             if((x.height - ScreenUtil().setHeight(50))/x.width > 297/210) {
                 setState(() {
                     canvasW = x.width;
@@ -142,7 +147,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                     canvasW = x.width;
                 });
             }
-            _drawerKey.currentState.openDrawer();
+            _drawerKey.currentState?.openDrawer();
         }
     }
 
@@ -152,23 +157,19 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
     }
 
     func3() {
-        if(pdfDocument == null) {
-            Future.delayed(Duration(seconds: 1)).then((value) => func3());
-        } else {
-            for(int i = 0;i<pdfDocument.count;i++){
-                strokes.add([]);
-            }
-            writeJson();
-            setState(() {
-            });
+        for(int i = 0;i<pdfDocument.count;i++){
+            strokes.add([]);
         }
+        writeJson();
+        setState(() {
+        });
     }
 
     initPdf() async {
         dir = (await getApplicationDocumentsDirectory()).path;
         if(!widget.local) {
-            pdfRef = widget.pdfReference;
-            xlsxRef = widget.xlsxReference;
+            pdfRef = widget.pdfReference!;
+            xlsxRef = widget.xlsxReference!;
             fileName = pdfRef.name.replaceAll(".pdf", "");
             if (await File('$dir/${pdfRef.name}').exists()) {
                 getFileFromLocal();
@@ -184,7 +185,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                 });
             }
         } else {
-            fileName = widget.fileName;
+            fileName = widget.fileName!;
             getFileFromLocal();
         }
 
@@ -224,7 +225,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
             await storage.ref(xlsxRef.fullPath).writeToFile(xlsxFile);
 
             getFileFromLocal();
-        } on SocketException catch (e) {
+        } on SocketException {
             setState(() {
                 load = false;
                 error = "No internet connection";
@@ -250,12 +251,13 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
     }
 
     getFileFromLocal() async {
+        print("--- get local");
         File xlsxFile = File(dir + '/' +  fileName + ".xlsx");
         List<int> bytes = await xlsxFile.readAsBytes();
 
         var excel = Excel.decodeBytes(bytes);
-        Sheet sheet = excel.tables[excel.tables.keys.toList()[0]];
-        readXlsx(sheet);
+        Sheet? sheet = excel.tables[excel.tables.keys.toList()[0]];
+        readXlsx(sheet!);
         readJson();
 
         var temp = await PDFDocument.fromFile(File(dir + '/' + fileName + ".pdf"));
@@ -277,9 +279,9 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
         List<int> bytes = downloadToFile.readAsBytesSync();
         var excel = Excel.decodeBytes(bytes);
         //print(excel.tables.keys.toList());
-        Sheet sheet = excel.tables[excel.tables.keys.toList()[0]];
+        Sheet? sheet = excel.tables[excel.tables.keys.toList()[0]];
         //print(sheet.rows);
-        readXlsx(sheet);
+        readXlsx(sheet!);
     }
 
     Future<void> readXlsx(Sheet sheet) async {
@@ -289,20 +291,18 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
             var x = sheet.rows[i];
             String a = x[0].toString();
             String b = (x[1] != null)?x[1].toString():"";
-            int c = x[2].toInt();
+            int c = x[2]?.value.toInt();
             bool d;
             if(x.length > 3) {
                 d = (x[3] != null) ? true : false;
             } else
                 d = false;
-            if(c != null){
-                heading.add(a);
-                if(b.lastIndexOf(".") != -1)
-                    b = b.substring(0, b.lastIndexOf("."));
-                section.add(b);
-                page.add(c);
-                sub.add(d);
-            }
+              heading.add(a);
+              if(b.lastIndexOf(".") != -1)
+                  b = b.substring(0, b.lastIndexOf("."));
+              section.add(b);
+              page.add(c);
+              sub.add(d);
 
             var tp = TextPainter(
                 textAlign: TextAlign.left,
@@ -319,7 +319,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                 tp.layout(maxWidth: ScreenUtil().setWidth(160),);
             else if(i == sheet.rows.length-1)
                 tp.layout(maxWidth: ScreenUtil().setWidth(150,),);
-            else if(sheet.rows[i+1].length > 3 && sheet.rows[i+1] != null)
+            else if(sheet.rows[i+1].length > 3)
                 tp.layout(maxWidth: ScreenUtil().setWidth(100,),);
             else
                 tp.layout(maxWidth: ScreenUtil().setWidth(150,),);
@@ -334,11 +334,11 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                 minimized.add(true);
             } else{
                 if(i == sub.length-1)
-                    minimized.add(null);
+                    minimized.add(false);
                 else if(sub[i+1])
                     minimized.add(true);
                 else
-                    minimized.add(null);
+                    minimized.add(false);
             }
         }
         setState(() {
@@ -428,9 +428,8 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 
         return WillPopScope(
             onWillPop: () async {
-                if(_drawerKey != null)
-                    if(_drawerKey.currentState.mounted)
-                        Navigator.pop(context);
+                  if(_drawerKey.currentState?.mounted ?? true)
+                      Navigator.pop(context);
                 return false;
             },
             child: Scaffold(
@@ -622,7 +621,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                                             width: ScreenUtil().setWidth(
                                                                                 (sub[index])
                                                                                         ? 245
-                                                                                        : (!sub[index] && minimized[index] != null)
+                                                                                        : (!sub[index])
                                                                                         ? 210
                                                                                         :260,
                                                                             ),
@@ -642,7 +641,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                                             ),
                                                                         ),
 
-                                                                        (!sub[index] && minimized[index] != null) ? GestureDetector(
+                                                                        (!sub[index]) ? GestureDetector(
                                                                             onTap: () {
                                                                                 for(int i=index+1;i<minimized.length;i++){
                                                                                     if(!sub[i])
@@ -779,7 +778,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                 if(drawing || zoom) Container(
                                                 ) else GestureDetector(
                                                     onTap: () {
-                                                        _drawerKey.currentState.openDrawer();
+                                                        _drawerKey.currentState?.openDrawer();
                                                     },
                                                     child: Padding(
                                                         padding: EdgeInsets.fromLTRB(
@@ -823,7 +822,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                     onTap: () {
                                                         setState(() {
                                                             if(strokes.isNotEmpty) {
-                                                                strokes[canvasCon.page.toInt()].removeLast();
+                                                                strokes[canvasCon.page!.toInt()].removeLast();
                                                                 writeJson();
                                                             }
                                                         });
@@ -977,9 +976,9 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                                 ),
                                                                 barrierDismissible: false,
                                                             );
-                                                            pdfDocument.get(page: pageCon.page.round() + 1).then((value){
+                                                            pdfDocument.get(page: pageCon.page!.round() + 1).then((value){
                                                                 zoom = !zoom;
-                                                                s = value.imgPath;
+                                                                s = value.imgPath!;
                                                                 setState(() {
                                                                 });
                                                                 Navigator.pop(context);
@@ -1070,11 +1069,10 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                 controller: pageCon,
                                                 lazyLoad: false,
                                                 showPicker: false,
-                                                pageSnapping: online,
                                                 maxScale: 1.0,
                                                 onPageChanged: (i){},
                                                 navigationBuilder: (context, pageNumber, totalPages, jumpToPage, animateToPage) {
-                                                    int x = pageNumber;
+                                                    int x = pageNumber!;
                                                     if (drawing) {
                                                         return Container(
                                                             decoration: BoxDecoration(
@@ -1097,16 +1095,19 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                                             ScreenUtil().setHeight(10),
                                                                         ),
                                                                         child: DropdownButton<int>(
-                                                                            value: strokeColor.value??Colors.black.value,
+                                                                            value: strokeColor.value,
                                                                             iconSize: 24,
                                                                             elevation: 16,
                                                                             underline: Container(
                                                                                 height: 0,
                                                                                 //color: Colors.blue,
                                                                             ),
-                                                                            onChanged: (int newValue) {
+                                                                            onChanged: (int? newValue) {
                                                                                 setState(() {
-                                                                                    strokeColor = Color(newValue);
+                                                                                    if(newValue != null)
+                                                                                        strokeColor = Color(newValue);
+                                                                                    else
+                                                                                        strokeColor = Colors.black;
                                                                                 });
                                                                             },
                                                                             items: dropDownItems,
@@ -1462,7 +1463,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                             child: Slider(
                                                                 value: x.toDouble(),
                                                                 min: 0,
-                                                                max: totalPages.toDouble(),
+                                                                max: totalPages!.toDouble(),
                                                                 activeColor: Colors.black54,
                                                                 onChangeEnd: (value) {
                                                                     swipeChangePage = false;
@@ -1526,7 +1527,9 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                                                     child: CustomPaint(
                                                                                         painter: (page < strokes.length)?Painter(
                                                                                             strokes: strokes[page],
-                                                                                        ):Painter(),
+                                                                                        ):Painter(
+                                                                                            strokes: [],
+                                                                                        ),
                                                                                     ),
                                                                                 ),
                                                                             ),
@@ -1543,7 +1546,9 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                                                 child: CustomPaint(
                                                                                     painter: (page < strokes.length)?Painter(
                                                                                         strokes: strokes[page],
-                                                                                    ):Painter(),
+                                                                                    ):Painter(
+                                                                                        strokes: [],
+                                                                                    ),
                                                                                 ),
                                                                             ),
                                                                         );
@@ -1571,7 +1576,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                 alignment: Alignment.center,
                                                 child: PDFPage(
                                                         s,
-                                                        pageCon.page.round() + 1
+                                                        pageCon.page!.round() + 1
                                                 ),
                                             ),
                                         ],
@@ -1606,7 +1611,9 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 class Painter extends CustomPainter {
     final List<Map<String, dynamic>> strokes;
 
-    Painter({this.strokes}) : super();
+    Painter({
+        required this.strokes
+    }) : super();
 
 
     @override
@@ -1618,52 +1625,50 @@ class Painter extends CustomPainter {
             ..style = PaintingStyle.stroke;
 
         //canvas.drawLine(Offset(100,100), Offset(200,200), paint);
-        if(strokes != null){
-            for(int i = 0; i<strokes.length; i++){
-                if (strokes[i]["color"] != null) {
-                    paint.color = Color(strokes[i]["color"]).withOpacity(strokes[i]["opacity"]??1);
-                } else {
-                    paint.color = Colors.black;
-                }
-                if (strokes[i]["width"] != null) {
-                    paint.strokeWidth = strokes[i]["width"].toDouble();
-                } else {
-                    paint.strokeWidth = 2;
-                }
-                if (strokes[i]["color"] == Colors.white.value) {
-                    paint.blendMode = BlendMode.clear;
-                    paint.color = Colors.transparent;
-                }
-                if (strokes[i]["offsets"] != null) {
-                    for (var j = 1; j<strokes[i]["offsets"].length; j++) {
-                        //Path path = new Path();
-                        canvas.drawLine(strokes[i]["offsets"][j-1], strokes[i]["offsets"][j], paint);
-                        //canvas.
-                        //canvas.drawPoints(PointMode.polygon, strokes[i]["offsets"], paint);
-                        //canvas.drawCircle(strokes[i]["offsets"][j-1], strokes[i]["width"].toDouble()/2, paint);
-                        /*canvas.drawOval(
-                            Rect.fromCenter(
-                            center: Offset((strokes[i]["offsets"][j-1].dx + strokes[i]["offsets"][j].dx)/2, (strokes[i]["offsets"][j-1].dy + strokes[i]["offsets"][j].dy)/2),
-                            width: strokes[i]["width"].toDouble(),
-                            height: strokes[i]["width"].toDouble()*1.2,
-                            ),
-                            paint,
-                        );*/
-                        /*path.moveTo(strokes[i]["offsets"][j-1].dx, strokes[i]["offsets"][j-1].dy);
-                        path.lineTo(strokes[i]["offsets"][j].dx, strokes[i]["offsets"][j].dy);
-                        canvas.drawPath(path, paint);*/
-                        /*canvas.drawRect(
-                            Rect.fromCenter(
-                                center: Offset((strokes[i]["offsets"][j-1].dx + strokes[i]["offsets"][j].dx)/2, (strokes[i]["offsets"][j-1].dy + strokes[i]["offsets"][j].dy)/2),
-                                width: strokes[i]["width"].toDouble(),
-                                height: strokes[i]["width"].toDouble()*1.2,
-                            ),
-                            paint,
-                        );*/
-                    }
-                }
-            }
-        }
+          for(int i = 0; i<strokes.length; i++){
+              if (strokes[i]["color"] != null) {
+                  paint.color = Color(strokes[i]["color"]).withOpacity(strokes[i]["opacity"]??1);
+              } else {
+                  paint.color = Colors.black;
+              }
+              if (strokes[i]["width"] != null) {
+                  paint.strokeWidth = strokes[i]["width"].toDouble();
+              } else {
+                  paint.strokeWidth = 2;
+              }
+              if (strokes[i]["color"] == Colors.white.value) {
+                  paint.blendMode = BlendMode.clear;
+                  paint.color = Colors.transparent;
+              }
+              if (strokes[i]["offsets"] != null) {
+                  for (var j = 1; j<strokes[i]["offsets"].length; j++) {
+                      //Path path = new Path();
+                      canvas.drawLine(strokes[i]["offsets"][j-1], strokes[i]["offsets"][j], paint);
+                      //canvas.
+                      //canvas.drawPoints(PointMode.polygon, strokes[i]["offsets"], paint);
+                      //canvas.drawCircle(strokes[i]["offsets"][j-1], strokes[i]["width"].toDouble()/2, paint);
+                      /*canvas.drawOval(
+                          Rect.fromCenter(
+                          center: Offset((strokes[i]["offsets"][j-1].dx + strokes[i]["offsets"][j].dx)/2, (strokes[i]["offsets"][j-1].dy + strokes[i]["offsets"][j].dy)/2),
+                          width: strokes[i]["width"].toDouble(),
+                          height: strokes[i]["width"].toDouble()*1.2,
+                          ),
+                          paint,
+                      );*/
+                      /*path.moveTo(strokes[i]["offsets"][j-1].dx, strokes[i]["offsets"][j-1].dy);
+                      path.lineTo(strokes[i]["offsets"][j].dx, strokes[i]["offsets"][j].dy);
+                      canvas.drawPath(path, paint);*/
+                      /*canvas.drawRect(
+                          Rect.fromCenter(
+                              center: Offset((strokes[i]["offsets"][j-1].dx + strokes[i]["offsets"][j].dx)/2, (strokes[i]["offsets"][j-1].dy + strokes[i]["offsets"][j].dy)/2),
+                              width: strokes[i]["width"].toDouble(),
+                              height: strokes[i]["width"].toDouble()*1.2,
+                          ),
+                          paint,
+                      );*/
+                  }
+              }
+          }
 
     }
 
