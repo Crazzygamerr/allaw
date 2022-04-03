@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,11 +8,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:excel/excel.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:open_file/open_file.dart';
-
+import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 class Viewer extends StatefulWidget {
-
+    
     final Reference? pdfReference, xlsxReference;
     final bool local;
     final String? fileName;
@@ -32,6 +31,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
     // late PDFDocument pdfDocument;
     PageController pageCon = new PageController(keepPage: true);
     PageController canvasCon = new PageController();
+    final Completer<PDFViewController> pdfViewController = Completer<PDFViewController>();
     late File file;
     String url = "";
 
@@ -39,7 +39,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
             online = true,
             swipeChangePage = true,
             drawing = false,
-            zoom = false;
+            zoom = false, test = false;
 
     String error = "",
             dir = "",
@@ -1061,11 +1061,12 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                 GestureDetector(
                                     onPanStart: (details) {
                                         setState(() {
+                                            test = true;
                                             strokes[0].add({
                                                 "color": strokeColor.value,
                                                 "width": strokeWidth,
                                                 "opacity": strokeOpacity,
-                                                "offsets": [details.localPosition]
+                                                "offsets": [details.globalPosition]
                                             });
                                         });
                                     },
@@ -1074,12 +1075,13 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                             strokes[0]                //List of strokes in the page
                                             [strokes[0].length - 1]   //The current stroke
                                             ["offsets"]                  //The offsets in the current stroke
-                                                    .add(details.localPosition);
+                                                    .add(details.globalPosition);
                                         });
                                     },
                                     onPanEnd: (details) {
                                         PdfDocument document = PdfDocument(inputBytes: File("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf").readAsBytesSync());
                                         setState(() {
+                                            test = false;
                                             List<Offset> offsets = strokes[0]
                                             [strokes[0].length - 1]
                                             ["offsets"];
@@ -1096,24 +1098,73 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                             for(int i=0;i<offsets.length-1;i++) {
                                                 PdfLineAnnotation lineAnnotation = PdfLineAnnotation(
                                                     [
-                                                        offsets[i].dx.toInt(), 
+                                                        (offsets[i].dx.toInt()), 
                                                         document.pages[0].size.height.toInt() - offsets[i].dy.toInt(), 
                                                         offsets[i+1].dx.toInt(), 
                                                         document.pages[0].size.height.toInt() - offsets[i+1].dy.toInt()
                                                     ], 
                                                     "line annotation",
-                                                    opacity: 0.25,
-                                                    border: PdfAnnotationBorder(2),
-                                                    lineIntent: PdfLineIntent.lineDimension,
+                                                    opacity: 0.1,
+                                                    border: PdfAnnotationBorder(15),
                                                     color: PdfColor(0, 0, 255),
-                                                    lineCaption: false,
+                                                    
+                                                    //lineCaption: false,
                                                     setAppearance: true,
                                                 );
                                                 document.pages[0].annotations.add(lineAnnotation);
                                             }
+                                            PdfPath path = PdfPath();
+                                            
+                                            /* path.pen = PdfPen(
+                                                PdfColor(0, 0, 255),
+                                                width: 5, 
+                                                );
+                                            path.addPath(
+                                                strokes[0][strokes[0].length - 1]["offsets"],
+                                                List.generate(strokes[0][strokes[0].length - 1]["offsets"].length, (index) => 1)
+                                            );
+                                            path.draw(
+                                                page: document.pages[0], 
+                                                bounds: Rect.fromLTRB(400, 400, 400, 400)); */
+                                                
+                                            /* path.addLine(Offset(10, 100), Offset(10, 200));
+                                            path.addLine(Offset(100, 100), Offset(100, 200));
+                                            path.addLine(Offset(100, 200), Offset(55, 150));
+                                            //Draw the path
+                                            path.draw(page: document.pages.add(), bounds: Rect.zero);
+                                            
+                                            document.pages[0].graphics.drawLine(
+                                                PdfPen(PdfColor(165, 42, 42, 50), width: 5),
+                                                Offset(20, 100),
+                                                Offset(10, 200));
+                                                 */
                                             File("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf")
                                                     .writeAsBytes(document.save(), flush: true);
-                                            OpenFile.open("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf", );
+                                            //OpenFile.open("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf", );
+                                            /* Navigator.pushReplacement(context, new MaterialPageRoute(
+                                                builder: (context) {
+                                                    return Scaffold(
+                                                        appBar: AppBar(
+                                                            title: Text("The Indian Contract Act, 1872"),
+                                                            leading: IconButton(
+                                                                icon: Icon(Icons.arrow_back),
+                                                                onPressed: () {
+                                                                    Navigator.pushReplacement(
+                                                                        context, 
+                                                                        new MaterialPageRoute(
+                                                                            builder: (context) => Viewer(
+                                                                                local: widget.local,
+                                                                                pdfReference: widget.pdfReference,
+                                                                                xlsxReference: widget.xlsxReference,
+                                                                                fileName: widget.fileName,
+                                                                                )), 
+                                                                        );
+                                                                },
+                                                            ),
+                                                        ),
+                                                    );
+                                                },
+                                            ), ); */
                                             document.dispose();
                                             print("done"); 
                                         });
@@ -1125,6 +1176,17 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                       color: Colors.red,
                                   ),
                                 ),
+                                
+                                (!test)?Container(
+                                    height: 400,
+                                    child: PDF(   
+                                        enableSwipe: true,
+                                        swipeHorizontal: true,                                
+                                        onViewCreated: (PDFViewController pdfViewController) {
+                                            pdfViewController = pdfViewController;
+                                        },
+                                    ).fromPath("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf"),
+                                ):Container(),
 /*                                 (load)?Container(
                                   height: 400,
                                   child: adv.PDFViewer(
@@ -1142,13 +1204,13 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                     pageNumber: 0,
                                 ), */
                                 
-                                Container(
+                                /* Container(
                                     height: ScreenUtil().setHeight(500),
                                     child: SfPdfViewer.file(
                                         File("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf"),
                                         pageSpacing: strokes[0].length.toDouble(),
                                     ),
-                                ),
+                                ), */
                                 // (load)?Stack(
 /*                                         children: [
                                         PDFViewer(
