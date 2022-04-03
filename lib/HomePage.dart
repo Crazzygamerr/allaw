@@ -268,7 +268,6 @@ class _TwitterFeedState extends State<TwitterFeed> with AutomaticKeepAliveClient
     }
 
     @override
-    // TODO: implement wantKeepAlive
     bool get wantKeepAlive => true;
 }
 
