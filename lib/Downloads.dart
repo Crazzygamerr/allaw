@@ -115,7 +115,6 @@ class _DownloadsState extends State<Downloads>{
                                                             context,
                                                             new MaterialPageRoute(
                                                                 builder: (context) => Viewer(
-                                                                    local: true,
                                                                     fileName: downloads[index],
                                                                 ),
                                                             ),

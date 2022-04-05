@@ -10,7 +10,6 @@ import 'package:path_provider/path_provider.dart';
 class Viewer extends StatefulWidget {
   
   final Reference? pdfReference, xlsxReference;
-  final bool local;
   final String? fileName;
 
   @override
@@ -19,7 +18,6 @@ class Viewer extends StatefulWidget {
   Viewer({
     this.pdfReference,
     this.xlsxReference,
-    required this.local,
     this.fileName
   }):assert(fileName != null || (pdfReference != null && xlsxReference != null));
 }
@@ -33,11 +31,11 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
   late File file;
   String url = "";
 
-  bool load = false,
-      online = true,
-      swipeChangePage = true,
-      drawing = false,
-      zoom = false, test = false;
+  bool local = false, 
+    load = false,
+    online = true,
+    swipeChangePage = true,
+    drawing = false;
 
   String error = "",
       dir = "",
@@ -166,7 +164,8 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 
   initPdf() async {
     dir = (await getApplicationDocumentsDirectory()).path;
-    if(!widget.local) {
+    local = await File(dir + "/" + (widget.fileName ?? "") + ".pdf").exists();
+    if(!local) {
       pdfRef = widget.pdfReference!;
       xlsxRef = widget.xlsxReference!;
       fileName = pdfRef.name.replaceAll(".pdf", "");
@@ -743,7 +742,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
 
-                        if(drawing || zoom) Container(
+                        if(drawing) Container(
                         ) else GestureDetector(
                           onTap: () {
                             Navigator.pop(context);
@@ -771,7 +770,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                           ),
                         ),
 
-                        if(drawing || zoom) Container(
+                        if(drawing) Container(
                         ) else GestureDetector(
                           onTap: () {
                             _drawerKey.currentState?.openDrawer();
@@ -858,13 +857,11 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                           child: Text(online.toString()),
                         ),*/
                         if(drawing) Container(
-                        ) else if(zoom)SizedBox(
-                          width: ScreenUtil().setWidth(270),
                         ) else SizedBox(
                           width: ScreenUtil().setWidth((online)?150:90),
                         ),
 
-                        if (online || zoom) Container(
+                        if (online) Container(
                         ) else GestureDetector(
                           onTap: () {
                             setState(() {
@@ -907,7 +904,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                           width: ScreenUtil().setWidth(55),
                         ),*/
 
-                        if (online || zoom || !drawing) Container(
+                        if (online || !drawing) Container(
                         ) else GestureDetector(
                           onTap: () {
                             /* strokes = [];
@@ -946,78 +943,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                         ),
 
                         if(drawing) Container(
-                        ) else GestureDetector(
-                          onTap: () {
-                            if (!zoom) {
-                              showDialog(
-                                context: context,
-                                builder: (_) => WillPopScope(
-                                  onWillPop: () async {
-                                    return false;
-                                  },
-                                  child: AlertDialog(
-                                    content: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "Loading...",
-                                          style: TextStyle(
-                                            fontSize: ScreenUtil().setSp(14),
-                                          ),
-                                        ),
-                                        CircularProgressIndicator(),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                barrierDismissible: false,
-                              );
-                              // pdfDocument.get(page: pageCon.page!.round() + 1).then((value){
-                              //   zoom = !zoom;
-                              //   s = value.imgPath!;
-                              //   setState(() {
-                              //   });
-                              //   Navigator.pop(context);
-                              // });
-                            } else {
-                              zoom = !zoom;
-                              setState(() {
-                              });
-                            }
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                              ScreenUtil().setWidth(10),
-                              ScreenUtil().setHeight(0),
-                              ScreenUtil().setWidth(10),
-                              ScreenUtil().setHeight(0),
-                            ),
-                            child: Container(
-                              width: ScreenUtil().setWidth(50),
-                              height: ScreenUtil().setHeight(50),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                  width: 1,
-                                  color: Colors.black,
-                                ),
-                                color: Colors.white,
-                              ),
-                              padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(8),
-                                ScreenUtil().setHeight(8),
-                                ScreenUtil().setWidth(8),
-                                ScreenUtil().setHeight(8),
-                              ),
-                              child: Image.asset(
-                                (zoom)?"assets/exit_to_app.png":"assets/zoom_in.png",
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        if(drawing || zoom) Container(
                         ) else GestureDetector(
                           onTap: () {
                             if(online)
@@ -1161,7 +1086,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                   ),
                 ), */
                 
-                (widget.local)?Expanded(
+                (local)?Expanded(
                   child: PDF(   
                     enableSwipe: true,
                     swipeHorizontal: true,        
@@ -1175,6 +1100,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                     swipeHorizontal: true,        
                     onViewCreated: (PDFViewController pdfViewController) {
                       pdfViewController = pdfViewController;
+                      print(url);
                     },
                   ).fromUrl(url),
                 ),
@@ -1185,7 +1111,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                       key: _canvasKey,
                       document: pdfDocument,
                       //scrollDirection: Axis.vertical,
-                      enableSwipeNavigation: !zoom,
                       controller: pageCon,
                       lazyLoad: false,
                       showPicker: false,
@@ -1605,11 +1530,11 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                         Opacity(
                           opacity: (canvasH == 0)?0:1,
                           child: Container(
-                            height: ScreenUtil().setHeight((zoom)?0:610),
-                            width: ScreenUtil().setWidth((zoom)?1:411),
+                            height: ScreenUtil().setHeight(610),
+                            width: ScreenUtil().setWidth(411),
                             child: PageView.builder(
                               itemCount: pdfDocument.count,
-                              physics: (drawing || zoom)?NeverScrollableScrollPhysics():PageScrollPhysics(),
+                              physics: (drawing)?NeverScrollableScrollPhysics():PageScrollPhysics(),
                               controller: canvasCon,
                               itemBuilder: (context, page) {
                                 if(drawing && canvasCon.page == page) {
@@ -1683,27 +1608,11 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                         ),
                       ],
                     ),
-                    if(zoom) Container(
-                      height: ScreenUtil().setHeight(660),
-                      width: ScreenUtil().setWidth(411),
-                      padding: EdgeInsets.fromLTRB(
-                        ScreenUtil().setWidth(0),
-                        ScreenUtil().setHeight(0),
-                        ScreenUtil().setWidth(0),
-                        ScreenUtil().setHeight(45),
-                      ),
-                      color: Colors.white,
-                      alignment: Alignment.center,
-                      child: PDFPage(
-                          s,
-                          pageCon.page!.round() + 1
-                      ),
-                    ),
                   ], */
 /*         ):Expanded(
                   child: Center(
                     child: (error=="")
-                        ?CircularProgressIndicator()
+                        CircularProgressIndicator()
                         :Text(
                       error,
                       style: TextStyle(

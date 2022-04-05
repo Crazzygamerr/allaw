@@ -128,7 +128,6 @@ class _BareActsState extends State<BareActs>{
                                                                 builder: (context) => Viewer(
                                                                     pdfReference: pdfReference[index],
                                                                     xlsxReference: xlsxReference[index],
-                                                                    local: false,
                                                                 ),
                                                             ),
                                                         ).then((value) {
