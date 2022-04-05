@@ -426,7 +426,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 
     @override
     Widget build(BuildContext context) {
-
+        //bool ignore = 
         return WillPopScope(
             onWillPop: () async {
                   if(_drawerKey.currentState?.mounted ?? true)
@@ -1095,7 +1095,8 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                 setAppearance: true,
                                                 lineIntent: PdfLineIntent.lineDimension);
                                             document.pages[0].annotations.add(lineAnnotation); */
-                                            for(int i=0;i<offsets.length-1;i++) {
+                                            
+                                            /* for(int i=0;i<offsets.length-1;i++) {
                                                 PdfLineAnnotation lineAnnotation = PdfLineAnnotation(
                                                     [
                                                         (offsets[i].dx.toInt()), 
@@ -1105,68 +1106,56 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                     ], 
                                                     "line annotation",
                                                     opacity: 0.1,
-                                                    border: PdfAnnotationBorder(15),
+                                                    border: PdfAnnotationBorder(0),
+                                                    innerColor: PdfColor(255, 0, 0),
                                                     color: PdfColor(0, 0, 255),
-                                                    
-                                                    //lineCaption: false,
                                                     setAppearance: true,
                                                 );
-                                                document.pages[0].annotations.add(lineAnnotation);
-                                            }
-                                            PdfPath path = PdfPath();
-                                            
-                                            /* path.pen = PdfPen(
-                                                PdfColor(0, 0, 255),
+                                                //lineAnnotation.
+                                                document.pages[2].annotations.add(lineAnnotation);
+                                            } */
+                                            /* PdfRectangleAnnotation rectangleAnnotation = PdfRectangleAnnotation(
+                                                    Rect.fromPoints(offsets.first, offsets.last),
+                                                    "line annotation",
+                                                    opacity: 0.1,
+                                                    border: PdfAnnotationBorder(0),
+                                                    innerColor: PdfColor(255, 0, 0),
+                                                    color: PdfColor(0, 0, 255),
+                                                    setAppearance: true,
+                                                );
+                                                document.pages[4].annotations.add(rectangleAnnotation); */
+                                                
+                                            /* PdfPath path = PdfPath();
+                                            path.pen = PdfPen(
+                                                PdfColor(0, 0, 250),
                                                 width: 5, 
                                                 );
                                             path.addPath(
-                                                strokes[0][strokes[0].length - 1]["offsets"],
-                                                List.generate(strokes[0][strokes[0].length - 1]["offsets"].length, (index) => 1)
+                                                //strokes[0][strokes[0].length - 1]["offsets"],
+                                                [Offset(10, 700), Offset(10, 500), Offset(10, 700), Offset(10, 500)],
+                                                //List.generate(strokes[0][strokes[0].length - 1]["offsets"].length, (index) => 1)
+                                                [0, 1, 3, 129],
                                             );
+                                            document.pages[1].graphics.drawPath(
+                                              path,
+                                              pen: PdfPen(PdfColor(165, 0, 0, 50), width: 5),
+                                              );                                              
                                             path.draw(
-                                                page: document.pages[0], 
-                                                bounds: Rect.fromLTRB(400, 400, 400, 400)); */
-                                                
-                                            /* path.addLine(Offset(10, 100), Offset(10, 200));
-                                            path.addLine(Offset(100, 100), Offset(100, 200));
+                                                page: document.pages[1], 
+                                                bounds: Rect.fromLTRB(400, 400, 800, 800));
+                                            path.addLine(Offset(10, 700), Offset(10, 500));
+                                            path.addLine(Offset(10, 100), Offset(100, 200));
                                             path.addLine(Offset(100, 200), Offset(55, 150));
-                                            //Draw the path
-                                            path.draw(page: document.pages.add(), bounds: Rect.zero);
-                                            
+                                            document.pages[0].graphics.drawPath(path);
                                             document.pages[0].graphics.drawLine(
-                                                PdfPen(PdfColor(165, 42, 42, 50), width: 5),
-                                                Offset(20, 100),
-                                                Offset(10, 200));
+                                                PdfPen(PdfColor(165, 0, 0, 50), width: 5),
+                                                Offset(500, 100),
+                                                Offset(300, 200));
                                                  */
+
                                             File("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf")
                                                     .writeAsBytes(document.save(), flush: true);
-                                            //OpenFile.open("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf", );
-                                            /* Navigator.pushReplacement(context, new MaterialPageRoute(
-                                                builder: (context) {
-                                                    return Scaffold(
-                                                        appBar: AppBar(
-                                                            title: Text("The Indian Contract Act, 1872"),
-                                                            leading: IconButton(
-                                                                icon: Icon(Icons.arrow_back),
-                                                                onPressed: () {
-                                                                    Navigator.pushReplacement(
-                                                                        context, 
-                                                                        new MaterialPageRoute(
-                                                                            builder: (context) => Viewer(
-                                                                                local: widget.local,
-                                                                                pdfReference: widget.pdfReference,
-                                                                                xlsxReference: widget.xlsxReference,
-                                                                                fileName: widget.fileName,
-                                                                                )), 
-                                                                        );
-                                                                },
-                                                            ),
-                                                        ),
-                                                    );
-                                                },
-                                            ), ); */
                                             document.dispose();
-                                            print("done"); 
                                         });
                                         writeJson();
 
@@ -1185,6 +1174,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                         onViewCreated: (PDFViewController pdfViewController) {
                                             pdfViewController = pdfViewController;
                                         },
+
                                     ).fromPath("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf"),
                                 ):Container(),
 /*                                 (load)?Container(
