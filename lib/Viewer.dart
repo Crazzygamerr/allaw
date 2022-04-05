@@ -1,14 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:excel/excel.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:path_provider/path_provider.dart';
 class Viewer extends StatefulWidget {
     
     final Reference? pdfReference, xlsxReference;
@@ -30,7 +28,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 
     // late PDFDocument pdfDocument;
     PageController pageCon = new PageController(keepPage: true);
-    PageController canvasCon = new PageController();
+    //PageController canvasCon = new PageController();
     final Completer<PDFViewController> pdfViewController = Completer<PDFViewController>();
     late File file;
     String url = "";
@@ -91,7 +89,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 
     initState() {
         super.initState();
-        canvasCon.addListener(() => func2());
+        //canvasCon.addListener(() => func2());
         initPdf();
         func();
     }
@@ -152,19 +150,19 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
         }
     }
 
-    func2() {
+    /* func2() {
         if(swipeChangePage)
             pageCon.jumpTo(canvasCon.offset);
-    }
+    } */
 
-    func3() {
+    /* func3() {
         // for(int i = 0;i<pdfDocument.count;i++){
         //     strokes.add([]);
         // }
         writeJson();
         setState(() {
         });
-    }
+    } */
 
     initPdf() async {
         dir = (await getApplicationDocumentsDirectory()).path;
@@ -242,34 +240,33 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
     Future<void> getFileFromCloud() async {
         FirebaseStorage storage = FirebaseStorage.instance;
         url = await storage.ref(pdfRef.fullPath).getDownloadURL();
-/*         adv.PDFDocument doc = await adv.PDFDocument.fromURL(url);
+        //adv.PDFDocument doc = await adv.PDFDocument.fromURL(url);
         setState(() {
-            pdfDocument = doc;
+            //pdfDocument = doc;
             load = true;
             online = true;
-        }); */
+        });
         Navigator.pop(context);
     }
 
     getFileFromLocal() async {
-        print("--- get local");
         File xlsxFile = File(dir + '/' +  fileName + ".xlsx");
         List<int> bytes = await xlsxFile.readAsBytes();
 
         var excel = Excel.decodeBytes(bytes);
         Sheet? sheet = excel.tables[excel.tables.keys.toList()[0]];
         readXlsx(sheet!);
-        readJson();
+        //readJson();
 
-/*         var temp = await adv.PDFDocument.fromFile(File(dir + '/' + fileName + ".pdf"));
+        /* var temp = await adv.PDFDocument.fromFile(File(dir + '/' + fileName + ".pdf"));
         for(int i=0;i<temp.count;i++){
             strokes.add([]);
-        }
+        } */
         setState(() {
-            pdfDocument = temp;
+            //pdfDocument = temp;
             load = true;
             online = false;
-        });  */
+        }); 
         Navigator.pop(context);
     }
 
@@ -298,12 +295,12 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                 d = (x[3] != null) ? true : false;
             } else
                 d = false;
-              heading.add(a);
-              if(b.lastIndexOf(".") != -1)
-                  b = b.substring(0, b.lastIndexOf("."));
-              section.add(b);
-              page.add(c);
-              sub.add(d);
+                heading.add(a);
+                if(b.lastIndexOf(".") != -1)
+                    b = b.substring(0, b.lastIndexOf("."));
+                section.add(b);
+                page.add(c);
+                sub.add(d);
 
             var tp = TextPainter(
                 textAlign: TextAlign.left,
@@ -356,7 +353,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
         Navigator.pop(context);
     }
 
-    readJson() async {
+    /* readJson() async {
         if(await File("$dir/annotations.json").exists()) {
             file = new File("$dir/annotations.json");
             Map<String, dynamic> map = jsonDecode(await file.readAsString());
@@ -394,9 +391,9 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
             );
             func3();
         }
-    }
+    } */
 
-    writeJson() async {
+    /* writeJson() async {
         List<List<Map<String, dynamic>>> temp = [];
         for(var page in strokes) {
             temp.add([]);
@@ -415,7 +412,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
             }
         }
         file.writeAsString(jsonEncode({fileName: temp}));
-    }
+    } */
 
     Future<bool> pls() async {
         bool b = await File('$dir/$fileName.pdf').exists();
@@ -429,8 +426,8 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
         //bool ignore = 
         return WillPopScope(
             onWillPop: () async {
-                  if(_drawerKey.currentState?.mounted ?? true)
-                      Navigator.pop(context);
+                    if(_drawerKey.currentState?.mounted ?? true)
+                        Navigator.pop(context);
                 return false;
             },
             child: Scaffold(
@@ -569,8 +566,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                 return GestureDetector(
                                                     onTap: () {
                                                         pageCon.jumpToPage(page[index]-1);
-                                                        if(!online)
-                                                            canvasCon.jumpToPage(page[index]-1);
                                                         Navigator.pop(context);
                                                     },
                                                     child: Stack(
@@ -822,10 +817,10 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                 (drawing)?GestureDetector(
                                                     onTap: () {
                                                         setState(() {
-                                                            if(strokes.isNotEmpty) {
+                                                            /* if(strokes.isNotEmpty) {
                                                                 strokes[canvasCon.page!.toInt()].removeLast();
                                                                 writeJson();
-                                                            }
+                                                            } */
                                                         });
                                                     },
                                                     child: Container(
@@ -915,8 +910,8 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                 if (online || zoom || !drawing) Container(
                                                 ) else GestureDetector(
                                                     onTap: () {
-                                                        strokes = [];
-                                                        func3();
+                                                        /* strokes = [];
+                                                        func3(); */
                                                     },
                                                     child: Padding(
                                                         padding: EdgeInsets.fromLTRB(
@@ -1058,7 +1053,8 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                         ),
                                     ),
                                 ),
-                                GestureDetector(
+                                
+                                /* GestureDetector(
                                     onPanStart: (details) {
                                         setState(() {
                                             test = true;
@@ -1072,21 +1068,20 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                     },
                                     onPanUpdate: (details) {
                                         setState(() {
-                                            strokes[0]                //List of strokes in the page
+                                            strokes[0]        //List of strokes in the page
                                             [strokes[0].length - 1]   //The current stroke
-                                            ["offsets"]                  //The offsets in the current stroke
+                                            ["offsets"]          //The offsets in the current stroke
                                                     .add(details.globalPosition);
                                         });
                                     },
                                     onPanEnd: (details) {
-                                        PdfDocument document = PdfDocument(inputBytes: File("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf").readAsBytesSync());
+                                        //PdfDocument document = PdfDocument(inputBytes: File("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf").readAsBytesSync());
                                         setState(() {
                                             test = false;
                                             List<Offset> offsets = strokes[0]
                                             [strokes[0].length - 1]
                                             ["offsets"];
-                                            
-/*                                             final PdfLineAnnotation lineAnnotation = PdfLineAnnotation(
+/*                         final PdfLineAnnotation lineAnnotation = PdfLineAnnotation(
                                                 [0, 0, 500, 500], 'Introduction',
                                                 color: PdfColor(255, 0, 0),
                                                 author: 'John Milton',
@@ -1137,9 +1132,9 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                 [0, 1, 3, 129],
                                             );
                                             document.pages[1].graphics.drawPath(
-                                              path,
-                                              pen: PdfPen(PdfColor(165, 0, 0, 50), width: 5),
-                                              );                                              
+                                                path,
+                                                pen: PdfPen(PdfColor(165, 0, 0, 50), width: 5),
+                                                );                          
                                             path.draw(
                                                 page: document.pages[1], 
                                                 bounds: Rect.fromLTRB(400, 400, 800, 800));
@@ -1153,56 +1148,39 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                 Offset(300, 200));
                                                  */
 
-                                            File("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf")
+                                            /* File("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf")
                                                     .writeAsBytes(document.save(), flush: true);
-                                            document.dispose();
+                                            document.dispose(); */
                                         });
-                                        writeJson();
+                                        //writeJson();
 
                                     },
-                                  child: Container(
+                                    child: Container(
                                     height: ScreenUtil().setHeight(100),
-                                      color: Colors.red,
-                                  ),
-                                ),
+                                        color: Colors.red,
+                                    ),
+                                ), */
                                 
-                                (!test)?Container(
-                                    height: 400,
-                                    child: PDF(   
+                                (widget.local)?Expanded(
+                                  child: PDF(   
+                                      enableSwipe: true,
+                                      swipeHorizontal: true,                
+                                      onViewCreated: (PDFViewController pdfViewController) {
+                                          pdfViewController = pdfViewController;
+                                      },
+                                  ).fromPath('$dir/$fileName.pdf'),
+                                ):Expanded(
+                                    child: PDF(
                                         enableSwipe: true,
-                                        swipeHorizontal: true,                                
+                                        swipeHorizontal: true,                
                                         onViewCreated: (PDFViewController pdfViewController) {
                                             pdfViewController = pdfViewController;
                                         },
+                                    ).fromUrl(url),
+                                ),
 
-                                    ).fromPath("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf"),
-                                ):Container(),
-/*                                 (load)?Container(
-                                  height: 400,
-                                  child: adv.PDFViewer(
-                                      document: pdfDocument,
-
-                                  ),
-                                ):Container(), */
-                                /* RawImage(
-                                    image: pageImage?.imageIfAvailable,
-                                    fit: BoxFit.contain,
-                                ), */
-                                
-                                /* PdfDocumentLoader.openData(
-                                    File("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf").readAsBytesSync(),
-                                    pageNumber: 0,
-                                ), */
-                                
-                                /* Container(
-                                    height: ScreenUtil().setHeight(500),
-                                    child: SfPdfViewer.file(
-                                        File("/data/user/0/com.lexliaise.allaw/app_flutter/The Indian Contract Act, 1872.pdf"),
-                                        pageSpacing: strokes[0].length.toDouble(),
-                                    ),
-                                ), */
                                 // (load)?Stack(
-/*                                         children: [
+/*                     								children: [
                                         PDFViewer(
                                             key: _canvasKey,
                                             document: pdfDocument,
@@ -1649,9 +1627,9 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                                                             },
                                                                             onPanUpdate: (details) {
                                                                                 setState(() {
-                                                                                    strokes[page]                //List of strokes in the page
+                                                                                    strokes[page]        //List of strokes in the page
                                                                                     [strokes[page].length - 1]   //The current stroke
-                                                                                    ["offsets"]                  //The offsets in the current stroke
+                                                                                    ["offsets"]          //The offsets in the current stroke
                                                                                             .add(details.localPosition); //Add the offset to the stroke
                                                                                 });
                                                                             },
@@ -1722,7 +1700,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                             ),
                                         ),
                                     ], */
-/*                                 ):Expanded(
+/*                 ):Expanded(
                                     child: Center(
                                         child: (error=="")
                                                 ?CircularProgressIndicator()
@@ -1766,50 +1744,50 @@ class Painter extends CustomPainter {
             ..style = PaintingStyle.stroke;
 
         //canvas.drawLine(Offset(100,100), Offset(200,200), paint);
-          for(int i = 0; i<strokes.length; i++){
-              if (strokes[i]["color"] != null) {
-                  paint.color = Color(strokes[i]["color"]).withOpacity(strokes[i]["opacity"]??1);
-              } else {
-                  paint.color = Colors.black;
-              }
-              if (strokes[i]["width"] != null) {
-                  paint.strokeWidth = strokes[i]["width"].toDouble();
-              } else {
-                  paint.strokeWidth = 2;
-              }
-              if (strokes[i]["color"] == Colors.white.value) {
-                  paint.blendMode = BlendMode.clear;
-                  paint.color = Colors.transparent;
-              }
-              if (strokes[i]["offsets"] != null) {
-                  for (var j = 1; j<strokes[i]["offsets"].length; j++) {
-                      //Path path = new Path();
-                      canvas.drawLine(strokes[i]["offsets"][j-1], strokes[i]["offsets"][j], paint);
-                      //canvas.
-                      //canvas.drawPoints(PointMode.polygon, strokes[i]["offsets"], paint);
-                      //canvas.drawCircle(strokes[i]["offsets"][j-1], strokes[i]["width"].toDouble()/2, paint);
-                      /*canvas.drawOval(
-                          Rect.fromCenter(
-                          center: Offset((strokes[i]["offsets"][j-1].dx + strokes[i]["offsets"][j].dx)/2, (strokes[i]["offsets"][j-1].dy + strokes[i]["offsets"][j].dy)/2),
-                          width: strokes[i]["width"].toDouble(),
-                          height: strokes[i]["width"].toDouble()*1.2,
-                          ),
-                          paint,
-                      );*/
-                      /*path.moveTo(strokes[i]["offsets"][j-1].dx, strokes[i]["offsets"][j-1].dy);
-                      path.lineTo(strokes[i]["offsets"][j].dx, strokes[i]["offsets"][j].dy);
-                      canvas.drawPath(path, paint);*/
-                      /*canvas.drawRect(
-                          Rect.fromCenter(
-                              center: Offset((strokes[i]["offsets"][j-1].dx + strokes[i]["offsets"][j].dx)/2, (strokes[i]["offsets"][j-1].dy + strokes[i]["offsets"][j].dy)/2),
-                              width: strokes[i]["width"].toDouble(),
-                              height: strokes[i]["width"].toDouble()*1.2,
-                          ),
-                          paint,
-                      );*/
-                  }
-              }
-          }
+            for(int i = 0; i<strokes.length; i++){
+                if (strokes[i]["color"] != null) {
+                    paint.color = Color(strokes[i]["color"]).withOpacity(strokes[i]["opacity"]??1);
+                } else {
+                    paint.color = Colors.black;
+                }
+                if (strokes[i]["width"] != null) {
+                    paint.strokeWidth = strokes[i]["width"].toDouble();
+                } else {
+                    paint.strokeWidth = 2;
+                }
+                if (strokes[i]["color"] == Colors.white.value) {
+                    paint.blendMode = BlendMode.clear;
+                    paint.color = Colors.transparent;
+                }
+                if (strokes[i]["offsets"] != null) {
+                    for (var j = 1; j<strokes[i]["offsets"].length; j++) {
+                        //Path path = new Path();
+                        canvas.drawLine(strokes[i]["offsets"][j-1], strokes[i]["offsets"][j], paint);
+                        //canvas.
+                        //canvas.drawPoints(PointMode.polygon, strokes[i]["offsets"], paint);
+                        //canvas.drawCircle(strokes[i]["offsets"][j-1], strokes[i]["width"].toDouble()/2, paint);
+                        /*canvas.drawOval(
+                            Rect.fromCenter(
+                            center: Offset((strokes[i]["offsets"][j-1].dx + strokes[i]["offsets"][j].dx)/2, (strokes[i]["offsets"][j-1].dy + strokes[i]["offsets"][j].dy)/2),
+                            width: strokes[i]["width"].toDouble(),
+                            height: strokes[i]["width"].toDouble()*1.2,
+                            ),
+                            paint,
+                        );*/
+                        /*path.moveTo(strokes[i]["offsets"][j-1].dx, strokes[i]["offsets"][j-1].dy);
+                        path.lineTo(strokes[i]["offsets"][j].dx, strokes[i]["offsets"][j].dy);
+                        canvas.drawPath(path, paint);*/
+                        /*canvas.drawRect(
+                            Rect.fromCenter(
+                                center: Offset((strokes[i]["offsets"][j-1].dx + strokes[i]["offsets"][j].dx)/2, (strokes[i]["offsets"][j-1].dy + strokes[i]["offsets"][j].dy)/2),
+                                width: strokes[i]["width"].toDouble(),
+                                height: strokes[i]["width"].toDouble()*1.2,
+                            ),
+                            paint,
+                        );*/
+                    }
+                }
+            }
 
     }
 
