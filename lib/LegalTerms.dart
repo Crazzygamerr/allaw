@@ -1,10 +1,12 @@
 import 'dart:io';
+
+import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
-import 'package:flutter/material.dart';
+import 'package:excel/excel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:excel/excel.dart';
 
 class LegalTerms extends StatefulWidget {
     @override
@@ -57,10 +59,7 @@ class _LegalTermsState extends State<LegalTerms>{
                 children: [
 
                     Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: Colors.white,
-                        ),
+                        decoration: aBoxDecor50W(),
                         child: TextFormField(
                             controller: textCon,
                             style: TextStyle(
@@ -100,13 +99,7 @@ class _LegalTermsState extends State<LegalTerms>{
                         child: Padding(
                             padding: aPaddingLTRB(10, 10, 10, 10),
                             child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                                    border: Border.all(
-                                        color: Colors.black,
-                                    ),
-                                ),
+                                decoration: aBoxDecor15B(),
                                 child: (!loading)?Scrollbar(
                                     child: ListView.builder(
                                         itemCount: sheet.rows.length,
@@ -116,14 +109,7 @@ class _LegalTermsState extends State<LegalTerms>{
                                             bool b = sheet.rows[index][0].toString().toLowerCase().contains(textCon.text.toLowerCase());
 
                                             return (b)?Container(
-                                                decoration: BoxDecoration(
-                                                    border: Border(
-                                                        top: BorderSide(color: Colors.transparent),
-                                                        bottom: BorderSide(color: Colors.black),
-                                                        left: BorderSide(color: Colors.transparent),
-                                                        right: BorderSide(color: Colors.transparent),
-                                                    ),
-                                                ),
+                                                decoration: aBoxDecorBottom(),
                                               child: ExpansionTile(
                                                   title: Container(
                                                       padding: aPaddingLTRB(20, 20, 10, 20),

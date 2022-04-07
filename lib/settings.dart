@@ -1,5 +1,6 @@
 import 'package:allaw/global/widgets/TextItem.dart';
 import 'package:allaw/provider.dart';
+import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
@@ -16,14 +17,7 @@ class _SettingsState extends State<Settings> {
         return Padding(
             padding: aPaddingLTRB(10, 10, 10, 10),
             child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    border: Border.all(
-                        width: 1,
-                        color: Colors.black,
-                    ),
-                    color: Colors.white,
-                ),
+                decoration: aBoxDecor15B(),
                 child: SingleChildScrollView(
                     child: Column(
                         children: [

@@ -9,6 +9,7 @@ import 'package:allaw/global/widgets/onboarding.dart';
 import 'package:allaw/provider.dart';
 import 'package:allaw/settings.dart';
 import 'package:allaw/Request.dart';
+import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
 
 import 'package:flutter/material.dart';
@@ -107,13 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height: ScreenUtil().setHeight(70),
                                 padding: aPaddingLTRB(0, 10, 0, 10),
                                 child: Container(
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1,
-                                            color: Colors.black,
-                                        ),
-                                        color: Colors.white,
-                                    ),
+                                    decoration: aBoxDecor15B(),
                                     child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -186,13 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             Padding(
                                 padding: aPaddingLTRB(0, 5, 0, 10),
                                 child: Container(
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1,
-                                            color: Colors.black,
-                                        ),
-                                        color: Colors.white,
-                                    ),
+                                    decoration: aBoxDecor15B(),
                                     child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [

@@ -1,4 +1,5 @@
 import 'package:allaw/provider.dart';
+import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,14 +22,7 @@ class _AboutUsState extends State<AboutUs> {
             child: Padding(
                 padding: aPaddingLTRB(10, 10, 10, 10),
                 child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                        border: Border.all(
-                            width: 1,
-                            color: Colors.black,
-                        ),
-                        color: Colors.white,
-                    ),
+                    decoration: aBoxDecor15B(),
                     padding: aPaddingLTRB(20, 0, 20, 20),
                     child: SingleChildScrollView(
                       child: Column(
@@ -41,9 +35,7 @@ class _AboutUsState extends State<AboutUs> {
                               Container(
                                   height: ScreenUtil().setHeight(120),
                                   width: ScreenUtil().setWidth(120),
-                                  decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(20)
-                                  ),
+                                  decoration: aBoxDecorCircle(),
                                   clipBehavior: Clip.hardEdge,
                                   child: Image.asset("assets/Logo.jpg"),
                               ),

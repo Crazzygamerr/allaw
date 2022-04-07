@@ -1,3 +1,4 @@
+import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -19,9 +20,7 @@ class Onboarding extends StatelessWidget {
             Container(
               height: ScreenUtil().setHeight(250),
               width: ScreenUtil().setWidth(250),
-              decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20)
-              ),
+              decoration: aBoxDecorCircle(),
               clipBehavior: Clip.hardEdge,
               child: Image.asset("assets/Logo.jpg"),
             ),

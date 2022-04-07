@@ -1,3 +1,4 @@
+import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -18,13 +19,7 @@ class AHomeIcon extends StatelessWidget {
         onTap: () => onTap(),
         child: Container(
             width: ScreenUtil().setWidth(100),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                    width: 1,
-                    color: Colors.black,
-                ),
-            ),
+            decoration: aBoxDecor15B(),
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

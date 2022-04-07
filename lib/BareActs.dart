@@ -1,5 +1,6 @@
 import 'package:allaw/Viewer/Viewer.dart';
 import 'package:allaw/global/widgets/TextItem.dart';
+import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -57,10 +58,7 @@ class _BareActsState extends State<BareActs>{
                 children: [
 
                     Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: Colors.white,
-                        ),
+                        decoration: aBoxDecor50W(),
                         child: TextFormField(
                             controller: textCon,
                             style: TextStyle(
@@ -100,13 +98,7 @@ class _BareActsState extends State<BareActs>{
                         child: Padding(
                             padding: aPaddingLTRB(10, 10, 10, 10),
                             child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(15),
-                                    border: Border.all(
-                                            color: Colors.black
-                                    ),
-                                ),
+                                decoration: aBoxDecor15B(),
                                 child: (!loading)?ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
                                     child: Scrollbar(

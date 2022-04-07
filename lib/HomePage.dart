@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -51,9 +52,7 @@ class _HomePageState extends State<HomePage> {
                     Container(
                         height: ScreenUtil().setHeight(120),
                         width: ScreenUtil().setWidth(120),
-                        decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20)
-                        ),
+                        decoration: aBoxDecorCircle(),
                         clipBehavior: Clip.hardEdge,
                         child: Image.asset("assets/Logo.jpg"),
                     ),
@@ -188,13 +187,7 @@ class _TwitterFeedState extends State<TwitterFeed> with AutomaticKeepAliveClient
             padding: aPaddingLTRB(5, 0, 5, 0),
             child: Container(
                 padding: aPaddingLTRB(1, 1, 1, 1),
-                decoration: BoxDecoration(
-                    border: Border.all(
-                        width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                    color: Colors.white,
-                ),
+                decoration: aBoxDecor15B(),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: Stack(

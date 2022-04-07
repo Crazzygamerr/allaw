@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:allaw/Viewer/Viewer.dart';
 import 'package:allaw/global/widgets/TextItem.dart';
+import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -46,10 +47,7 @@ class _DownloadsState extends State<Downloads>{
                 children: [
 
                     Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: Colors.white,
-                        ),
+                        decoration: aBoxDecor50W(),
                         child: TextFormField(
                             controller: textCon,
                             style: TextStyle(
@@ -89,13 +87,7 @@ class _DownloadsState extends State<Downloads>{
                         child: Padding(
                             padding: aPaddingLTRB(10, 10, 10, 10),
                             child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                                    border: Border.all(
-                                            color: Colors.black
-                                    ),
-                                ),
+                                decoration: aBoxDecor15B(),
                                 child: (downloads.length != 0)?ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
                                     child: Scrollbar(
