@@ -1,4 +1,6 @@
 import 'package:allaw/Viewer/Viewer.dart';
+import 'package:allaw/global/widgets/TextItem.dart';
+import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -74,7 +76,7 @@ class _BareActsState extends State<BareActs>{
                                     color: Colors.black,
                                     size: 23,
                                 ),
-                                contentPadding: EdgeInsets.all(10),
+                                contentPadding: aPaddingLTRB(10, 10, 10, 10),
                                 focusColor: Colors.white,
                                 hoverColor: Colors.white,
                                 fillColor: Colors.white,
@@ -96,12 +98,7 @@ class _BareActsState extends State<BareActs>{
 
                     Expanded(
                         child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(10),
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(10),
-                            ),
+                            padding: aPaddingLTRB(10, 10, 10, 10),
                             child: Container(
                                 decoration: BoxDecoration(
                                     color: Colors.white,
@@ -120,7 +117,8 @@ class _BareActsState extends State<BareActs>{
 
                                                 bool b = bareActs[index].toLowerCase().contains(textCon.text.toLowerCase());
 
-                                                return (b)?GestureDetector(
+                                                return (b)?TextItem(
+                                                  text: bareActs[index],
                                                     onTap: () {
                                                         Navigator.push(
                                                             context,
@@ -133,26 +131,7 @@ class _BareActsState extends State<BareActs>{
                                                         ).then((value) {
                                                             getDocs();
                                                         });
-                                                    },
-                                                    child: Container(
-                                                        padding: EdgeInsets.fromLTRB(
-                                                            ScreenUtil().setWidth(20),
-                                                            ScreenUtil().setHeight(20),
-                                                            ScreenUtil().setWidth(10),
-                                                            ScreenUtil().setHeight(20),
-                                                        ),
-                                                        decoration: BoxDecoration(
-                                                            border: Border(
-                                                                top: BorderSide(color: Colors.transparent),
-                                                                bottom: BorderSide(color: Colors.black),
-                                                                left: BorderSide(color: Colors.transparent),
-                                                                right: BorderSide(color: Colors.transparent),
-                                                            ),
-                                                        ),
-                                                        child: Text(
-                                                            bareActs[index],
-                                                        ),
-                                                    ),
+                                                    }, 
                                                 ):Container();
                                             },
                                         ),

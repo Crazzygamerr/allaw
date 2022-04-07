@@ -25,7 +25,7 @@ class AIconButton extends StatelessWidget {
                   color: Colors.black,
               ),
           ),
-          padding: aPaddingAll(8),
+          padding: aPaddingLTRB(8, 8, 8, 8),
           child: Image.asset(
               assetName,
           ),

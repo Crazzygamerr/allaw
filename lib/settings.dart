@@ -1,4 +1,4 @@
-import 'package:allaw/global/widgets/SettingsItem.dart';
+import 'package:allaw/global/widgets/TextItem.dart';
 import 'package:allaw/provider.dart';
 import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ class _SettingsState extends State<Settings> {
     @override
     Widget build(BuildContext context) {
         return Padding(
-            padding: aPaddingAll(10),
+            padding: aPaddingLTRB(10, 10, 10, 10),
             child: Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -28,35 +28,35 @@ class _SettingsState extends State<Settings> {
                     child: Column(
                         children: [
 
-                            SettingsItem(
+                            TextItem(
                               text: "About Us",
                               onTap: (){
                                   PageConProvider.of(context)?.pageCon.jumpToPage(5);
                               },
                             ),
 
-                            SettingsItem(
+                            TextItem(
                               text: "How to use?",
                               onTap: (){
 
                               },
                             ),
 
-                            SettingsItem(
+                            TextItem(
                               text: "Request Material",
                               onTap: (){
                                   PageConProvider.of(context)?.pageCon.jumpToPage(6);
                               },
                             ),
 
-                            SettingsItem(
+                            TextItem(
                               text: "Rate us",
                               onTap: (){
                                   AppReview.requestReview;
                               },
                             ),
 
-                            SettingsItem(
+                            TextItem(
                               text: "Share the app",
                               onTap: (){
                                   Share.share("ALLAW by LexLiaise - Your Ally For Law\n"

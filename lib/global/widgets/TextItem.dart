@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:allaw/utils/APadding.dart';
 
-class SettingsItem extends StatelessWidget {
+class TextItem extends StatelessWidget {
   final Function onTap;
   final String text;
-  const SettingsItem({ 
+  const TextItem({ 
     Key? key,
     required this.onTap,
     required this.text,

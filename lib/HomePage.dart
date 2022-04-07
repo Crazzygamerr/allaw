@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                         return Padding(
                             padding: aPaddingLTRB(10, 5, 10, 5),
                             child: Container(
-                                padding: aPaddingAll(1),
+                                padding: aPaddingLTRB(1, 1, 1, 1),
                                 height: ScreenUtil().setHeight(55),
                                 width: double.infinity,
                                 decoration: BoxDecoration(
@@ -187,7 +187,7 @@ class _TwitterFeedState extends State<TwitterFeed> with AutomaticKeepAliveClient
         return Padding(
             padding: aPaddingLTRB(5, 0, 5, 0),
             child: Container(
-                padding: aPaddingAll(1),
+                padding: aPaddingLTRB(1, 1, 1, 1),
                 decoration: BoxDecoration(
                     border: Border.all(
                         width: 1,

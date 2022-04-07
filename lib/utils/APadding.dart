@@ -9,8 +9,3 @@ EdgeInsets aPaddingLTRB(double left, double top, double right, double bottom) {
     ScreenUtil().setHeight(bottom),
   );
 }
-
-
-EdgeInsets aPaddingAll(double value) {
-  return EdgeInsets.all(ScreenUtil().setWidth(value));
-}

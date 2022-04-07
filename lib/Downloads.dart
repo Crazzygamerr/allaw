@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:allaw/Viewer/Viewer.dart';
+import 'package:allaw/global/widgets/TextItem.dart';
+import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
@@ -85,12 +87,7 @@ class _DownloadsState extends State<Downloads>{
 
                     Expanded(
                         child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(10),
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(10),
-                            ),
+                            padding: aPaddingLTRB(10, 10, 10, 10),
                             child: Container(
                                 decoration: BoxDecoration(
                                     color: Colors.white,
@@ -109,45 +106,27 @@ class _DownloadsState extends State<Downloads>{
 
                                                 bool b = downloads[index].toLowerCase().contains(textCon.text.toLowerCase());
 
-                                                return (b)?GestureDetector(
-                                                    onTap: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            new MaterialPageRoute(
-                                                                builder: (context) => Viewer(
-                                                                    fileName: downloads[index],
-                                                                ),
-                                                            ),
-                                                        ).then((value) {
-                                                            getDocs();
-                                                        });
-                                                    },
-                                                    child: Container(
-                                                        padding: EdgeInsets.fromLTRB(
-                                                            ScreenUtil().setWidth(20),
-                                                            ScreenUtil().setHeight(20),
-                                                            ScreenUtil().setWidth(10),
-                                                            ScreenUtil().setHeight(20),
-                                                        ),
-                                                        decoration: BoxDecoration(
-                                                            border: Border(
-                                                                top: BorderSide(color: Colors.transparent),
-                                                                bottom: BorderSide(color: Colors.black),
-                                                                left: BorderSide(color: Colors.transparent),
-                                                                right: BorderSide(color: Colors.transparent),
-                                                            ),
-                                                        ),
-                                                        child: Text(
-                                                            downloads[index],
-                                                        ),
-                                                    ),
+                                                return (b)?TextItem(
+                                                  text: downloads[index],
+                                                  onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          new MaterialPageRoute(
+                                                              builder: (context) => Viewer(
+                                                                  fileName: downloads[index],
+                                                              ),
+                                                          ),
+                                                      ).then((value) {
+                                                          getDocs();
+                                                      });
+                                                  },
                                                 ):Container();
                                             },
                                         ),
                                     ),
                                 ) : Center(
                                     child: Text(
-                                            "No downloads!"
+                                      "No downloads!",
                                     ),
                                 ),
                             ),

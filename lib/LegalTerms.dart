@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -97,12 +98,7 @@ class _LegalTermsState extends State<LegalTerms>{
 
                     Expanded(
                         child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(10),
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(10),
-                            ),
+                            padding: aPaddingLTRB(10, 10, 10, 10),
                             child: Container(
                                 decoration: BoxDecoration(
                                     color: Colors.white,
@@ -130,24 +126,14 @@ class _LegalTermsState extends State<LegalTerms>{
                                                 ),
                                               child: ExpansionTile(
                                                   title: Container(
-                                                      padding: EdgeInsets.fromLTRB(
-                                                          ScreenUtil().setWidth(20),
-                                                          ScreenUtil().setHeight(20),
-                                                          ScreenUtil().setWidth(10),
-                                                          ScreenUtil().setHeight(20),
-                                                      ),
+                                                      padding: aPaddingLTRB(20, 20, 10, 20),
                                                       child: Text(
                                                           sheet.rows[index][0]?.value,
                                                       ),
                                                   ),
                                                   children: [
                                                       Container(
-                                                          padding: EdgeInsets.fromLTRB(
-                                                              ScreenUtil().setWidth(10),
-                                                              ScreenUtil().setHeight(0),
-                                                              ScreenUtil().setWidth(10),
-                                                              ScreenUtil().setHeight(10),
-                                                          ),
+                                                          padding: aPaddingLTRB(10, 0, 10, 10),
                                                           child: Text(
                                                               sheet.rows[index][1]?.value,
                                                           ),
