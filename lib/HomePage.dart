@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
@@ -58,12 +59,7 @@ class _HomePageState extends State<HomePage> {
                     ),
 
                     Container(
-                        padding: EdgeInsets.fromLTRB(
-                            0,
-                            ScreenUtil().setHeight(5),
-                            0,
-                            ScreenUtil().setHeight(5),
-                        ),
+                        padding: aPaddingLTRB(0, 5, 0, 5),
                         child: Text(
                             "by LexLiase",
                             textAlign: TextAlign.center,
@@ -87,25 +83,10 @@ class _HomePageState extends State<HomePage> {
 
                     Expanded(
                         child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(10),
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(5),
-                            ),
+                            padding: aPaddingLTRB(10, 10, 10, 5),
                             child: Container(
-                                //height: ScreenUtil().setHeight(300),
-                                /*decoration: BoxDecoration(
-                            border: Border.all(
-                                    width: 1,
-                                    color: Colors.black
-                            ),
-                            color: Colors.white,
-                        ),*/
                                 child: PageView(
                                     controller: pageController,
-                                    //physics: NeverScrollableScrollPhysics(),
-                                    //pageSnapping: false,
                                     children: [
 
                                         TwitterFeed(0),
@@ -125,19 +106,9 @@ class _HomePageState extends State<HomePage> {
                       future: quoteFuture,
                       builder: (context, snapshot) {
                         return Padding(
-                            padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(5),
-                                ScreenUtil().setWidth(10),
-                                ScreenUtil().setHeight(5),
-                            ),
+                            padding: aPaddingLTRB(10, 5, 10, 5),
                             child: Container(
-                                padding: EdgeInsets.fromLTRB(
-                                    ScreenUtil().setWidth(1),
-                                    ScreenUtil().setHeight(1),
-                                    ScreenUtil().setWidth(1),
-                                    ScreenUtil().setHeight(1),
-                                ),
+                                padding: aPaddingAll(1),
                                 height: ScreenUtil().setHeight(55),
                                 width: double.infinity,
                                 decoration: BoxDecoration(
@@ -214,19 +185,9 @@ class _TwitterFeedState extends State<TwitterFeed> with AutomaticKeepAliveClient
     Widget build(BuildContext context) {
         super.build(context);
         return Padding(
-            padding: EdgeInsets.fromLTRB(
-                ScreenUtil().setWidth(5),
-                0,
-                ScreenUtil().setWidth(5),
-                0,
-            ),
+            padding: aPaddingLTRB(5, 0, 5, 0),
             child: Container(
-                padding: EdgeInsets.fromLTRB(
-                    ScreenUtil().setWidth(1),
-                    ScreenUtil().setHeight(1),
-                    ScreenUtil().setWidth(1),
-                    ScreenUtil().setHeight(1),
-                ),
+                padding: aPaddingAll(1),
                 decoration: BoxDecoration(
                     border: Border.all(
                         width: 1,

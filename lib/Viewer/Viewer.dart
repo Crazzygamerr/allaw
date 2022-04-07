@@ -24,9 +24,7 @@ class Viewer extends StatefulWidget {
 
 class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 
-  // late PDFDocument pdfDocument;
   PageController pageCon = new PageController(keepPage: true);
-  //PageController canvasCon = new PageController();
   final Completer<PDFViewController> pdfViewController = Completer<PDFViewController>();
   int currentPage = 0, totalPage = 0;
   
@@ -43,13 +41,11 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
       fileName = "",
       imgPath = "", s = "";
 
-  double headingH = 0, subH = 0,
-      canvasH = 0, canvasW = 0;
+  double headingH = 0, subH = 0;
 
   late Reference pdfRef, xlsxRef;
 
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
-  GlobalKey _canvasKey = GlobalKey();
 
   List<String> heading = [];
   List<String> section = [];
@@ -88,12 +84,11 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 
   initState() {
     super.initState();
-    //canvasCon.addListener(() => func2());
     initPdf();
-    func();
+    showLoading();
   }
 
-  func() async {
+  showLoading() async {
     WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((timeStamp) {
       showDialog(
         context: context,
@@ -118,50 +113,8 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
         ),
         barrierDismissible: false,
       );
-      func1();
     });
   }
-
-  func1() {
-    if(_canvasKey.currentContext == null) {
-      Future.delayed(Duration(seconds: 1)).then((value) => func1());
-    } else {
-      Size? x = _canvasKey.currentContext?.size;
-      if(x == null)
-        return;
-      if((x.height - ScreenUtil().setHeight(50))/x.width > 297/210) {
-        setState(() {
-          canvasW = x.width;
-          canvasH = (297/210)*(x.width);
-        });
-      } else if((x.height - ScreenUtil().setHeight(50))/x.width < 297/210) {
-        setState(() {
-          canvasH = (x.height - ScreenUtil().setHeight(50));
-          canvasW = (210/297)*canvasH;
-        });
-      } else {
-        setState(() {
-          canvasH = x.height - ScreenUtil().setHeight(50);
-          canvasW = x.width;
-        });
-      }
-      _drawerKey.currentState?.openDrawer();
-    }
-  }
-
-  /* func2() {
-    if(swipeChangePage)
-      pageCon.jumpTo(canvasCon.offset);
-  } */
-
-  /* func3() {
-    // for(int i = 0;i<pdfDocument.count;i++){
-    //   strokes.add([]);
-    // }
-    writeJson();
-    setState(() {
-    });
-  } */
 
   initPdf() async {
     dir = (await getApplicationDocumentsDirectory()).path;
@@ -240,9 +193,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
   Future<void> getFileFromCloud() async {
     FirebaseStorage storage = FirebaseStorage.instance;
     url = await storage.ref(pdfRef.fullPath).getDownloadURL();
-    //adv.PDFDocument doc = await adv.PDFDocument.fromURL(url);
     setState(() {
-      //pdfDocument = doc;
       load = true;
       online = true;
     });
@@ -256,14 +207,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
     var excel = Excel.decodeBytes(bytes);
     Sheet? sheet = excel.tables[excel.tables.keys.toList()[0]];
     readXlsx(sheet!);
-    //readJson();
-
-    /* var temp = await adv.PDFDocument.fromFile(File(dir + '/' + fileName + ".pdf"));
-    for(int i=0;i<temp.count;i++){
-      strokes.add([]);
-    } */
     setState(() {
-      //pdfDocument = temp;
       load = true;
       online = false;
     }); 
@@ -276,9 +220,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
     await storage.ref(xlsxRef.fullPath).writeToFile(downloadToFile);
     List<int> bytes = downloadToFile.readAsBytesSync();
     var excel = Excel.decodeBytes(bytes);
-    //print(excel.tables.keys.toList());
     Sheet? sheet = excel.tables[excel.tables.keys.toList()[0]];
-    //print(sheet.rows);
     readXlsx(sheet!);
   }
 
@@ -305,7 +247,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
       var tp = TextPainter(
         textAlign: TextAlign.left,
         textDirection: TextDirection.ltr,
-        //maxLines: null,
         text: TextSpan(
           style: TextStyle(
             fontSize: ScreenUtil().setSp((d)?12:15),
@@ -353,77 +294,8 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
     Navigator.pop(context);
   }
 
-  /* readJson() async {
-    if(await File("$dir/annotations.json").exists()) {
-      file = new File("$dir/annotations.json");
-      Map<String, dynamic> map = jsonDecode(await file.readAsString());
-      if(map[fileName] != null) {
-        var temp = jsonDecode(file.readAsStringSync());
-        if(temp[fileName] != null){
-          for(var page1 in temp[fileName]) {
-            strokes.add([]);
-            for(var stroke in page1) {
-              Map<String, dynamic> tempStroke = {
-                "color": stroke["color"],
-                "width": stroke["width"],
-                "opacity": stroke["opacity"],
-              };
-              List<Offset> coord = [];
-              for(var offset in stroke["offsets"]) {
-                coord.add(Offset(offset[0], offset[1]));
-              }
-              tempStroke["offsets"] = coord;
-              strokes[temp[fileName].indexOf(page1)].add(tempStroke);
-            }
-          }
-        }
-      } else {
-        func3();
-      }
-    } else {
-      file = await File("$dir/annotations.json").create();
-      file.writeAsString(
-        jsonEncode(
-          {
-            "$fileName": [],
-          },
-        ),
-      );
-      func3();
-    }
-  } */
-
-  /* writeJson() async {
-    List<List<Map<String, dynamic>>> temp = [];
-    for(var page in strokes) {
-      temp.add([]);
-      for(var stroke in page) {
-        var tempStroke = {
-          "color": stroke["color"],
-          "width": stroke["width"],
-          "opacity": stroke["opacity"],
-        };
-        List<List<double>> coord = [];
-        for(var offset in stroke["offsets"]) {
-          coord.add([offset.dx, offset.dy]);
-        }
-        tempStroke["offsets"] = coord;
-        temp[strokes.indexOf(page)].add(tempStroke);
-      }
-    }
-    file.writeAsString(jsonEncode({fileName: temp}));
-  } */
-
-  Future<bool> pls() async {
-    bool b = await File('$dir/$fileName.pdf').exists();
-    setState(() {
-    });
-    return b;
-  }
-
   @override
   Widget build(BuildContext context) {
-    //bool ignore = 
     return WillPopScope(
       onWillPop: () async {
           if(_drawerKey.currentState?.mounted ?? true)
@@ -475,13 +347,10 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                     color: Colors.grey,
                   ),
                   child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.s,
-                    //crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
 
                       Expanded(
                         child: Container(
-                          //width: ScreenUtil().setWidth(150),
                           alignment: Alignment.center,
                           child: Text(
                             "Title",
@@ -508,7 +377,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                         child: Container(
                           width: ScreenUtil().setWidth(59),
                           alignment: Alignment.center,
-                          //color: Colors.blue,
                           child: Text(
                             "Section No.",
                             textAlign: TextAlign.center,
@@ -605,8 +473,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                   ),
                                 ),
                                 child: Row(
-                                  //mainAxisAlignment: MainAxisAlignment.s,
-                                  //crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
 
                                     (sub[index]) ? Container(
@@ -622,7 +488,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                             :260,
                                       ),
                                       alignment: Alignment.centerLeft,
-                                      //color: Colors.red,
                                       padding: EdgeInsets.fromLTRB(
                                         ScreenUtil().setWidth(10),
                                         ScreenUtil().setHeight(5),
@@ -651,7 +516,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                       child: Container(
                                         height: ScreenUtil().setHeight((sub[index])?subH:headingH),
                                         width: ScreenUtil().setWidth(50),
-                                        //color: Colors.blue,
                                         padding: EdgeInsets.fromLTRB(
                                           ScreenUtil().setWidth(10),
                                           ScreenUtil().setHeight(10),
@@ -665,7 +529,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                                     ) : Container(),
 
                                     Container(
-                                      //height: ScreenUtil().setHeight(22),
                                       width: ScreenUtil().setWidth(63),
                                       alignment: Alignment.center,
                                       //color: (sub[index] && minimized[index])?Colors.green:Colors.white,
@@ -847,16 +710,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                           ),
                         ):Container(),
 
-                        /*GestureDetector(
-                          onTap: (){
-                            pls().then((value) {
-                              setState(() {
-                                online = !value;
-                              });
-                            });
-                          },
-                          child: Text(online.toString()),
-                        ),*/
                         if(drawing) Container(
                         ) else SizedBox(
                           width: ScreenUtil().setWidth((online)?150:90),
@@ -900,10 +753,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                             ),
                           ),
                         ),
-
-                        /*if(drawing) SizedBox(
-                          width: ScreenUtil().setWidth(55),
-                        ),*/
 
                         if (online || !drawing) Container(
                         ) else GestureDetector(

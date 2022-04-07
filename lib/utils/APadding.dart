@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-EdgeInsets aPaddingLRTB(double left, double top, double right, double bottom) {
+EdgeInsets aPaddingLTRB(double left, double top, double right, double bottom) {
   return EdgeInsets.fromLTRB(
     ScreenUtil().setWidth(left),
     ScreenUtil().setHeight(top),

@@ -19,7 +19,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:allaw/BareActs.dart';
 import 'package:allaw/Downloads.dart';
 import 'package:allaw/LegalTerms.dart';
-import 'package:path_provider/path_provider.dart';
 
 void main() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -106,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                             Container(
                                 height: ScreenUtil().setHeight(70),
-                                padding: aPaddingLRTB(0, 10, 0, 10),
+                                padding: aPaddingLTRB(0, 10, 0, 10),
                                 child: Container(
                                     decoration: BoxDecoration(
                                         border: Border.all(
@@ -185,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
 
                             Padding(
-                                padding: aPaddingLRTB(0, 5, 0, 10),
+                                padding: aPaddingLTRB(0, 5, 0, 10),
                                 child: Container(
                                     decoration: BoxDecoration(
                                         border: Border.all(
