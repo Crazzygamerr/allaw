@@ -3,10 +3,13 @@ import 'dart:io';
 
 import 'package:allaw/AboutUs.dart';
 import 'package:allaw/HomePage.dart';
+import 'package:allaw/global/widgets/AHomeIcon.dart';
+import 'package:allaw/global/widgets/AIconButton.dart';
 import 'package:allaw/global/widgets/onboarding.dart';
 import 'package:allaw/provider.dart';
 import 'package:allaw/settings.dart';
 import 'package:allaw/Request.dart';
+import 'package:allaw/utils/APadding.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,7 +41,6 @@ class MyApp extends StatelessWidget {
         );
     }
 }
-// PDF Viewer icon
 class MyHomePage extends StatefulWidget {
 
     @override
@@ -50,8 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
     PageController pageCon = new PageController();
     List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms", "About Us", "Request Material"];
     int index = 0;
-    List<Offset> offsets = [];
     bool onboarding = true;
+    
     @override
     void initState() {
         super.initState();
@@ -104,12 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                             Container(
                                 height: ScreenUtil().setHeight(70),
-                                padding: EdgeInsets.fromLTRB(
-                                    0,
-                                    ScreenUtil().setHeight(10),
-                                    0,
-                                    ScreenUtil().setHeight(10),
-                                ),
+                                padding: aPaddingLRTB(0, 10, 0, 10),
                                 child: Container(
                                     decoration: BoxDecoration(
                                         border: Border.all(
@@ -122,35 +119,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
 
-                                            GestureDetector(
-                                                onTap: () {
-                                                    FocusScope.of(context).unfocus();
-                                                    pageCon.jumpToPage(0);
-                                                },
-                                                child: Container(
-                                                    width: ScreenUtil().setWidth(50),
-                                                    height: ScreenUtil().setHeight(50),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(15),
-                                                        border: Border.all(
-                                                            width: 1,
-                                                            color: Colors.black,
-                                                        ),
-                                                    ),
-                                                    padding: EdgeInsets.fromLTRB(
-                                                        ScreenUtil().setWidth(8),
-                                                        ScreenUtil().setHeight(8),
-                                                        ScreenUtil().setWidth(8),
-                                                        ScreenUtil().setHeight(8),
-                                                    ),
-                                                    child: Image.asset(
-                                                        "assets/home.png",
-                                                    ),
-                                                ),
+                                            AIconButton(
+                                              assetName: "assets/home.png", 
+                                              onTap: () {
+                                                FocusScope.of(context).unfocus();
+                                                pageCon.jumpToPage(0);
+                                              },
                                             ),
 
                                             Container(
-                                                //color: Colors.blue,
                                                 width: ScreenUtil().setWidth(290),  //275 before---------------------
                                                 child: Text(
                                                     s[index],
@@ -162,33 +139,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 ),
                                             ),
 
-                                            GestureDetector(
-                                                onTap: () {
-                                                    FocusScope.of(context).unfocus();
-                                                    pageCon.jumpToPage(1);
-                                                },
-                                                child: Container(
-                                                    width: ScreenUtil().setWidth(50),
-                                                    height: ScreenUtil().setHeight(50),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(15),
-                                                        border: Border.all(
-                                                            width: 1,
-                                                            color: Colors.black,
-                                                        ),
-                                                    ),
-                                                    padding: EdgeInsets.fromLTRB(
-                                                        ScreenUtil().setWidth(8),
-                                                        ScreenUtil().setHeight(8),
-                                                        ScreenUtil().setWidth(8),
-                                                        ScreenUtil().setHeight(8),
-                                                    ),
-                                                    child: Image.asset(
-                                                        "assets/settings.png",
-                                                    ),
-                                                ),
+                                            AIconButton(
+                                              assetName: "assets/settings.png", 
+                                              onTap: () {
+                                                FocusScope.of(context).unfocus();
+                                                pageCon.jumpToPage(1);
+                                              },
                                             ),
-
                                         ],
                                     ),
                                 ),
@@ -228,12 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
 
                             Padding(
-                                padding: EdgeInsets.fromLTRB(
-                                    0,
-                                    ScreenUtil().setHeight(5),
-                                    0,
-                                    ScreenUtil().setHeight(10),
-                                ),
+                                padding: aPaddingLRTB(0, 5, 0, 10),
                                 child: Container(
                                     decoration: BoxDecoration(
                                         border: Border.all(
@@ -246,164 +198,39 @@ class _MyHomePageState extends State<MyHomePage> {
                                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
 
-                                            GestureDetector(
-                                                onTap: () {
-                                                    FocusScope.of(context).unfocus();
-                                                    pageCon.jumpToPage(2);
-                                                },
-                                                child: Container(
-                                                    width: ScreenUtil().setWidth(100),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(15),
-                                                        border: Border.all(
-                                                            width: 1,
-                                                            color: Colors.black,
-                                                        ),
-                                                    ),
-                                                    child: Column(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        children: [
-                                                            Image.asset(
-                                                                "assets/library_books.png",
-                                                                width: ScreenUtil().setWidth(20),
-                                                                height: ScreenUtil().setHeight(20),
-                                                            ),
-                                                            Text(
-                                                                "Bare Acts",
-                                                                style: TextStyle(
-                                                                        fontSize: ScreenUtil().setSp(14)
-                                                                ),
-                                                            ),
-                                                        ],
-                                                    ),
-                                                ),
+                                            AHomeIcon(
+                                              assetName: "assets/library_books.png", 
+                                              text: "Bare Acts",
+                                              onTap: () {
+                                                FocusScope.of(context).unfocus();
+                                                pageCon.jumpToPage(2);
+                                              },
                                             ),
-                                            GestureDetector(
-                                                onTap: () {
+                                            
+                                            AHomeIcon(
+                                              assetName: "assets/article.png",
+                                              text: "Legal Notes",
+                                              onTap: () {
 
-                                                },
-                                                child: Stack(
-                                                    alignment: Alignment.center,
-                                                    children: [
-                                                        Container(
-                                                            width: ScreenUtil().setWidth(100),
-                                                            //height: ScreenUtil().setHeight(75),
-                                                            decoration: BoxDecoration(
-                                                                borderRadius: BorderRadius.circular(15),
-                                                                border: Border.all(
-                                                                    width: 1,
-                                                                    color: Colors.black,
-                                                                ),
-                                                                //color: Colors.grey,
-                                                            ),
-                                                            child: Column(
-                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                children: [
-                                                                    Image.asset(
-                                                                        "assets/article.png",
-                                                                        width: ScreenUtil().setWidth(20),
-                                                                        height: ScreenUtil().setHeight(20),
-                                                                    ),
-                                                                    Text(
-                                                                        "Legal Notes",
-                                                                        style: TextStyle(
-                                                                            fontSize: ScreenUtil().setSp(14)
-                                                                        ),
-                                                                    ),
-                                                                ],
-                                                            ),
-                                                        ),
-                                                        Transform.rotate(
-                                                            angle: -3.14*1/10,
-                                                            child: Opacity(
-                                                                opacity: 1,
-                                                                child: Container(
-                                                                    width: ScreenUtil().setWidth(98),
-                                                                    decoration: BoxDecoration(
-                                                                        color: Colors.grey,
-                                                                        borderRadius: BorderRadius.only(
-                                                                            topRight: Radius.circular(11),
-                                                                            //bottomRight: Radius.circular(5),
-                                                                            bottomLeft: Radius.circular(11),
-                                                                        ),
-                                                                    ),
-                                                                    alignment: Alignment.center,
-                                                                    child: Text(
-                                                                        "Coming soon",
-                                                                        style: TextStyle(
-                                                                            //color: Colors.white
-                                                                            fontSize: ScreenUtil().setSp(10),
-                                                                        ),
-                                                                    ),
-                                                                ),
-                                                            ),
-                                                        ),
-                                                    ],
-                                                ),
+                                              },
                                             ),
-                                            GestureDetector(
-                                                onTap: () {
-                                                    FocusScope.of(context).unfocus();
-                                                    pageCon.jumpToPage(4);
-                                                },
-                                                child: Container(
-                                                    width: ScreenUtil().setWidth(100),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(15),
-                                                        border: Border.all(
-                                                            width: 1,
-                                                            color: Colors.black,
-                                                        ),
-                                                    ),
-                                                    child: Column(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        children: [
-                                                            Image.asset(
-                                                                "assets/font_download.png",
-                                                                width: ScreenUtil().setWidth(20),
-                                                                height: ScreenUtil().setHeight(20),
-                                                            ),
-                                                            Text(
-                                                                "Legal Terms",
-                                                                style: TextStyle(
-                                                                        fontSize: ScreenUtil().setSp(14)
-                                                                ),
-                                                            ),
-                                                        ],
-                                                    ),
-                                                ),
+                                            
+                                            AHomeIcon(
+                                              assetName: "assets/font_download.png",
+                                              text: "Legal Terms",
+                                              onTap: () {
+                                                  FocusScope.of(context).unfocus();
+                                                  pageCon.jumpToPage(4);
+                                              },
                                             ),
-                                            GestureDetector(
-                                                onTap: () {
-                                                    FocusScope.of(context).unfocus();
-                                                    pageCon.jumpToPage(3);
-                                                },
-                                                child: Container(
-                                                    width: ScreenUtil().setWidth(100),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(15),
-                                                        border: Border.all(
-                                                            width: 1,
-                                                            color: Colors.black,
-                                                        ),
-                                                    ),
-                                                    child: Column(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        children: [
-                                                            Image.asset(
-                                                                "assets/archive.png",
-                                                                width: ScreenUtil().setWidth(20),
-                                                                height: ScreenUtil().setHeight(20),
-                                                            ),
-                                                            Text(
-                                                                "Downloads",
-                                                                style: TextStyle(
-                                                                        fontSize: ScreenUtil().setSp(14)
-                                                                ),
-                                                            ),
-                                                        ],
-                                                    ),
-                                                ),
+                                            
+                                            AHomeIcon(
+                                              assetName: "assets/archive.png",
+                                              text: "Downloads",
+                                              onTap: () {
+                                                  FocusScope.of(context).unfocus();
+                                                  pageCon.jumpToPage(3);
+                                              },
                                             ),
 
                                         ],
@@ -422,42 +249,4 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
         );
     }
-
-    test() async {
-        String dir = (await getApplicationDocumentsDirectory()).path;
-        File file = new File("$dir/test.json");
-        Map<String, dynamic> json = {};
-        json['one more'] = [1, 2, 3, 4, 5];
-        file.writeAsString(jsonEncode(json));
-        var x = await file.readAsString();
-        print(x);
-    }
-
-}
-
-class TestPaint extends CustomPainter {
-    final offsets;
-
-    TestPaint({this.offsets}) : super();
-
-
-    @override
-    void paint(Canvas canvas, Size size) {
-        final paint = Paint()
-            ..color = Colors.black
-            ..isAntiAlias = true
-            ..strokeWidth = 2;
-
-        if(offsets != null){
-            for(int i=1; i<offsets.length; i++){
-                if(offsets[i] == null || offsets[i-1] == null)
-                    continue;
-                canvas.drawLine(offsets[i-1], offsets[i], paint);
-            }
-        }
-
-    }
-
-    @override
-    bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
