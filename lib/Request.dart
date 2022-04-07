@@ -1,9 +1,10 @@
 import 'dart:convert';
 
+import 'package:allaw/provider.dart';
+import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
-import 'package:allaw/provider.dart';
 
 class Request extends StatefulWidget {
     @override
@@ -32,12 +33,7 @@ class _RequestState extends State<Request> {
                 return false;
             },
             child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                    ScreenUtil().setWidth(10),
-                    ScreenUtil().setHeight(10),
-                    ScreenUtil().setWidth(10),
-                    ScreenUtil().setHeight(10),
-                ),
+                padding: aPaddingLTRB(10, 10, 10, 10),
                 child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -47,12 +43,7 @@ class _RequestState extends State<Request> {
                         ),
                         color: Colors.white,
                     ),
-                    padding: EdgeInsets.fromLTRB(
-                        ScreenUtil().setWidth(10),
-                        ScreenUtil().setHeight(20),
-                        ScreenUtil().setWidth(10),
-                        ScreenUtil().setHeight(10),
-                    ),
+                    padding: aPaddingLTRB(10, 20, 10, 10),
                     child: SingleChildScrollView(
                         child: Column(
                             children: [
@@ -82,28 +73,12 @@ class _RequestState extends State<Request> {
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
                                                         Padding(
-                                                            padding: EdgeInsets.fromLTRB(
-                                                                ScreenUtil().setWidth(10),
-                                                                ScreenUtil().setHeight(0),
-                                                                ScreenUtil().setWidth(0),
-                                                                ScreenUtil().setHeight(0),
-                                                            ),
-                                                            child: Row(
-                                                                children: [
-                                                                    Text(
-                                                                        "Name of Act/Legal Term",
-                                                                        style: TextStyle(
-                                                                            fontSize: ScreenUtil().setSp(14),
-                                                                        ),
-                                                                    ),
-                                                                    Text(
-                                                                        "*",
-                                                                        style: TextStyle(
-                                                                            fontSize: ScreenUtil().setSp(14),
-                                                                            color: Colors.red,
-                                                                        ),
-                                                                    ),
-                                                                ],
+                                                            padding: aPaddingLTRB(10, 0, 0, 0),
+                                                            child: Text(
+                                                                "Name of Act/Legal Term*",
+                                                                style: TextStyle(
+                                                                    fontSize: ScreenUtil().setSp(14),
+                                                                ),
                                                             ),
                                                         ),
                                                         Form(
@@ -134,12 +109,7 @@ class _RequestState extends State<Request> {
                                                                 decoration: InputDecoration(border: OutlineInputBorder(
                                                                     borderRadius: BorderRadius.circular(10),
                                                                 ),
-                                                                    contentPadding: EdgeInsets.fromLTRB(
-                                                                            ScreenUtil().setWidth(10),
-                                                                            ScreenUtil().setHeight(10),
-                                                                            ScreenUtil().setWidth(10),
-                                                                            ScreenUtil().setHeight(10)
-                                                                    ),
+                                                                    contentPadding: aPaddingLTRB(10, 10, 10, 10),
                                                                     hintText: "Enter the name of the Act/Legal Term",
                                                                 ),
                                                             ),
@@ -158,12 +128,7 @@ class _RequestState extends State<Request> {
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
                                                         Padding(
-                                                            padding: EdgeInsets.fromLTRB(
-                                                                ScreenUtil().setWidth(10),
-                                                                ScreenUtil().setHeight(0),
-                                                                ScreenUtil().setWidth(0),
-                                                                ScreenUtil().setHeight(0),
-                                                            ),
+                                                            padding: aPaddingLTRB(10, 0, 0, 0),
                                                             child: Text(
                                                                 "Year",
                                                                 style: TextStyle(
@@ -193,12 +158,7 @@ class _RequestState extends State<Request> {
                                                                 decoration: InputDecoration(border: OutlineInputBorder(
                                                                     borderRadius: BorderRadius.circular(10),
                                                                 ),
-                                                                    contentPadding: EdgeInsets.fromLTRB(
-                                                                            ScreenUtil().setWidth(10),
-                                                                            ScreenUtil().setHeight(10),
-                                                                            ScreenUtil().setWidth(10),
-                                                                            ScreenUtil().setHeight(10)
-                                                                    ),
+                                                                    contentPadding: aPaddingLTRB(10, 10, 10, 10),
                                                                     hintText: "Year",
                                                                 ),
                                                             ),
@@ -219,12 +179,7 @@ class _RequestState extends State<Request> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                         Container(
-                                            padding: EdgeInsets.fromLTRB(
-                                                ScreenUtil().setWidth(10),
-                                                ScreenUtil().setHeight(0),
-                                                ScreenUtil().setWidth(0),
-                                                ScreenUtil().setHeight(0),
-                                            ),
+                                            padding: aPaddingLTRB(10, 0, 0, 0),
                                             child: Text(
                                                 "Your Email address",
                                                 style: TextStyle(
@@ -246,12 +201,7 @@ class _RequestState extends State<Request> {
                                                 decoration: InputDecoration(border: OutlineInputBorder(
                                                     borderRadius: BorderRadius.circular(10),
                                                 ),
-                                                    contentPadding: EdgeInsets.fromLTRB(
-                                                            ScreenUtil().setWidth(10),
-                                                            ScreenUtil().setHeight(10),
-                                                            ScreenUtil().setWidth(10),
-                                                            ScreenUtil().setHeight(10)
-                                                    ),
+                                                    contentPadding: aPaddingLTRB(10, 10, 10, 10),
                                                     hintText: "Enter your email id",
                                                 ),
                                             ),
@@ -275,12 +225,7 @@ class _RequestState extends State<Request> {
                                         requestAct();
                                     },
                                     child: Padding(
-                                        padding: EdgeInsets.fromLTRB(
-                                            ScreenUtil().setWidth(10),
-                                            ScreenUtil().setHeight(10),
-                                            ScreenUtil().setWidth(10),
-                                            ScreenUtil().setHeight(10),
-                                        ),
+                                        padding: aPaddingLTRB(10, 10, 10, 10),
                                         child: Text(
                                             "Submit",
                                             style: TextStyle(
@@ -294,12 +239,7 @@ class _RequestState extends State<Request> {
                                 Container(
                                     width: double.infinity,
                                     alignment: Alignment.centerLeft,
-                                    padding: EdgeInsets.fromLTRB(
-                                        ScreenUtil().setWidth(10),
-                                        ScreenUtil().setHeight(10),
-                                        ScreenUtil().setWidth(0),
-                                        ScreenUtil().setHeight(0),
-                                    ),
+                                    padding: aPaddingLTRB(10, 10, 0, 0),
                                     child: Text(
                                         "* - The field is mandatory",
                                         style: TextStyle(

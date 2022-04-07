@@ -1,4 +1,5 @@
 import 'package:allaw/provider.dart';
+import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -18,12 +19,7 @@ class _AboutUsState extends State<AboutUs> {
                 return false;
             },
             child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                    ScreenUtil().setWidth(10),
-                    ScreenUtil().setHeight(10),
-                    ScreenUtil().setWidth(10),
-                    ScreenUtil().setHeight(10),
-                ),
+                padding: aPaddingLTRB(10, 10, 10, 10),
                 child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -33,12 +29,7 @@ class _AboutUsState extends State<AboutUs> {
                         ),
                         color: Colors.white,
                     ),
-                    padding: EdgeInsets.fromLTRB(
-                        ScreenUtil().setWidth(20),
-                        ScreenUtil().setHeight(0),
-                        ScreenUtil().setWidth(20),
-                        ScreenUtil().setHeight(20),
-                    ),
+                    padding: aPaddingLTRB(20, 0, 20, 20),
                     child: SingleChildScrollView(
                       child: Column(
                           children: [
@@ -58,12 +49,7 @@ class _AboutUsState extends State<AboutUs> {
                               ),
 
                               Container(
-                                  padding: EdgeInsets.fromLTRB(
-                                      0,
-                                      ScreenUtil().setHeight(5),
-                                      0,
-                                      ScreenUtil().setHeight(5),
-                                  ),
+                                  padding: aPaddingLTRB(0, 5, 0, 5),
                                   child: Text(
                                       "by LexLiase",
                                       textAlign: TextAlign.center,
