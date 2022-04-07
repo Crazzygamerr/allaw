@@ -1,4 +1,4 @@
-import 'package:allaw/Viewer.dart';
+import 'package:allaw/Viewer/Viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

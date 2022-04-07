@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         onboarding = false;
                     }));
         } else {
-            Future.delayed(Duration(milliseconds: 50))
+            Future.delayed(Duration(milliseconds: 500))
                     .then((value) => showOnboarding());
         }
     }
@@ -185,10 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     ),
                                                     child: Image.asset(
                                                         "assets/settings.png",
-                                                    ),/*Icon(
-                                                        Icons.settings,
-                                                        size: 27,
-                                                    ),*/
+                                                    ),
                                                 ),
                                             ),
 
@@ -208,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     index = page;
                                             });
                                         },
-                                        //physics: NeverScrollableScrollPhysics(),
+                                        physics: NeverScrollableScrollPhysics(),
                                         children: [
 
                                             HomePage(),
@@ -225,36 +222,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                             Request(),
 
-                                            /*Container(
-                                              color: Colors.blue,
-                                              child: GestureDetector(
-                                                  onTap: () {
-                                                      test();
-                                                  },
-                                                  onPanStart: (details) {
-                                                      print("Start: " + details.localPosition.toString());
-                                                      setState(() {
-                                                        offsets.add(details.localPosition);
-                                                      });
-                                                      //offsets.add(offset);
-                                                  },
-                                                  onPanUpdate: (details) {
-                                                      print("Update: " + details.localPosition.toString());
-                                                      setState(() {
-                                                          offsets.add(details.localPosition);
-                                                      });
-                                                  },
-                                                  onPanEnd: (details) {
-                                                      setState(() {
-                                                          offsets.add(null);
-                                                      });
-                                                  },
-                                                  child: CustomPaint(
-                                                      painter: TestPaint(offsets: offsets),
-                                                  ),
-                                              ),
-                                          ),*/
-
                                         ],
                                     ),
                                 ),
@@ -268,7 +235,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     ScreenUtil().setHeight(10),
                                 ),
                                 child: Container(
-                                    //height: ScreenUtil().setHeight(50),
                                     decoration: BoxDecoration(
                                         border: Border.all(
                                             width: 1,
@@ -307,10 +273,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                 style: TextStyle(
                                                                         fontSize: ScreenUtil().setSp(14)
                                                                 ),
-                                                                /*style: TextStyle(
-                                                                    fontFamily: "SF Pro",
-                                                                    fontStyle: FontStyle.normal,
-                                                                ),*/
                                                             ),
                                                         ],
                                                     ),
@@ -406,10 +368,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                 style: TextStyle(
                                                                         fontSize: ScreenUtil().setSp(14)
                                                                 ),
-                                                                /*style: TextStyle(
-                                                                    fontWeight: FontWeight.bold,
-                                                                    fontSize: 12,
-                                                                ),*/
                                                             ),
                                                         ],
                                                     ),
@@ -490,9 +448,7 @@ class TestPaint extends CustomPainter {
             ..isAntiAlias = true
             ..strokeWidth = 2;
 
-        //canvas.drawLine(Offset(100,100), Offset(200,200), paint);
         if(offsets != null){
-            //canvas.drawPoints(PointMode.polygon, offsets, paint);
             for(int i=1; i<offsets.length; i++){
                 if(offsets[i] == null || offsets[i-1] == null)
                     continue;
