@@ -28,13 +28,14 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
   PageController pageCon = new PageController(keepPage: true);
   //PageController canvasCon = new PageController();
   final Completer<PDFViewController> pdfViewController = Completer<PDFViewController>();
+  int currentPage = 0, totalPage = 0;
+  
   late File file;
   String url = "";
 
   bool local = false, 
     load = false,
     online = true,
-    swipeChangePage = true,
     drawing = false;
 
   String error = "",
@@ -1086,25 +1087,69 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                   ),
                 ), */
                 
-                (local)?Expanded(
+                (load)?(local)?Expanded(
                   child: PDF(   
                     enableSwipe: true,
                     swipeHorizontal: true,        
-                    onViewCreated: (PDFViewController pdfViewController) {
-                      pdfViewController = pdfViewController;
+                    onViewCreated: (PDFViewController pdfViewCon) async {
+                      pdfViewController.complete(pdfViewCon);
+                      currentPage = await pdfViewCon.getCurrentPage() ?? 0;
+                      totalPage = await pdfViewCon.getPageCount() ?? 0;
+                      setState(() {});
                     },
                   ).fromPath('$dir/$fileName.pdf'),
                 ):Expanded(
                   child: PDF(
                     enableSwipe: true,
                     swipeHorizontal: true,        
-                    onViewCreated: (PDFViewController pdfViewController) {
-                      pdfViewController = pdfViewController;
-                      print(url);
+                    onViewCreated: (PDFViewController pdfViewCon) async {
+                      pdfViewController.complete(pdfViewCon);
+                      currentPage = await pdfViewCon.getCurrentPage() ?? 0;
+                      totalPage = await pdfViewCon.getPageCount() ?? 0;
+                      setState(() {});
                     },
                   ).fromUrl(url),
+                ):Center(
+                  child: CircularProgressIndicator(),
                 ),
-
+                
+                FutureBuilder<PDFViewController>(
+                  future: pdfViewController.future,
+                  builder: (context, AsyncSnapshot<PDFViewController> snapshot) {
+                    if(snapshot.hasData && snapshot.data != null) {
+                      return Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            ),
+                            color: Colors.white
+                        ),
+                        height: ScreenUtil().setHeight(50),
+                        child: Slider(
+                          value: currentPage.toDouble(),
+                          min: 0,
+                          max: totalPage.toDouble(),
+                          activeColor: Colors.black54,
+                          onChangeEnd: (value) async {
+                            await snapshot.data?.setPage(value.toInt());
+                            currentPage = await snapshot.data?.getCurrentPage() ?? 0;
+                            setState(() {});
+                          },
+                          onChanged: (value) async {
+                            await snapshot.data?.setPage(value.toInt());
+                            currentPage = await snapshot.data?.getCurrentPage() ?? 0;
+                            setState(() {});
+                          },
+                        ),
+                      );
+                    } else {
+                      return Container(
+                        height: ScreenUtil().setHeight(50),
+                      );
+                    }
+                  }
+                ),
                 // (load)?Stack(
 /*           								children: [
                     PDFViewer(
