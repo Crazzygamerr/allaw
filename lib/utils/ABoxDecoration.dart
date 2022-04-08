@@ -27,7 +27,7 @@ BoxDecoration aBoxDecorCircle() {
   );
 }
 
-BoxDecoration aBoxDecorBottom() {
+BoxDecoration aBoxDecorBottom({bool? grey}) {
   return BoxDecoration(
     border: Border(
       top: BorderSide(color: Colors.transparent),
@@ -35,5 +35,6 @@ BoxDecoration aBoxDecorBottom() {
       left: BorderSide(color: Colors.transparent),
       right: BorderSide(color: Colors.transparent),
     ),
+    color: (grey ?? false) ? Colors.grey : Colors.white,
   );
 }

@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:allaw/AboutUs.dart';
 import 'package:allaw/HomePage.dart';
 import 'package:allaw/global/widgets/AHomeIcon.dart';

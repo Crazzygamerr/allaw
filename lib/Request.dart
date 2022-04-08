@@ -291,6 +291,7 @@ class _RequestState extends State<Request> {
                 });
             } catch (e) {
                 Navigator.pop(context);
+                //TODO: Handle errors
                 showLoadingDialog(
                   context, 
                   isError: true,

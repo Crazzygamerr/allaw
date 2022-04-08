@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:allaw/Viewer/Drawer.dart';
+import 'package:allaw/global/widgets/AIconButton.dart';
 import 'package:allaw/global/widgets/LoadingDialog.dart';
+import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:excel/excel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +27,7 @@ class Viewer extends StatefulWidget {
 }
 
 class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
-
-  PageController pageCon = new PageController(keepPage: true);
+  
   final Completer<PDFViewController> pdfViewController = Completer<PDFViewController>();
   int currentPage = 0, totalPage = 0;
   
@@ -250,6 +252,13 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 
     Navigator.pop(context);
   }
+  
+  setSlider(PDFViewController? pdfViewController) async {
+    currentPage = await pdfViewController?.getCurrentPage() ?? 0;
+    totalPage = await pdfViewController?.getPageCount() ?? 0;
+    print(totalPage);
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -263,269 +272,27 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
         key: _drawerKey,
         backgroundColor: Color(0xffF2F2F2),
         drawerEnableOpenDragGesture: false,
-        drawer: SafeArea(
-          child: Container(
-            color: Color(0xffF2F2F2),
-            width: ScreenUtil().setWidth(375),
-            padding: EdgeInsets.fromLTRB(
-              ScreenUtil().setWidth(0),
-              ScreenUtil().setHeight(10),
-              ScreenUtil().setWidth(0),
-              ScreenUtil().setHeight(0),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    ScreenUtil().setWidth(10),
-                    ScreenUtil().setHeight(0),
-                    ScreenUtil().setWidth(0),
-                    ScreenUtil().setHeight(10),
-                  ),
-                  child: Text(
-                    fileName,
-                    style: TextStyle(
-                      fontSize: ScreenUtil().setSp(20),
-                    ),
-                  ),
-                ),
-
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: Colors.transparent),
-                      bottom: BorderSide(color: Colors.black),
-                      left: BorderSide(color: Colors.transparent),
-                      right: BorderSide(color: Colors.transparent),
-                    ),
-                    color: Colors.grey,
-                  ),
-                  child: Row(
-                    children: [
-
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: Text(
-                            "Title",
-                            style: TextStyle(
-                              fontSize: ScreenUtil().setSp(15),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Container(
-                        width: ScreenUtil().setWidth(1),
-                        height: ScreenUtil().setHeight(70),
-                        color: Colors.black,
-                      ),
-
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(
-                          ScreenUtil().setWidth(2),
-                          ScreenUtil().setHeight(0),
-                          ScreenUtil().setWidth(2),
-                          ScreenUtil().setHeight(0),
-                        ),
-                        child: Container(
-                          width: ScreenUtil().setWidth(59),
-                          alignment: Alignment.center,
-                          child: Text(
-                            "Section No.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: ScreenUtil().setSp(15),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Container(
-                        width: ScreenUtil().setWidth(1),
-                        height: ScreenUtil().setHeight(70),
-                        color: Colors.black,
-                      ),
-
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(
-                          ScreenUtil().setWidth(5),
-                          ScreenUtil().setHeight(10),
-                          ScreenUtil().setWidth(0),
-                          ScreenUtil().setHeight(10),
-                        ),
-                        child: Container(
-                          width: ScreenUtil().setWidth(44),
-                          alignment: Alignment.center,
-                          child: Text(
-                            "Page No.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: ScreenUtil().setSp(15),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: heading.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      String part1 = "", part2 = "";
-                      if(section[index].contains("-")) {
-                        part1 = section[index].split("-")[0];
-                        part2 = section[index].split("-")[1];
-                      }
-
-                      if(sub[index] && minimized[index])
-                        return Container();
-                      else
-                        return GestureDetector(
-                          onTap: () {
-                            pageCon.jumpToPage(page[index]-1);
-                            Navigator.pop(context);
-                          },
-                          child: Stack(
-                            children: [
-
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: ScreenUtil().setWidth(260),
-                                  ),
-                                  Container(
-                                    width: ScreenUtil().setWidth(1),
-                                    height: ScreenUtil().setHeight((sub[index])?subH:headingH),
-                                    color: Colors.black,
-                                  ),
-                                  SizedBox(
-                                    width: ScreenUtil().setWidth(63),
-                                  ),
-                                  Container(
-                                    width: ScreenUtil().setWidth(1),
-                                    height: ScreenUtil().setHeight((sub[index])?subH:headingH),
-                                    color: Colors.black,
-                                  ),
-                                ],
-                              ),
-
-                              Container(
-                                width: ScreenUtil().setWidth(375),
-                                height: ScreenUtil().setHeight((sub[index])?subH:headingH),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    top: BorderSide(color: Colors.transparent),
-                                    bottom: BorderSide(color: Colors.black),
-                                    left: BorderSide(color: Colors.transparent),
-                                    right: BorderSide(color: Colors.transparent),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-
-                                    (sub[index]) ? Container(
-                                      width: ScreenUtil().setWidth(15),
-                                    ) : Container(),
-
-                                    Container(
-                                      width: ScreenUtil().setWidth(
-                                        (sub[index])
-                                            ? 245
-                                            : (!sub[index])
-                                            ? 210
-                                            :260,
-                                      ),
-                                      alignment: Alignment.centerLeft,
-                                      padding: EdgeInsets.fromLTRB(
-                                        ScreenUtil().setWidth(10),
-                                        ScreenUtil().setHeight(5),
-                                        ScreenUtil().setWidth(10),
-                                        ScreenUtil().setHeight(5),
-                                      ),
-                                      child: Text(
-                                        heading[index].toString(),
-                                        style: TextStyle(
-                                          fontSize: ScreenUtil().setSp((sub[index])?12:15),
-                                        ),
-                                      ),
-                                    ),
-
-                                    (!sub[index]) ? GestureDetector(
-                                      onTap: () {
-                                        for(int i=index+1;i<minimized.length;i++){
-                                          if(!sub[i])
-                                            break;
-                                          else
-                                            minimized[i] = !minimized[i];
-                                        }
-                                        setState(() {
-                                        });
-                                      },
-                                      child: Container(
-                                        height: ScreenUtil().setHeight((sub[index])?subH:headingH),
-                                        width: ScreenUtil().setWidth(50),
-                                        padding: EdgeInsets.fromLTRB(
-                                          ScreenUtil().setWidth(10),
-                                          ScreenUtil().setHeight(10),
-                                          ScreenUtil().setWidth(10),
-                                          ScreenUtil().setHeight(10),
-                                        ),
-                                        child: Image.asset(
-                                          (minimized[index+1])?"assets/expand_more.png":"assets/expand_less.png",
-                                        ),
-                                      ),
-                                    ) : Container(),
-
-                                    Container(
-                                      width: ScreenUtil().setWidth(63),
-                                      alignment: Alignment.center,
-                                      //color: (sub[index] && minimized[index])?Colors.green:Colors.white,
-                                      child: Text(
-                                        (section[index].contains("-"))?"$part1\n-\n$part2":section[index].toString(),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: ScreenUtil().setSp((sub[index])?10:15),
-                                        ),
-                                      ),
-                                    ),
-
-                                    Container(
-                                      width: ScreenUtil().setWidth(45),
-                                      padding: EdgeInsets.fromLTRB(
-                                        ScreenUtil().setWidth(0),
-                                        ScreenUtil().setHeight(5),
-                                        ScreenUtil().setWidth(0),
-                                        ScreenUtil().setHeight(5),
-                                      ),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        page[index].toString(),
-                                        style: TextStyle(
-                                          fontSize: ScreenUtil().setSp((sub[index])?10:15),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+        drawer: FutureBuilder<PDFViewController>(
+          future: pdfViewController.future,
+          builder: (context, snapshot) {
+            if(snapshot.hasData && snapshot.data != null) {
+              return ADrawer(
+                fileName: fileName,
+                heading: heading,
+                section: section,
+                page: page,
+                sub: sub,
+                minimized: minimized,
+                headingH: headingH,
+                subH: subH,
+                pdfViewController: snapshot.data,
+                setState: () => setState(() {}),
+                setSlider: () => setSlider(snapshot.data),
+              );
+          } else {
+            return Container();
+          }
+          }
         ),
         body: SafeArea(
           child: Container(
@@ -564,77 +331,27 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                       children: [
 
                         if(drawing) Container(
-                        ) else GestureDetector(
+                        ) else AIconButton(
+                          assetName: "assets/navigate_before.png",
                           onTap: () {
                             Navigator.pop(context);
                           },
-                          child: Container(
-                            width: ScreenUtil().setWidth(50),
-                            height: ScreenUtil().setHeight(50),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              border: Border.all(
-                                width: 1,
-                                color: Colors.black,
-                              ),
-                              color: Colors.white,
-                            ),
-                            padding: EdgeInsets.fromLTRB(
-                              ScreenUtil().setWidth(8),
-                              ScreenUtil().setHeight(8),
-                              ScreenUtil().setWidth(8),
-                              ScreenUtil().setHeight(8),
-                            ),
-                            child: Image.asset(
-                              "assets/navigate_before.png",
-                            ),
-                          ),
                         ),
 
                         if(drawing) Container(
-                        ) else GestureDetector(
+                        ) else AIconButton(
+                          assetName: "assets/list.png",
                           onTap: () {
                             _drawerKey.currentState?.openDrawer();
                           },
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                              ScreenUtil().setWidth(10),
-                              ScreenUtil().setHeight(0),
-                              ScreenUtil().setWidth(10),
-                              ScreenUtil().setHeight(0),
-                            ),
-                            child: Container(
-                              width: ScreenUtil().setWidth(50),
-                              height: ScreenUtil().setHeight(50),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                  width: 1,
-                                  color: Colors.black,
-                                ),
-                                color: Colors.white,
-                              ),
-                              padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(8),
-                                ScreenUtil().setHeight(8),
-                                ScreenUtil().setWidth(8),
-                                ScreenUtil().setHeight(8),
-                              ),
-                              child: Image.asset(
-                                "assets/list.png",
-                              ),/*Icon(
-                                Icons.list,
-                                size: 27,
-                              ),*/
-                            ),
-                          ),
                         ),
 
                         if(drawing) Container(
                           width: ScreenUtil().setWidth(220),
                         ),
 
-                        (drawing)?GestureDetector(
+                        (drawing)?AIconButton(
+                          assetName: "assets/undo.png",
                           onTap: () {
                             setState(() {
                               /* if(strokes.isNotEmpty) {
@@ -643,28 +360,6 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                               } */
                             });
                           },
-                          child: Container(
-                            width: ScreenUtil().setWidth(50),
-                            height: ScreenUtil().setHeight(50),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              border: Border.all(
-                                width: 1,
-                                color: Colors.black,
-                              ),
-                              color: Colors.white,
-                            ),
-                            padding: EdgeInsets.fromLTRB(
-                              ScreenUtil().setWidth(8),
-                              ScreenUtil().setHeight(8),
-                              ScreenUtil().setWidth(8),
-                              ScreenUtil().setHeight(8),
-                            ),
-                            child: Image.asset(
-                              "assets/undo.png",
-                              color: Colors.black,
-                            ),
-                          ),
                         ):Container(),
 
                         if(drawing) Container(
@@ -673,112 +368,33 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                         ),
 
                         if (online) Container(
-                        ) else GestureDetector(
+                        ) else AIconButton(
+                          assetName: (drawing)?"assets/exit_to_app.png":"assets/border_color.png",
                           onTap: () {
                             setState(() {
                               drawing = !drawing;
                             });
                           },
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                              ScreenUtil().setWidth(10),
-                              ScreenUtil().setHeight(0),
-                              ScreenUtil().setWidth(0),
-                              ScreenUtil().setHeight(0),
-                            ),
-                            child: Container(
-                              width: ScreenUtil().setWidth(50),
-                              height: ScreenUtil().setHeight(50),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                  width: 1,
-                                  color: Colors.black,
-                                ),
-                                color: Colors.white,
-                              ),
-                              padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(8),
-                                ScreenUtil().setHeight(8),
-                                ScreenUtil().setWidth(8),
-                                ScreenUtil().setHeight(8),
-                              ),
-                              child: Image.asset(
-                                (drawing)?"assets/exit_to_app.png":"assets/border_color.png",
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
                         ),
 
                         if (online || !drawing) Container(
-                        ) else GestureDetector(
+                        ) else AIconButton(
+                          assetName: "assets/clear.png",
                           onTap: () {
                             /* strokes = [];
                             func3(); */
                           },
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                              ScreenUtil().setWidth(10),
-                              ScreenUtil().setHeight(0),
-                              ScreenUtil().setWidth(0),
-                              ScreenUtil().setHeight(0),
-                            ),
-                            child: Container(
-                              width: ScreenUtil().setWidth(50),
-                              height: ScreenUtil().setHeight(50),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                  width: 1,
-                                  color: Colors.black,
-                                ),
-                                color: Colors.white,
-                              ),
-                              padding: EdgeInsets.fromLTRB(
-                                ScreenUtil().setWidth(8),
-                                ScreenUtil().setHeight(8),
-                                ScreenUtil().setWidth(8),
-                                ScreenUtil().setHeight(8),
-                              ),
-                              child: Image.asset(
-                                "assets/clear.png",
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
                         ),
 
                         if(drawing) Container(
-                        ) else GestureDetector(
+                        ) else AIconButton(
+                          assetName: (online)?"assets/get_app.png":"assets/delete_forever.png",
                           onTap: () {
                             if(online)
                               downloadFiles();
                             else
                               deleteLocalPdf();
                           },
-                          child: Container(
-                            width: ScreenUtil().setWidth(50),
-                            height: ScreenUtil().setHeight(50),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              border: Border.all(
-                                width: 1,
-                                color: Colors.black,
-                              ),
-                              color: Colors.white,
-                            ),
-                            padding: EdgeInsets.fromLTRB(
-                              ScreenUtil().setWidth(8),
-                              ScreenUtil().setHeight(8),
-                              ScreenUtil().setWidth(8),
-                              ScreenUtil().setHeight(8),
-                            ),
-                            child: Image.asset(
-                              (online)?"assets/get_app.png":"assets/delete_forever.png",
-                              color: Colors.black,
-                            ),
-                          ),
                         )
 
                       ],
@@ -894,25 +510,21 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                 ), */
                 
                 (load)?(local)?Expanded(
-                  child: PDF(   
-                    enableSwipe: true,
-                    swipeHorizontal: true,        
-                    onViewCreated: (PDFViewController pdfViewCon) async {
-                      pdfViewController.complete(pdfViewCon);
-                      currentPage = await pdfViewCon.getCurrentPage() ?? 0;
-                      totalPage = await pdfViewCon.getPageCount() ?? 0;
-                      setState(() {});
-                    },
-                  ).fromPath('$dir/$fileName.pdf'),
-                ):Expanded(
                   child: PDF(
                     enableSwipe: true,
                     swipeHorizontal: true,        
                     onViewCreated: (PDFViewController pdfViewCon) async {
                       pdfViewController.complete(pdfViewCon);
-                      currentPage = await pdfViewCon.getCurrentPage() ?? 0;
-                      totalPage = await pdfViewCon.getPageCount() ?? 0;
-                      setState(() {});
+                      setSlider(pdfViewCon);
+                    },
+                  ).fromPath('$dir/$fileName.pdf'),
+                ):Expanded(
+                  child: PDF(
+                    enableSwipe: true,
+                    swipeHorizontal: true,
+                    onViewCreated: (PDFViewController pdfViewCon) async {
+                      pdfViewController.complete(pdfViewCon);
+                      setSlider(pdfViewCon);
                     },
                   ).fromUrl(url),
                 ):Center(
@@ -924,13 +536,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                   builder: (context, AsyncSnapshot<PDFViewController> snapshot) {
                     if(snapshot.hasData && snapshot.data != null) {
                       return Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 1,
-                              color: Colors.black,
-                            ),
-                            color: Colors.white
-                        ),
+                        decoration: aBoxDecor15B(rounded: false),
                         height: ScreenUtil().setHeight(50),
                         child: Slider(
                           value: currentPage.toDouble(),
@@ -939,13 +545,11 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
                           activeColor: Colors.black54,
                           onChangeEnd: (value) async {
                             await snapshot.data?.setPage(value.toInt());
-                            currentPage = await snapshot.data?.getCurrentPage() ?? 0;
-                            setState(() {});
+                            setSlider(snapshot.data);
                           },
                           onChanged: (value) async {
                             await snapshot.data?.setPage(value.toInt());
-                            currentPage = await snapshot.data?.getCurrentPage() ?? 0;
-                            setState(() {});
+                            setSlider(snapshot.data);
                           },
                         ),
                       );
@@ -1485,72 +1089,4 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
       ),
     );
   }
-}
-
-class Painter extends CustomPainter {
-  final List<Map<String, dynamic>> strokes;
-
-  Painter({
-    required this.strokes
-  }) : super();
-
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.black
-      ..isAntiAlias = true
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
-    //canvas.drawLine(Offset(100,100), Offset(200,200), paint);
-      for(int i = 0; i<strokes.length; i++){
-        if (strokes[i]["color"] != null) {
-          paint.color = Color(strokes[i]["color"]).withOpacity(strokes[i]["opacity"]??1);
-        } else {
-          paint.color = Colors.black;
-        }
-        if (strokes[i]["width"] != null) {
-          paint.strokeWidth = strokes[i]["width"].toDouble();
-        } else {
-          paint.strokeWidth = 2;
-        }
-        if (strokes[i]["color"] == Colors.white.value) {
-          paint.blendMode = BlendMode.clear;
-          paint.color = Colors.transparent;
-        }
-        if (strokes[i]["offsets"] != null) {
-          for (var j = 1; j<strokes[i]["offsets"].length; j++) {
-            //Path path = new Path();
-            canvas.drawLine(strokes[i]["offsets"][j-1], strokes[i]["offsets"][j], paint);
-            //canvas.
-            //canvas.drawPoints(PointMode.polygon, strokes[i]["offsets"], paint);
-            //canvas.drawCircle(strokes[i]["offsets"][j-1], strokes[i]["width"].toDouble()/2, paint);
-            /*canvas.drawOval(
-              Rect.fromCenter(
-              center: Offset((strokes[i]["offsets"][j-1].dx + strokes[i]["offsets"][j].dx)/2, (strokes[i]["offsets"][j-1].dy + strokes[i]["offsets"][j].dy)/2),
-              width: strokes[i]["width"].toDouble(),
-              height: strokes[i]["width"].toDouble()*1.2,
-              ),
-              paint,
-            );*/
-            /*path.moveTo(strokes[i]["offsets"][j-1].dx, strokes[i]["offsets"][j-1].dy);
-            path.lineTo(strokes[i]["offsets"][j].dx, strokes[i]["offsets"][j].dy);
-            canvas.drawPath(path, paint);*/
-            /*canvas.drawRect(
-              Rect.fromCenter(
-                center: Offset((strokes[i]["offsets"][j-1].dx + strokes[i]["offsets"][j].dx)/2, (strokes[i]["offsets"][j-1].dy + strokes[i]["offsets"][j].dy)/2),
-                width: strokes[i]["width"].toDouble(),
-                height: strokes[i]["width"].toDouble()*1.2,
-              ),
-              paint,
-            );*/
-          }
-        }
-      }
-
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
