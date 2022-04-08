@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:allaw/global/widgets/LoadingDialog.dart';
 import 'package:excel/excel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -90,29 +91,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
 
   showLoading() async {
     WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((timeStamp) {
-      showDialog(
-        context: context,
-        builder: (_) => WillPopScope(
-          onWillPop: () async {
-            return false;
-          },
-          child: AlertDialog(
-            content: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Loading...",
-                  style: TextStyle(
-                    fontSize: ScreenUtil().setSp(14),
-                  ),
-                ),
-                CircularProgressIndicator(),
-              ],
-            ),
-          ),
-        ),
-        barrierDismissible: false,
-      );
+      showLoadingDialog(context);
     });
   }
 
@@ -144,29 +123,7 @@ class _ViewerState extends State<Viewer> with SingleTickerProviderStateMixin{
   }
 
   downloadFiles() async {
-    showDialog(
-      context: context,
-      builder: (_) => WillPopScope(
-        onWillPop: () async {
-          return false;
-        },
-        child: AlertDialog(
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Loading...",
-                style: TextStyle(
-                  fontSize: ScreenUtil().setSp(14),
-                ),
-              ),
-              CircularProgressIndicator(),
-            ],
-          ),
-        ),
-      ),
-      barrierDismissible: false,
-    );
+    showLoadingDialog(context);
 
     try {
       File pdfFile = new File(dir + "/" + pdfRef.name);

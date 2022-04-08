@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
-BoxDecoration aBoxDecor15B() {
+BoxDecoration aBoxDecor15B({bool rounded = true}) {
   return BoxDecoration(
-    borderRadius: BorderRadius.all(Radius.circular(15)),
+    borderRadius: BorderRadius.all(
+      Radius.circular(
+        rounded ? 15 : 0
+        )),
     border: Border.all(
       color: Colors.black,
       width: 1,

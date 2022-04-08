@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:allaw/global/widgets/LoadingDialog.dart';
 import 'package:allaw/provider.dart';
 import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
@@ -258,24 +259,7 @@ class _RequestState extends State<Request> {
         } else {
             String URL = "https://script.google.com/macros/s/AKfycbx30nXWKUQCwn8mLqeSa7iC2JjZr7OT01tTBmCZg3j0eFeODh9gs3u9aQ/exec";
             FocusScope.of(context).unfocus();
-            showDialog(
-                context: context,
-                builder: (_) => WillPopScope(
-                    onWillPop: () async {
-                        return false;
-                    },
-                    child: AlertDialog(
-                        content: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                                Text("Loading..."),
-                                CircularProgressIndicator(),
-                            ],
-                        ),
-                    ),
-                ),
-                barrierDismissible: false,
-            );
+            showLoadingDialog(context);
             try {
                 await http.post(Uri.parse(URL), body: {
                     "name": textCon1.text,
@@ -292,27 +276,7 @@ class _RequestState extends State<Request> {
                                 textCon2.text = "";
                                 textCon3.text = "";
                             }
-                            showDialog(
-                                context: context,
-                                builder: (_) => AlertDialog(
-                                    content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                            Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                    Text(s),
-                                                    Icon(
-                                                        (jsonDecode(response.body)['status'] == "SUCCESS")?Icons.check:Icons.clear,
-                                                        color: (jsonDecode(response.body)['status'] == "SUCCESS")?Colors.green:Colors.blue,
-                                                        size: 20,
-                                                    ),
-                                                ],
-                                            ),
-                                        ],
-                                    ),
-                                ),
-                            );
+                            showResposeDialog(context, s, response);
                         });
                     } else {
                         Navigator.pop(context);
@@ -322,49 +286,14 @@ class _RequestState extends State<Request> {
                             textCon2.text = "";
                             textCon3.text = "";
                         }
-                        showDialog(
-                            context: context,
-                            builder: (_) => AlertDialog(
-                                content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                        Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                                Text(s),
-                                                Icon(
-                                                    (jsonDecode(response.body)['status'] == "SUCCESS")?Icons.check:Icons.clear,
-                                                    color: (jsonDecode(response.body)['status'] == "SUCCESS")?Colors.green:Colors.red,
-                                                ),
-                                            ],
-                                        ),
-                                    ],
-                                ),
-                            ),
-                        );
+                        showResposeDialog(context, s, response);
                     }
                 });
             } catch (e) {
                 Navigator.pop(context);
-                showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
-                        content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                                Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                        Text("Error!"),
-                                        Icon(
-                                            Icons.clear,
-                                            color: Colors.red,
-                                        ),
-                                    ],
-                                ),
-                            ],
-                        ),
-                    ),
+                showLoadingDialog(
+                  context, 
+                  isError: true,
                 );
             }
         }

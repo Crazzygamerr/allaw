@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height: ScreenUtil().setHeight(70),
                                 padding: aPaddingLTRB(0, 10, 0, 10),
                                 child: Container(
-                                    decoration: aBoxDecor15B(),
+                                    decoration: aBoxDecor15B(rounded: false),
                                     child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -181,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             Padding(
                                 padding: aPaddingLTRB(0, 5, 0, 10),
                                 child: Container(
-                                    decoration: aBoxDecor15B(),
+                                    decoration: aBoxDecor15B(rounded: false),
                                     child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
