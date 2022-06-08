@@ -1,4 +1,5 @@
 import 'package:allaw/Viewer/Viewer.dart';
+import 'package:allaw/global/widgets/LoadingDialog.dart';
 import 'package:allaw/global/widgets/TextItem.dart';
 import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
@@ -6,10 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:pdftron_flutter/pdftron_flutter.dart';
+
 class BareActs extends StatefulWidget {
     @override
     _BareActsState createState() => _BareActsState();
 }
+//TODO:  remove 1, 5, 7, 8, 9, 11, 12, 13 buttons from the viewer
+//TODO: share and delete button
+//TODO: Change annotation heading, and remove extra colors and fonts
+//TODO: try to get the outline button seperate
 
 class _BareActsState extends State<BareActs>{
 
@@ -17,10 +26,12 @@ class _BareActsState extends State<BareActs>{
     List<Reference> pdfReference = [], xlsxReference = [];
     TextEditingController textCon = new TextEditingController();
     bool loading = true;
+    String dir = "";
 
     @override
     void initState() {
         super.initState();
+        PdftronFlutter.initialize();
         getDocs();
     }
 
@@ -45,9 +56,11 @@ class _BareActsState extends State<BareActs>{
             xlsxReference.add(excelRef.elementAt(x));
         }
         if(this.mounted)
-            setState(() {
-                loading = false;
-            });
+          setState(() {
+            loading = false;
+          });
+        
+        dir = (await getApplicationDocumentsDirectory()).path;
     }
 
     @override
@@ -111,8 +124,8 @@ class _BareActsState extends State<BareActs>{
 
                                                 return (b)?TextItem(
                                                   text: bareActs[index],
-                                                    onTap: () {
-                                                        Navigator.push(
+                                                    onTap: () async {
+                                                        /* Navigator.push(
                                                             context,
                                                             new MaterialPageRoute(
                                                                 builder: (context) => Viewer(
@@ -122,7 +135,63 @@ class _BareActsState extends State<BareActs>{
                                                             ),
                                                         ).then((value) {
                                                             getDocs();
-                                                        });
+                                                        }); */
+                                                        
+                                                        
+                                                        bool local = await File(dir + "/" + (bareActs[index]) + ".pdf").exists();
+                                                        if(!local) {
+                                                          File pdfFile = new File(dir + "/" + (bareActs[index]) + ".pdf");
+                                                          FirebaseStorage storage = FirebaseStorage.instance;
+                                                          showLoadingDialog(context);
+                                                          await storage.ref(pdfReference[index].fullPath).writeToFile(pdfFile);
+                                                          Navigator.pop(context);
+                                                        }
+                                                        
+                                                        Config config = new Config();
+                                                        
+                                                        config.annotationToolbars = [
+                                                          DefaultToolbars.view,
+                                                          DefaultToolbars.annotate,
+                                                        ];
+                                                        
+                                                        config.disabledElements = [
+                                                          Buttons.printButton,
+                                                          Buttons.saveCopyButton,
+                                                          Buttons.editPagesButton,
+                                                          Buttons.shareButton,
+                                                          Buttons.viewLayersButton,
+                                                          //Buttons.viewControlsButton,
+                                                        ];
+                                                        
+                                                        config.bottomToolbar = [
+                                                          Buttons.viewControlsButton,
+                                                          Buttons.searchButton,
+                                                          Buttons.listsButton,
+                                                          Buttons.outlineListButton,
+                                                        ];
+                                                        
+                                                        config.disabledTools = [
+                                                          Tools.annotationSmartPen,
+                                                          Tools.annotationCreateFreeHand,
+                                                          Tools.annotationCreateTextStrikeout,
+                                                          Tools.annotationCreateTextSquiggly,
+                                                          Tools.annotationCreateSticky,
+                                                          Tools.annotationCreateCallout,
+                                                          Tools.multiSelect,
+                                                          Tools.annotationLasso,
+                                                          Tools.annotationEdit
+                                                        ];
+                                                        
+                                                        config.annotationToolbarAlignment = ToolbarAlignment.Start;               
+                                                        config.outlineListEditingEnabled = false;
+                                                        
+                                                        var documentLoadedCancel = startDocumentLoadedListener((path) async
+                                                          {
+                                                            await PdftronFlutter.openOutlineList();
+                                                          });
+                                                        
+                                                        PdftronFlutter.openDocument(dir + "/" + (bareActs[index]) + ".pdf", config: config);
+                                                        
                                                     }, 
                                                 ):Container();
                                             },

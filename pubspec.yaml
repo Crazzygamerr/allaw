@@ -34,6 +34,8 @@ dev_dependencies:
   syncfusion_flutter_pdfviewer: ^19.4.56-beta
   syncfusion_flutter_pdf: ^19.4.56-beta
   flutter_cached_pdfview: ^0.4.1
+  open_file: ^3.2.1
+  pdftron_flutter: ^1.0.0-beta.22
 
 flutter_icons:
   image_path: "assets/Logo.jpg"

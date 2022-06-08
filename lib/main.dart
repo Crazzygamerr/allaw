@@ -193,19 +193,19 @@ class _MyHomePageState extends State<MyHomePage> {
                                             ),
                                             
                                             AHomeIcon(
-                                              assetName: "assets/article.png",
-                                              text: "Legal Notes",
-                                              onTap: () {
-
-                                              },
-                                            ),
-                                            
-                                            AHomeIcon(
                                               assetName: "assets/font_download.png",
                                               text: "Legal Terms",
                                               onTap: () {
                                                   FocusScope.of(context).unfocus();
                                                   pageCon.jumpToPage(4);
+                                              },
+                                            ),
+                                            
+                                            AHomeIcon(
+                                              assetName: "assets/article.png",
+                                              text: "Legal Notes",
+                                              onTap: () {
+
                                               },
                                             ),
                                             
