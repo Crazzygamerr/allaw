@@ -18,7 +18,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_screenutil: ^5.3.1
-  share: ^2.0.4
+  share_plus: ^4.0.7
   app_review: ^2.0.1
   http: ^0.13.4
   path_provider: ^2.0.9

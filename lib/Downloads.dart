@@ -17,6 +17,7 @@ class _DownloadsState extends State<Downloads>{
 
     List<String> downloads = [];
     TextEditingController textCon = new TextEditingController();
+    String dir = "";
 
     @override
     void initState() {
@@ -26,8 +27,8 @@ class _DownloadsState extends State<Downloads>{
 
     getDocs() async {
         downloads = [];
-        String s = (await getApplicationDocumentsDirectory()).path;
-        var x = Directory(s).listSync();
+        dir = (await getApplicationDocumentsDirectory()).path;
+        var x = Directory(dir).listSync();
         for(var p in x){
             if(p.path.contains(".pdf")){
                 downloads.add(
@@ -100,6 +101,8 @@ class _DownloadsState extends State<Downloads>{
 
                                                 return (b)?TextItem(
                                                   text: downloads[index],
+                                                  dir: dir,
+                                                  getDocs: getDocs,
                                                   onTap: () {
                                                       Navigator.push(
                                                           context,

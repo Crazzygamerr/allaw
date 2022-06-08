@@ -100,36 +100,39 @@ class _LegalTermsState extends State<LegalTerms>{
                             padding: aPaddingLTRB(10, 10, 10, 10),
                             child: Container(
                                 decoration: aBoxDecor15B(),
-                                child: (!loading)?Scrollbar(
-                                    child: ListView.builder(
-                                        itemCount: sheet.rows.length,
-
-                                        itemBuilder: (context, index) {
-
-                                            bool b = sheet.rows[index][0].toString().toLowerCase().contains(textCon.text.toLowerCase());
-
-                                            return (b)?Container(
-                                                decoration: aBoxDecorBottom(),
-                                              child: ExpansionTile(
-                                                  title: Container(
-                                                      padding: aPaddingLTRB(20, 20, 10, 20),
-                                                      child: Text(
-                                                          sheet.rows[index][0]?.value,
-                                                      ),
-                                                  ),
-                                                  children: [
-                                                      Container(
-                                                          padding: aPaddingLTRB(10, 0, 10, 10),
-                                                          child: Text(
-                                                              sheet.rows[index][1]?.value,
-                                                          ),
-                                                      ),
-                                                  ],
-                                                  //isExpanded:
-                                              ),
-                                            ):Container();
-                                        },
-                                    ),
+                                child: (!loading)?ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Scrollbar(
+                                      child: ListView.builder(
+                                          itemCount: sheet.rows.length,
+                                
+                                          itemBuilder: (context, index) {
+                                
+                                              bool b = sheet.rows[index][0].toString().toLowerCase().contains(textCon.text.toLowerCase());
+                                
+                                              return (b)?Container(
+                                                  decoration: aBoxDecorBottom(),
+                                                child: ExpansionTile(
+                                                    title: Container(
+                                                        padding: aPaddingLTRB(20, 20, 10, 20),
+                                                        child: Text(
+                                                            sheet.rows[index][0]?.value,
+                                                        ),
+                                                    ),
+                                                    children: [
+                                                        Container(
+                                                            padding: aPaddingLTRB(10, 0, 10, 10),
+                                                            child: Text(
+                                                                sheet.rows[index][1]?.value,
+                                                            ),
+                                                        ),
+                                                    ],
+                                                    //isExpanded:
+                                                ),
+                                              ):Container();
+                                          },
+                                      ),
+                                  ),
                                 ) : Center(
                                     child: CircularProgressIndicator(),
                                 ),
