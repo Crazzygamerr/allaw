@@ -16,7 +16,6 @@ class _HomePageState extends State<HomePage> {
 
     PageController pageController = new PageController(viewportFraction: 0.8, keepPage: true);
     String quote = "", author = "";
-    late Future quoteFuture;
 
     List<Color> colorOptions = [
         Colors.limeAccent.withOpacity(0.2),
@@ -26,20 +25,21 @@ class _HomePageState extends State<HomePage> {
     ];
 
     fetchQuote() async {
-        final response = await http.get(Uri.parse("https://favqs.com/api/qotd"));
-
+        final response = await http.get(Uri.parse("https://www.quotepub.com/api/widget/?type=rand&limit=1"));
         if(response.statusCode == 200) {
             var responseJson = json.decode(response.body);
-            quote = responseJson["quote"]["body"];
-            author = responseJson["quote"]["author"];
+            setState(() {
+              quote = responseJson[0]["quote_body"];
+              author = responseJson[0]["quote_author"];
+            });
         }
     }
 
 
-    @override
+  @override
   void initState() {
      super.initState();
-     quoteFuture = fetchQuote();
+     fetchQuote();
   }
 
   @override
@@ -101,10 +101,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                     ),
 
-                    FutureBuilder(
-                      future: quoteFuture,
-                      builder: (context, snapshot) {
-                        return Padding(
+                    Padding(
                             padding: aPaddingLTRB(10, 5, 10, 5),
                             child: Container(
                                 padding: aPaddingLTRB(1, 1, 1, 1),
@@ -121,7 +118,14 @@ class _HomePageState extends State<HomePage> {
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
                                     child: SingleChildScrollView(
-                                        child: Column(
+                                        child: (quote == "") 
+                                        ? Center(
+                                          child: Container(
+                                            padding: aPaddingLTRB(10, 10, 10, 10),
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        ) 
+                                        : Column(
                                             children: [
                                                 Container(
                                                     width: ScreenUtil().setWidth(380),
@@ -149,9 +153,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                 ),
                             ),
-                        );
-                      }
-                    ),
+                        ),
 
                 ],
             ),
