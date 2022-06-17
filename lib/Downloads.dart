@@ -1,12 +1,12 @@
 import 'dart:io';
-
-import 'package:allaw/Viewer/Viewer.dart';
 import 'package:allaw/global/widgets/TextItem.dart';
 import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
+import 'package:allaw/utils/ViewerConfig.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pdftron_flutter/pdftron_flutter.dart';
 
 class Downloads extends StatefulWidget {
     @override
@@ -104,7 +104,7 @@ class _DownloadsState extends State<Downloads>{
                                                   dir: dir,
                                                   getDocs: getDocs,
                                                   onTap: () {
-                                                      Navigator.push(
+                                                      /* Navigator.push(
                                                           context,
                                                           new MaterialPageRoute(
                                                               builder: (context) => Viewer(
@@ -113,7 +113,9 @@ class _DownloadsState extends State<Downloads>{
                                                           ),
                                                       ).then((value) {
                                                           getDocs();
-                                                      });
+                                                      }); */
+                                                      
+                                                      PdftronFlutter.openDocument(dir + "/" + (downloads[index]) + ".pdf", config: getConfig());
                                                   },
                                                 ):Container();
                                             },

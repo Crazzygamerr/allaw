@@ -18,48 +18,58 @@ class _SettingsState extends State<Settings> {
             padding: aPaddingLTRB(10, 10, 10, 10),
             child: Container(
                 decoration: aBoxDecor15B(),
-                child: SingleChildScrollView(
-                    child: Column(
-                        children: [
-
-                            TextItem(
-                              text: "About Us",
-                              onTap: (){
-                                  PageConProvider.of(context)?.pageCon.jumpToPage(5);
-                              },
-                            ),
-
-                            TextItem(
-                              text: "How to use?",
-                              onTap: (){
-
-                              },
-                            ),
-
-                            TextItem(
-                              text: "Request Material",
-                              onTap: (){
-                                  PageConProvider.of(context)?.pageCon.jumpToPage(6);
-                              },
-                            ),
-
-                            TextItem(
-                              text: "Rate us",
-                              onTap: (){
-                                  AppReview.requestReview;
-                              },
-                            ),
-
-                            TextItem(
-                              text: "Share the app",
-                              onTap: (){
-                                  Share.share("ALLAW by LexLiaise - Your Ally For Law\n"
-                                          "A one stop solutions for all the Legal needs.");
-                              },
-                            ),
-
-                        ],
-                    ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15), 
+                  child: SingleChildScrollView(
+                      child: Column(
+                          children: [
+                
+                              TextItem(
+                                text: "About Us",
+                                onTap: (){
+                                    PageConProvider.of(context)?.pageCon.jumpToPage(5);
+                                },
+                              ),
+                
+                              TextItem(
+                                text: "How to use?",
+                                onTap: (){
+                
+                                },
+                              ),
+                
+                              TextItem(
+                                text: "Request Material",
+                                onTap: (){
+                                    PageConProvider.of(context)?.pageCon.jumpToPage(6);
+                                },
+                              ),
+                              
+                              TextItem(
+                                text: "Request Advice",
+                                onTap: (){
+                                    // PageConProvider.of(context)?.pageCon.jumpToPage(6);
+                                },
+                              ),
+                
+                              TextItem(
+                                text: "Rate us",
+                                onTap: (){
+                                    AppReview.requestReview;
+                                },
+                              ),
+                
+                              TextItem(
+                                text: "Share the app",
+                                onTap: (){
+                                    Share.share("ALLAW by LexLiaise - Your Ally For Law\n"
+                                            "A one stop solutions for all the Legal needs.");
+                                },
+                              ),
+                
+                          ],
+                      ),
+                  ),
                 ),
             ),
         );
