@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
+import 'package:allaw/widgets/ASearch.dart';
 import 'package:excel/excel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -15,33 +16,27 @@ class LegalTerms extends StatefulWidget {
 
 class _LegalTermsState extends State<LegalTerms>{
 
-    TextEditingController textCon = new TextEditingController();
     late Sheet sheet;
     bool loading = true;
+    String searchTerm = "";
 
     @override
     void initState() {
         super.initState();
-        getDocs();
+        getTerms();
     }
 
-    getDocs() async {
+    getTerms() async {
         String dir = (await getApplicationDocumentsDirectory()).path;
-        File xlsxFile;
-        if(await File('$dir/Legal Terms.xlsx').exists()) {
-
-            xlsxFile = File('$dir/Legal Terms.xlsx');
-
-        } else {
-
-            FirebaseStorage storage = FirebaseStorage.instance;
-            Reference? ref;
-            xlsxFile = File('$dir/Legal Terms.xlsx');
-            await storage.ref().listAll().then((value) {
-                ref = value.items.singleWhere((element) => element.name == "Legal Terms.xlsx");
-            });
-            await storage.ref(ref!.fullPath).writeToFile(xlsxFile);
-        }
+        
+        FirebaseStorage storage = FirebaseStorage.instance;
+        Reference? ref;
+        File xlsxFile = File('$dir/Legal Terms.xlsx');
+        
+        await storage.ref().listAll().then((value) {
+            ref = value.items.singleWhere((element) => element.name == "Legal Terms.xlsx");
+        });
+        await storage.ref(ref!.fullPath).writeToFile(xlsxFile);
 
         List<int> bytes = xlsxFile.readAsBytesSync();
         var excel = Excel.decodeBytes(bytes);
@@ -57,42 +52,13 @@ class _LegalTermsState extends State<LegalTerms>{
         return Container(
             child: Column(
                 children: [
-
-                    Container(
-                        decoration: aBoxDecor50W(),
-                        child: TextFormField(
-                            controller: textCon,
-                            style: TextStyle(
-                                    fontSize: ScreenUtil().setSp(20)
-                            ),
-                            onChanged: (s) {
-                                setState(() {
-                                });
-                            },
-                            decoration: InputDecoration(
-                                prefixIcon: Icon(
-                                    Icons.search,
-                                    color: Colors.black,
-                                    size: 23,
-                                ),
-                                contentPadding: EdgeInsets.all(10),
-                                focusColor: Colors.white,
-                                hoverColor: Colors.white,
-                                fillColor: Colors.white,
-                                hintText: "Search",
-                                border: InputBorder.none,
-                                enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black
-                                            .withOpacity(0.2)),
-                                    borderRadius: BorderRadius.circular(50),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black
-                                            .withOpacity(0.2)),
-                                    borderRadius: BorderRadius.circular(50),
-                                ),
-                            ),
-                        ),
+                    
+                    ASearchWidget(
+                      onChanged: (String s) {
+                        setState(() {
+                          searchTerm = s;
+                        });
+                      }
                     ),
 
                     Expanded(
@@ -108,9 +74,10 @@ class _LegalTermsState extends State<LegalTerms>{
                                 
                                           itemBuilder: (context, index) {
                                 
-                                              bool b = sheet.rows[index][0].toString().toLowerCase().contains(textCon.text.toLowerCase());
+                                              bool b0 = sheet.rows[index][0].toString().toLowerCase().contains(searchTerm.toLowerCase());
+                                              bool b1 = sheet.rows[index][1].toString().toLowerCase().contains(searchTerm.toLowerCase());
                                 
-                                              return (b)?Container(
+                                              return (b0 | b1)?Container(
                                                   decoration: aBoxDecorBottom(),
                                                 child: ExpansionTile(
                                                     title: Container(

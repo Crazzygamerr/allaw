@@ -1,5 +1,5 @@
-import 'package:allaw/global/widgets/TextItem.dart';
-import 'package:allaw/provider.dart';
+import 'package:allaw/widgets/TextItem.dart';
+import 'package:allaw/utils/provider.dart';
 import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';

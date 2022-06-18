@@ -1,10 +1,12 @@
 import 'dart:io';
 
-import 'package:allaw/global/widgets/LoadingDialog.dart';
-import 'package:allaw/global/widgets/TextItem.dart';
+import 'package:allaw/widgets/ASearch.dart';
+import 'package:allaw/widgets/LoadingDialog.dart';
+import 'package:allaw/widgets/TextItem.dart';
 import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
 import 'package:allaw/utils/ViewerConfig.dart';
+import 'package:allaw/utils/provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,7 +16,7 @@ import 'package:pdftron_flutter/pdftron_flutter.dart';
 enum ListType {
   BareActs,
   Downloads,
-  Notes
+  Queries
 }
 
 class DocumentList extends StatefulWidget {
@@ -25,7 +27,7 @@ class DocumentList extends StatefulWidget {
   
   DocumentList({
     Key? key,
-    this.type = ListType.BareActs
+    required this.type
   }) : super(key: key);
 }
 
@@ -34,26 +36,30 @@ class _DocumentListState extends State<DocumentList>{
     List<String> documents = [];
     List<Reference> pdfReference = [];
     bool loading = true;
-    String dir = "";
-    TextEditingController textCon = new TextEditingController();
+    String dir = "", searchTerm = "";
 
     @override
     void initState() {
         super.initState();
         PdftronFlutter.initialize();
-        if(widget.type == ListType.BareActs){
-            getBareActs();
-        } else if(widget.type == ListType.Downloads){
+        if(widget.type == ListType.Downloads){
             getDownloads();
-        } else if(widget.type == ListType.Notes){
-            getNotes();
+        } else {
+            getDocuments();
         }
     }
 
-    getBareActs() async {
+    getDocuments() async {
         documents = []; pdfReference = []; 
         FirebaseStorage storage = FirebaseStorage.instance;
-        ListResult res = await storage.ref().listAll();
+        
+        ListResult res;
+        if(widget.type == ListType.BareActs){
+          res = await storage.ref().child("Acts").listAll();
+        } else {
+          res = await storage.ref().child("Queries").listAll();
+        }
+        
         for(Reference ref in res.items) {
             if(ref.name.contains(".pdf")) {
                 String s = ref.name.replaceAll(".pdf", "");
@@ -89,27 +95,6 @@ class _DocumentListState extends State<DocumentList>{
           });
         }
     }
-    
-    getNotes() async {
-      documents = []; pdfReference = []; 
-        FirebaseStorage storage = FirebaseStorage.instance;
-        ListResult res = await storage.ref().listAll();
-        for(Reference ref in res.items) {
-            if(ref.name.contains(".pdf")) {
-                String s = ref.name.replaceAll(".pdf", "");
-                documents.add(s);
-                pdfReference.add(ref);
-            } 
-        }
-        
-        if(this.mounted) {
-          setState(() {
-            loading = false;
-          });
-        }
-        
-        dir = (await getApplicationDocumentsDirectory()).path;
-    }
 
     @override
     Widget build(BuildContext context) {
@@ -117,44 +102,34 @@ class _DocumentListState extends State<DocumentList>{
             child: Column(
                 children: [
 
-                    Container(
-                        decoration: aBoxDecor50W(),
-                        child: TextFormField(
-                            controller: textCon,
-                            style: TextStyle(
-                              fontSize: ScreenUtil().setSp(20)
-                            ),
-                            onChanged: (s) {
-                                setState(() {
-                                });
-                            },
-                            decoration: InputDecoration(
-                                prefixIcon: Icon(
-                                    Icons.search,
-                                    color: Colors.black,
-                                    size: 23,
-                                ),
-                                contentPadding: aPaddingLTRB(10, 10, 10, 10),
-                                focusColor: Colors.white,
-                                hoverColor: Colors.white,
-                                fillColor: Colors.white,
-                                hintText: "Search",
-                                border: InputBorder.none,
-                                enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black.withOpacity(0.2)
-                                    ),
-                                    borderRadius: BorderRadius.circular(50),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black.withOpacity(0.2)
-                                    ),
-                                    borderRadius: BorderRadius.circular(50),
+                    ASearchWidget(
+                      onChanged: (String s) {
+                        setState(() {
+                          searchTerm = s;
+                        });
+                      }
+                    ),
+                    
+                    (widget.type == ListType.Queries) ?
+                      GestureDetector(
+                        onTap: () {
+                          PageConProvider.of(context)?.pageCon.jumpToPage(8);
+                        },
+                        child: Container(
+                            decoration: aBoxDecor15B(),
+                            margin: aPaddingLTRB(10, 10, 10, 0),
+                            padding: aPaddingLTRB(10, 10, 10, 10),
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            
+                            child: Text(
+                              "Request Advice",
+                                style: TextStyle(
+                                  fontSize: ScreenUtil().setSp(14),
                                 ),
                             ),
                         ),
-                    ),
+                      ) : Container(),
 
                     Expanded(
                         child: Padding(
@@ -169,7 +144,7 @@ class _DocumentListState extends State<DocumentList>{
 
                                             itemBuilder: (context, index) {
 
-                                                bool b = documents[index].toLowerCase().contains(textCon.text.toLowerCase());
+                                                bool b = documents[index].toLowerCase().contains(searchTerm.toLowerCase());
 
                                                 return (b) ? TextItem(
                                                     text: documents[index],

@@ -3,10 +3,10 @@ import 'package:allaw/DocumentList.dart';
 import 'package:allaw/HomePage.dart';
 import 'package:allaw/LegalTerms.dart';
 import 'package:allaw/Request.dart';
-import 'package:allaw/global/widgets/AHomeIcon.dart';
-import 'package:allaw/global/widgets/AIconButton.dart';
-import 'package:allaw/global/widgets/onboarding.dart';
-import 'package:allaw/provider.dart';
+import 'package:allaw/widgets/AHomeIcon.dart';
+import 'package:allaw/widgets/AIconButton.dart';
+import 'package:allaw/widgets/onboarding.dart';
+import 'package:allaw/utils/provider.dart';
 import 'package:allaw/settings.dart';
 import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
@@ -45,7 +45,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
     PageController pageCon = new PageController();
-    List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms", "About Us", "Request Material", "Legal Notes"];
+    List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms", "About Us", "Request Material", "Legal Notes", "Request Advice"];
     int index = 0;
     bool onboarding = true;
     
@@ -176,10 +176,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                                 AboutUs(),
 
-                                                Request(),
+                                                Request(
+                                                  type: RequestType.Material,
+                                                ),
                                                 
                                                 DocumentList(
-                                                  type: ListType.Notes,
+                                                  type: ListType.Queries,
+                                                ),
+                                                
+                                                Request(
+                                                  type: RequestType.Advice,
                                                 ),
 
                                             ],
