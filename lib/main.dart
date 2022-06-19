@@ -45,7 +45,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
     PageController pageCon = new PageController();
-    List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms", "About Us", "Request Material", "Legal Notes", "Request Advice"];
+    List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms", "About Us", "Request Material", "Legal Queries", "Request Advice"];
     int index = 0;
     bool onboarding = true;
     
@@ -74,8 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
     @override
     Widget build(BuildContext context) {
         ScreenUtil.init(
-            BoxConstraints(maxWidth: 411.4, maxHeight: 866.3),
-            context: context,
+            context,
             designSize: Size(411.4, 866.3),
         );
 
