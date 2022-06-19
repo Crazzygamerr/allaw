@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:allaw/widgets/ASearch.dart';
-import 'package:allaw/widgets/LoadingDialog.dart';
-import 'package:allaw/widgets/TextItem.dart';
 import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
 import 'package:allaw/utils/ViewerConfig.dart';
 import 'package:allaw/utils/provider.dart';
+import 'package:allaw/widgets/ASearch.dart';
+import 'package:allaw/widgets/LoadingDialog.dart';
+import 'package:allaw/widgets/TextItem.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -109,27 +109,6 @@ class _DocumentListState extends State<DocumentList>{
                         });
                       }
                     ),
-                    
-                    (widget.type == ListType.Queries) ?
-                      GestureDetector(
-                        onTap: () {
-                          PageConProvider.of(context)?.pageCon.jumpToPage(8);
-                        },
-                        child: Container(
-                            decoration: aBoxDecor15B(),
-                            margin: aPaddingLTRB(10, 10, 10, 0),
-                            padding: aPaddingLTRB(10, 10, 10, 10),
-                            width: double.infinity,
-                            alignment: Alignment.center,
-                            
-                            child: Text(
-                              "Request Advice",
-                                style: TextStyle(
-                                  fontSize: ScreenUtil().setSp(14),
-                                ),
-                            ),
-                        ),
-                      ) : Container(),
 
                     Expanded(
                         child: Padding(
@@ -181,6 +160,27 @@ class _DocumentListState extends State<DocumentList>{
                             ),
                         ),
                     ),
+                    
+                    (widget.type == ListType.Queries) ?
+                      GestureDetector(
+                        onTap: () {
+                          PageConProvider.of(context)?.pageCon.jumpToPage(8);
+                        },
+                        child: Container(
+                            decoration: aBoxDecor15B(),
+                            margin: aPaddingLTRB(10, 0, 10, 10),
+                            padding: aPaddingLTRB(10, 10, 10, 10),
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            
+                            child: Text(
+                              "Request Advice",
+                                style: TextStyle(
+                                  fontSize: ScreenUtil().setSp(14),
+                                ),
+                            ),
+                        ),
+                      ) : Container(),
 
                 ],
             ),

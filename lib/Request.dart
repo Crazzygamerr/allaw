@@ -103,7 +103,7 @@ class _RequestState extends State<Request> {
                                     controller: textCon1, 
                                     focusNode: node1, 
                                     nextFocusNode: node3,
-                                    fieldText: "Your query*", 
+                                    fieldText: "Your Query*", 
                                     hintText: "Enter your query here",
                                     errorText: "Query cannot be empty",
                                     
@@ -117,8 +117,9 @@ class _RequestState extends State<Request> {
                                   AFormField(
                                     controller: textCon3, 
                                     focusNode: node3,
-                                    fieldText: "Your Email Address",
+                                    fieldText: "Your Email Address" + (widget.type == RequestType.Advice ? "*" : ""),
                                     hintText: "Enter your email address",
+                                    errorText: (widget.type == RequestType.Advice ? "Please enter a valid email address" : ""),
                                   ),
                         
                                   SizedBox(
@@ -171,7 +172,11 @@ class _RequestState extends State<Request> {
     }
 
     void requestAct() async {
-        if (textCon1.text != "") {
+        if (
+          (widget.type == RequestType.Material && textCon1.text != "")
+          || (widget.type == RequestType.Advice && textCon1.text != "" 
+          && RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(textCon3.text))
+          ) {
           var body = {
             "email": textCon3.text,
           };

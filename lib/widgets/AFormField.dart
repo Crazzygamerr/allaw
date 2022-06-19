@@ -48,6 +48,10 @@ class AFormField extends StatelessWidget {
               nextFocusNode?.requestFocus();
             },
             validator: (String? value) {
+              if((errorText.contains("email") && !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value ?? ""))){
+                return errorText;
+              }
+              
               if(errorText != "" && value == "") {
                 return errorText;
               } else {
