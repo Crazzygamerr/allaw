@@ -24,14 +24,14 @@ class AHomeIcon extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                     Image.asset(
-                        assetName,
-                        width: ScreenUtil().setWidth(20),
-                        height: ScreenUtil().setHeight(20),
+                      assetName,
+                      width: ScreenUtil().setWidth(20),
+                      height: ScreenUtil().setHeight(20),
                     ),
                     Text(
                         text,
                         style: TextStyle(
-                                fontSize: ScreenUtil().setSp(14)
+                          fontSize: ScreenUtil().setSp(13)
                         ),
                     ),
                 ],

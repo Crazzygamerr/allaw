@@ -2,18 +2,12 @@ import 'package:allaw/utils/APadding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-enum ValidatorType {
-  email,
-  text,
-  none
-}
-
 class AFormField extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final FocusNode? nextFocusNode;
-  final String fieldText, hintText;
-  final ValidatorType validatorType;
+  final String fieldText, hintText, errorText;
+  final bool isNumber, isMultiline;
   
   const AFormField({ 
     Key? key,
@@ -22,11 +16,13 @@ class AFormField extends StatelessWidget {
     this.nextFocusNode,
     required this.fieldText,
     required this.hintText,
-    this.validatorType = ValidatorType.none,
+    this.errorText = "",
+    this.isNumber = false,
+    this.isMultiline = false,
   }) : super(key: key);
-  
+
   @override
-  Widget build(BuildContext context) {
+  build(BuildContext context) {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,27 +36,30 @@ class AFormField extends StatelessWidget {
               ),
             ),
           ),
-          Form(
-            child: TextFormField(
-              controller: controller,
-              textAlign: TextAlign.start,
-              focusNode: focusNode,
-              onEditingComplete: () async {
-                focusNode.unfocus();
-                nextFocusNode?.requestFocus();
-              },
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                // no error message when in focus
-                errorStyle: focusNode.hasFocus ? TextStyle() : null,
-                focusedErrorBorder: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: aPaddingLTRB(10, 10, 10, 10),
-                hintText: hintText,
+          TextFormField(
+            controller: controller,
+            textAlign: TextAlign.start,
+            focusNode: focusNode,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            maxLines: isMultiline ? 6 : 1,
+            keyboardType: isMultiline ? TextInputType.multiline : (isNumber ? TextInputType.number : TextInputType.text),
+            onEditingComplete: () async {
+              focusNode.unfocus();
+              nextFocusNode?.requestFocus();
+            },
+            validator: (String? value) {
+              if(errorText != "" && value == "") {
+                return errorText;
+              } else {
+                return null;
+              }
+            },
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
+              contentPadding: aPaddingLTRB(10, 10, 10, 10),
+              hintText: hintText,
             ),
           ),
         ],

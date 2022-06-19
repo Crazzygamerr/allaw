@@ -152,8 +152,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                             controller: pageCon,
                                             onPageChanged: (page) {
                                                 setState(() {
-                                                    if(page<s.length)
-                                                        index = page;
+                                                  if(page<s.length)
+                                                    index = page;
                                                 });
                                             },
                                             physics: NeverScrollableScrollPhysics(),
@@ -221,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 
                                                 AHomeIcon(
                                                   assetName: "assets/article.png",
-                                                  text: "Legal Notes",
+                                                  text: "Legal Queries",
                                                   onTap: () {
                                                     FocusScope.of(context).unfocus();
                                                       pageCon.jumpToPage(7);
