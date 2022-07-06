@@ -140,12 +140,11 @@ class _DocumentListState extends State<DocumentList>{
                                                           Navigator.pop(context);
                                                         }
                                                         
-                                                        if(widget.type == ListType.BareActs) {
-                                                          var documentLoadedCancel = startDocumentLoadedListener(
-                                                            (path) async {
-                                                              await PdftronFlutter.openOutlineList();
-                                                            });
-                                                        }
+                                                        var documentLoadedCancel = startDocumentLoadedListener(
+                                                          (path) async {
+                                                            await PdftronFlutter.openOutlineList();
+                                                            
+                                                          });
                                                         
                                                         PdftronFlutter.openDocument(dir + "/" + (documents[index]) + ".pdf", config: getConfig());
                                                         

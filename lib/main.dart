@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     showOnboarding() async {
         if(mounted){
-            Future.delayed(Duration(seconds: 1))
+            Future.delayed(Duration(seconds: 3))
                     .then((value) => setState((){
                         onboarding = false;
                     }));

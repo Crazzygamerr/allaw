@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
+import 'package:allaw/utils/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
@@ -34,12 +35,17 @@ class _HomePageState extends State<HomePage> {
             });
         }
     }
-
-
+    
   @override
   void initState() {
-     super.initState();
-     fetchQuote();
+    super.initState();
+    fetchQuote();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchQuote();
   }
 
   @override
@@ -87,13 +93,10 @@ class _HomePageState extends State<HomePage> {
                                 child: PageView(
                                     controller: pageController,
                                     children: [
-
                                         TwitterFeed(0),
-
                                         TwitterFeed(1),
-
                                         TwitterFeed(2),
-
+                                        TwitterFeed(3)
                                     ],
 
                                 ),
@@ -175,8 +178,9 @@ class TwitterFeed extends StatefulWidget {
 class _TwitterFeedState extends State<TwitterFeed> with AutomaticKeepAliveClientMixin {
 
     List<String> s = [
-        r"""<a class="twitter-timeline" href="https://twitter.com/Lawctopus?ref_src=twsrc%5Etfw">Tweets by Lawctopus</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>""",
+        r"""<a class="twitter-timeline" href="https://twitter.com/barandbench?ref_src=twsrc%5Etfw">Tweets by BarAndBench</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>""",
         r"""<a class="twitter-timeline" href="https://twitter.com/LiveLawIndia?ref_src=twsrc%5Etfw">Tweets by LiveLawIndia</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>""",
+        r"""<a class="twitter-timeline" href="https://twitter.com/Lawctopus?ref_src=twsrc%5Etfw">Tweets by Lawctopus</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>""",
         r"""<a class="twitter-timeline" href="https://twitter.com/LegallyIndia?ref_src=twsrc%5Etfw">Tweets by LegallyIndia</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>""",
     ];
 

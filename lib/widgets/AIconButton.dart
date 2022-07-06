@@ -14,17 +14,29 @@ class AIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onTap(),
-      child: Container(
-          width: ScreenUtil().setWidth(50),
-          height: ScreenUtil().setHeight(50),
-          decoration: aBoxDecor15B(),
-          padding: aPaddingLTRB(8, 8, 8, 8),
-          child: Image.asset(
-              assetName,
+    return Container(
+      width: ScreenUtil().setWidth(50),
+      height: ScreenUtil().setHeight(50),
+      decoration: aBoxDecor15B(),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Theme(
+          data: ThemeData(
+            splashColor: Colors.black38,
           ),
+          child: Material(
+            child: InkWell(
+              onTap: () => onTap(),
+              child: Padding(
+                padding: aPaddingLTRB(10, 10, 10, 10),
+                child: Image.asset(
+                      assetName,
+                  ),
+              ),
+            ),
+          ),
+        ),
       ),
-  );
+    );
   }
 }

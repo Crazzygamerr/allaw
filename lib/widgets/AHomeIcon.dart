@@ -15,28 +15,38 @@ class AHomeIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: () => onTap(),
-        child: Container(
-            width: ScreenUtil().setWidth(100),
-            decoration: aBoxDecor15B(),
-            child: Column(
+    return Container(
+      width: ScreenUtil().setWidth(100),
+      decoration: aBoxDecor15B(),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Theme(
+          data: ThemeData(
+            splashColor: Colors.black38,
+          ),
+          child: Material(
+            child: InkWell(
+              onTap: () => onTap(),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                    Image.asset(
-                      assetName,
-                      width: ScreenUtil().setWidth(20),
-                      height: ScreenUtil().setHeight(20),
+                  Image.asset(
+                    assetName,
+                    width: ScreenUtil().setWidth(20),
+                    height: ScreenUtil().setHeight(20),
+                  ),
+                  Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: ScreenUtil().setSp(13)
                     ),
-                    Text(
-                        text,
-                        style: TextStyle(
-                          fontSize: ScreenUtil().setSp(13)
-                        ),
-                    ),
+                  ),
                 ],
+              ),
             ),
+          ),
         ),
+      ),
     );
   }
 }

@@ -103,8 +103,8 @@ class _RequestState extends State<Request> {
                                     controller: textCon1, 
                                     focusNode: node1, 
                                     nextFocusNode: node3,
-                                    fieldText: "Your Query*", 
-                                    hintText: "Enter your query here",
+                                    fieldText: "Your Legal Query/Advice*", 
+                                    hintText: "Enter your legal query/advice here",
                                     errorText: "Query cannot be empty",
                                     
                                     isMultiline: true,
@@ -152,11 +152,11 @@ class _RequestState extends State<Request> {
                                   Container(
                                       width: double.infinity,
                                       alignment: Alignment.centerLeft,
-                                      padding: aPaddingLTRB(10, 10, 0, 0),
+                                      padding: aPaddingLTRB(10, 200, 0, 0),
                                       child: Text(
                                           "* - The field is mandatory",
                                           style: TextStyle(
-                                              fontSize: ScreenUtil().setSp(14),
+                                              fontSize: ScreenUtil().setSp(11),
                                               color: Colors.red,
                                           ),
                                       ),

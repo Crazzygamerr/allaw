@@ -39,14 +39,14 @@ class _SettingsState extends State<Settings> {
                               ),
                 
                               TextItem(
-                                text: "Request Material",
+                                text: "Request Legal Material",
                                 onTap: (){
                                   PageConProvider.of(context)?.pageCon.jumpToPage(6);
                                 },
                               ),
                               
                               TextItem(
-                                text: "Request Advice",
+                                text: "Request Legal Query/Advice",
                                 onTap: (){
                                   PageConProvider.of(context)?.pageCon.jumpToPage(8);
                                 },
