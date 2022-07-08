@@ -45,7 +45,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
     PageController pageCon = new PageController();
-    List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms", "About Us", "Request Material", "Legal Queries", "Request Advice"];
+    List<String> s = ["", "Settings", "Bare Acts", "Downloads", "Legal Terms", "About Us", "Request Legal Material", "Legal Queries", "Request Legal Query/Advice"];
     int index = 0;
     bool onboarding = true;
     
@@ -126,7 +126,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         s[index],
                                                         textAlign: TextAlign.center,
                                                         style: TextStyle(
-                                                            fontSize: ScreenUtil().setSp(24),
+                                                            fontSize: (index == 6 || index == 8) 
+                                                            ? ScreenUtil().setSp(16)
+                                                            : ScreenUtil().setSp(24), 
                                                             fontWeight: FontWeight.bold,
                                                         ),
                                                     ),

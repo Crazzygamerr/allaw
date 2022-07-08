@@ -5,7 +5,8 @@ import 'package:allaw/utils/APadding.dart';
 import 'package:allaw/utils/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:webview_flutter_plus/webview_flutter_plus.dart';
+// import 'package:webview_flutter_plus/webview_flutter_plus.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -35,16 +36,14 @@ class _HomePageState extends State<HomePage> {
             });
         }
     }
-    
-  @override
-  void initState() {
-    super.initState();
-    fetchQuote();
-  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    // depend on inherited widget so that didChangeDependencies is called again
+    // when the inherited widget changes to fetch quote
+    var p = PageConProvider.of(context)?.pageCon;
+    
     fetchQuote();
   }
 
@@ -198,20 +197,21 @@ class _TwitterFeedState extends State<TwitterFeed> with AutomaticKeepAliveClient
                     borderRadius: BorderRadius.circular(15),
                     child: Stack(
                         children: [
-                            WebViewPlus(
-                                javascriptMode: JavascriptMode.unrestricted,
-                                onWebViewCreated: (controller) {
-                                    controller.loadString(s[widget.i]);
-                                },
-                                onPageFinished: (url) {
-                                    setState(() {
-                                        loading = false;
-                                    });
-                                },
-                                navigationDelegate: (navigation) {
-                                    return NavigationDecision.prevent;
-                                },
-                            ),
+                            // WebViewPlus(
+                            //     javascriptMode: JavascriptMode.unrestricted,
+                            //     onWebViewCreated: (controller) {
+                            //         controller.loadString(s[widget.i]);
+                            //     },
+                            //     onPageFinished: (url) {
+                            //         setState(() {
+                            //             loading = false;
+                            //         });
+                            //     },
+                            //     navigationDelegate: (navigation) {
+                            //         return NavigationDecision.prevent;
+                            //     },
+                            // ),
+                            
 
                             (loading)?Container(
                                 color: Colors.white,

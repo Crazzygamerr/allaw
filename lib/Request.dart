@@ -44,12 +44,14 @@ class _RequestState extends State<Request> {
                 child: Container(
                     decoration: aBoxDecor15B(),
                     padding: aPaddingLTRB(10, 20, 10, 10),
-                    child: SingleChildScrollView(
-                        child: Form(
-                          key: _formKey1,
-                          child: Column(
-                              children: [
-                        
+                    child: Form(
+                      key: _formKey1,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                    
+                              Column(
+                                children: [
                                   Container(
                                       child: Text(
                                           "Can't find a particular Act or Legal Term you are looking for, "
@@ -60,11 +62,11 @@ class _RequestState extends State<Request> {
                                           ),
                                       ),
                                   ),
-                        
+                    
                                   SizedBox(
                                       height: ScreenUtil().setHeight(30),
                                   ),
-                        
+                    
                                   (widget.type == RequestType.Material) ? Container(
                                     height: ScreenUtil().setHeight(95),
                                     child: Row(
@@ -80,11 +82,11 @@ class _RequestState extends State<Request> {
                                                   errorText: "Name cannot be empty",
                                                 ),
                                             ),
-                        
+                    
                                             SizedBox(
                                                 width: ScreenUtil().setWidth(20),
                                             ),
-                        
+                    
                                             Container(
                                                 width: ScreenUtil().setWidth(90),
                                                 child: AFormField(
@@ -96,7 +98,7 @@ class _RequestState extends State<Request> {
                                                   isNumber: true,
                                                 ),
                                             ),
-                        
+                    
                                         ],
                                     ),
                                   ) : AFormField(
@@ -109,7 +111,7 @@ class _RequestState extends State<Request> {
                                     
                                     isMultiline: true,
                                   ),
-                        
+                    
                                   SizedBox(
                                     height: ScreenUtil().setHeight(widget.type == RequestType.Material ? 0 : 25),
                                   ),
@@ -121,7 +123,7 @@ class _RequestState extends State<Request> {
                                     hintText: "Enter your email address",
                                     errorText: (widget.type == RequestType.Advice ? "Please enter a valid email address" : ""),
                                   ),
-                        
+                    
                                   SizedBox(
                                       height: ScreenUtil().setHeight(25),
                                   ),
@@ -148,23 +150,24 @@ class _RequestState extends State<Request> {
                                           ),
                                       ),
                                   ),
-                        
-                                  Container(
-                                      width: double.infinity,
-                                      alignment: Alignment.centerLeft,
-                                      padding: aPaddingLTRB(10, 200, 0, 0),
-                                      child: Text(
-                                          "* - The field is mandatory",
-                                          style: TextStyle(
-                                              fontSize: ScreenUtil().setSp(11),
-                                              color: Colors.red,
-                                          ),
+                                ],
+                              ),
+                    
+                              Container(
+                                  width: double.infinity,
+                                  alignment: Alignment.centerLeft,
+                                  padding: aPaddingLTRB(10, 140, 0, 0),
+                                  child: Text(
+                                      "* - The field is mandatory",
+                                      style: TextStyle(
+                                          fontSize: ScreenUtil().setSp(11),
+                                          color: Colors.red,
                                       ),
                                   ),
-                        
-                              ],
-                          ),
-                        ),
+                              ),
+                    
+                          ],
+                      ),
                     ),
                 ),
             ),

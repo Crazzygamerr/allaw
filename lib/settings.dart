@@ -32,7 +32,7 @@ class _SettingsState extends State<Settings> {
                               ),
                 
                               TextItem(
-                                text: "How to use?",
+                                text: "How To Use?",
                                 onTap: (){
                 
                                 },
@@ -53,14 +53,14 @@ class _SettingsState extends State<Settings> {
                               ),
                 
                               TextItem(
-                                text: "Rate us",
+                                text: "Rate Us",
                                 onTap: (){
                                     AppReview.requestReview;
                                 },
                               ),
                 
                               TextItem(
-                                text: "Share the app",
+                                text: "Share The App",
                                 onTap: (){
                                     Share.share("ALLAW by LexLiaise - Your Ally For Law\n"
                                             "A one stop solutions for all the Legal needs.");

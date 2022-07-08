@@ -173,7 +173,7 @@ class _DocumentListState extends State<DocumentList>{
                             alignment: Alignment.center,
                             
                             child: Text(
-                              "Request Advice",
+                              "Request Legal Query/Advice",
                                 style: TextStyle(
                                   fontSize: ScreenUtil().setSp(14),
                                 ),
