@@ -197,20 +197,20 @@ class _TwitterFeedState extends State<TwitterFeed> with AutomaticKeepAliveClient
                     borderRadius: BorderRadius.circular(15),
                     child: Stack(
                         children: [
-                            // WebViewPlus(
-                            //     javascriptMode: JavascriptMode.unrestricted,
-                            //     onWebViewCreated: (controller) {
-                            //         controller.loadString(s[widget.i]);
-                            //     },
-                            //     onPageFinished: (url) {
-                            //         setState(() {
-                            //             loading = false;
-                            //         });
-                            //     },
-                            //     navigationDelegate: (navigation) {
-                            //         return NavigationDecision.prevent;
-                            //     },
-                            // ),
+                            WebViewPlus(
+                                javascriptMode: JavascriptMode.unrestricted,
+                                onWebViewCreated: (controller) {
+                                    controller.loadString(s[widget.i]);
+                                },
+                                onPageFinished: (url) {
+                                    setState(() {
+                                        loading = false;
+                                    });
+                                },
+                                navigationDelegate: (navigation) {
+                                    return NavigationDecision.prevent;
+                                },
+                            ),
                             
 
                             (loading)?Container(
