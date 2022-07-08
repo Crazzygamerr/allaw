@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'package:allaw/utils/ABoxDecoration.dart';
 import 'package:allaw/utils/APadding.dart';
 import 'package:allaw/utils/provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:webview_flutter_plus/webview_flutter_plus.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:webview_flutter_plus/webview_flutter_plus.dart';
+import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -199,6 +200,7 @@ class _TwitterFeedState extends State<TwitterFeed> with AutomaticKeepAliveClient
                         children: [
                             WebViewPlus(
                                 javascriptMode: JavascriptMode.unrestricted,
+                                gestureRecognizers: [Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())].toSet(),
                                 onWebViewCreated: (controller) {
                                     controller.loadString(s[widget.i]);
                                 },
