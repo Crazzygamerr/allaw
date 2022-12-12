@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "1029815375566",
+    "firebase_url": "https://allaw-9cbd5-default-rtdb.firebaseio.com",
     "project_id": "allaw-9cbd5",
     "storage_bucket": "allaw-9cbd5.appspot.com"
   },
@@ -29,6 +30,13 @@
             {
               "client_id": "1029815375566-4smrh7ag3r3hf7ufkhfd8ejk5bm22lle.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1029815375566-rlktb7fn99fc3o7tl7vfuk092npdevde.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lexliaise.allaw"
+              }
             }
           ]
         }
