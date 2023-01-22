@@ -156,7 +156,7 @@ class _RequestState extends State<Request> {
                               Container(
                                   width: double.infinity,
                                   alignment: Alignment.centerLeft,
-                                  padding: aPaddingLTRB(10, 140, 0, 0),
+                                  padding: aPaddingLTRB(10, 0, 0, 0),
                                   child: Text(
                                       "* - The field is mandatory",
                                       style: TextStyle(
