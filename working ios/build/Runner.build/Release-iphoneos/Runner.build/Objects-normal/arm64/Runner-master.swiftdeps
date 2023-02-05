@@ -1,0 +1,6 @@
+version: "Apple Swift version 5.6.1 (swiftlang-5.6.0.323.66 clang-1316.0.20.12)"
+options: "df573a3403697ca782eae7416f93593fef6a4bfae7c43ede518317343e5a5b6d"
+build_start_time: [1665470615, 489752054]
+build_end_time: [1665470616, 63767910]
+inputs:
+  "/Users/lalitathithyan/Desktop/App/allaw/ios/Runner/AppDelegate.swift": [1662879072, 208064794]

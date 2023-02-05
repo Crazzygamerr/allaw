@@ -1,0 +1,21 @@
+dependencies: \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/Runner/GeneratedPluginRegistrant.m \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/Runner/GeneratedPluginRegistrant.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Modules/module.modulemap \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/Pods/Firebase/CoreOnly/Sources/module.modulemap \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterViewController.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterPluginAppLifeCycleDelegate.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterHeadlessDartRunner.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterEngineGroup.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterEngine.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterDartProject.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterCallbackCache.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterTexture.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterPlatformViews.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterCodecs.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterChannels.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterBinaryMessenger.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterPlugin.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterMacros.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/FlutterAppDelegate.h \
+  /Users/lalitathithyan/Desktop/App/allaw/ios/build/Release-iphoneos/Flutter.framework/Headers/Flutter.h
